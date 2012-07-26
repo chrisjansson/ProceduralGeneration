@@ -8,6 +8,9 @@
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath>bin\x86\Release\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>ObjLoader.Test.OpenGlTestProgram</StartupObject>
+  </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -48,8 +51,12 @@
     <Reference Include="nunit.framework, Version=2.6.0.12051, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.2.6.0.12054\lib\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="OpenTK">
+      <HintPath>..\..\includes\OpenTK.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -59,7 +66,8 @@
   <ItemGroup>
     <Compile Include="Loaders\MaterialLibraryLoaderTests.cs" />
     <Compile Include="Loaders\ObjLoaderTests.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="LoaderTestProgram.cs" />
+    <Compile Include="OpenGlTestProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeParsers\FaceParserTests.cs" />
     <Compile Include="TypeParsers\GroupParserTests.cs" />
@@ -77,6 +85,10 @@
     <ProjectReference Include="..\CjClutter.ObjLoader.Loader\CjClutter.ObjLoader.Loader.csproj">
       <Project>{1FD37682-98D6-442F-8E15-646247C690DC}</Project>
       <Name>CjClutter.ObjLoader.Loader</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CjClutter.OpenGl\CjClutter.OpenGl.csproj">
+      <Project>{F8718FBF-110A-42A2-9CA0-E35AE8222C08}</Project>
+      <Name>CjClutter.OpenGl</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
