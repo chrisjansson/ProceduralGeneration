@@ -34,6 +34,9 @@
     <Reference Include="OpenTK">
       <HintPath>..\..\includes\OpenTK.dll</HintPath>
     </Reference>
+    <Reference Include="QuickFont">
+      <HintPath>..\..\includes\QuickFont.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
