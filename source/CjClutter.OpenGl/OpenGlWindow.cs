@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Globalization;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -18,24 +17,30 @@ namespace CjClutter.OpenGl
                                                                                          };
 
         private QFont _qFont;
+        private double _frameFrequency;
 
-        public OpenGlWindow()
-            : base(800, 600, GraphicsMode.Default, "OpenGL Test Program", GameWindowFlags.Default, DisplayDevice.Default, 3, 1, GraphicsContextFlags.Default)
-        {
-        }
+        public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
+            : base(
+            width, 
+            height, 
+            GraphicsMode.Default, 
+            title, 
+            GameWindowFlags.Default, 
+            DisplayDevice.Default, 
+            openGlVersion.Major, 
+            openGlVersion.Minor, 
+            GraphicsContextFlags.Default) {}
 
         protected override void OnLoad(EventArgs e)
         {
             var font = new Font(FontFamily.GenericSansSerif, 10);
-            var config = new QFontBuilderConfiguration()
-            {
+            var config = new QFontBuilderConfiguration
+                             {
                 UseVertexBuffer = true,
                 TextGenerationRenderHint = TextGenerationRenderHint.SystemDefault
             };
 
             _qFont = new QFont(font, config);
-            _qFont.PrintToVBO("Hello World!", new Vector3(), Color.Crimson);
-            _qFont.LoadVBOs();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -45,33 +50,48 @@ namespace CjClutter.OpenGl
             GL.ClearColor(Color4.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            //GL.Color3(Color.Green);
+            GL.Color3(Color.Green);
 
-            //GL.Rotate(e.Time * 10, 0, 0, 1);
+            GL.Rotate(e.Time * 10, 0, 0, 1);
 
-            //GL.Begin(BeginMode.Triangles);
+            GL.Begin(BeginMode.Triangles);
 
-            //GL.Vertex3(-0.5, -0.5, 0);
-            //GL.Vertex3(0.5, -0.5, 0);
-            //GL.Vertex3(0.5, 0.5, 0);
+            GL.Vertex3(-0.5, -0.5, 0);
+            GL.Vertex3(0.5, -0.5, 0);
+            GL.Vertex3(0.5, 0.5, 0);
 
-            //GL.End();
+            GL.End();
 
-            //QFont.Begin();
-            var frequency = 1 / e.Time;
-            //_qFont.PrintToVBO(frequency.ToString("#"), new Vector3(0, 1, 0), Color.White);
-            //_qFont.LoadVBOs();
-            //_qFont.DrawVBOs();
-            //_qFont.ResetVBOs();
-            _qFont.DrawVBOs();
-            //QFont.End();
+            CalculateFrameFrequency(e.Time);
+
+            QFontScopeRunner(() =>
+                {
+                    _qFont.PrintToVBO(_frameFrequency.ToString("#"), Vector2.Zero, Color.Black);
+                    _qFont.LoadVBOs();
+                    _qFont.DrawVBOs();
+                    _qFont.ResetVBOs();
+                });
 
             SwapBuffers();
+        }
+
+        private void CalculateFrameFrequency(double frameTime)
+        {
+            var newFrameFrequency = 1/frameTime;
+            _frameFrequency = (newFrameFrequency + _frameFrequency)/2;
+        }
+
+        private void QFontScopeRunner(Action qFontCode)
+        {
+            QFont.Begin();
+            qFontCode();
+            QFont.End();
         }
 
         private void ProcessKeyboardInput()
         {
             var keyboardState = OpenTK.Input.Keyboard.GetState();
+
             foreach (var keyboardInputActionPair in _keyboardInputActions)
             {
                 if (keyboardState[keyboardInputActionPair.Key])
