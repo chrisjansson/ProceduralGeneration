@@ -34,13 +34,7 @@ namespace CjClutter.OpenGl
         protected override void OnLoad(EventArgs e)
         {
             var font = new Font(FontFamily.GenericSansSerif, 10);
-            var config = new QFontBuilderConfiguration
-                             {
-                UseVertexBuffer = true,
-                TextGenerationRenderHint = TextGenerationRenderHint.SystemDefault
-            };
-
-            _qFont = new QFont(font, config);
+            _qFont = QFontFactory.Create(font);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -73,10 +67,10 @@ namespace CjClutter.OpenGl
         {
             QFontExtensions.RunInQFontScope(() =>
                 {
+                    _qFont.ResetVBOs();
                     _qFont.PrintToVBO(_frameTimeCounter.ToOutputString(), Vector2.Zero, Color.Black);
                     _qFont.LoadVBOs();
                     _qFont.DrawVBOs();
-                    _qFont.ResetVBOs();
                 });
         }
 
