@@ -7,9 +7,10 @@ namespace ObjLoader.Test
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("OpenGl test program");
+            const string title = "OpenGl test program";
+            Console.WriteLine(title);
 
-            var window = new OpenGlWindow();
+            var window = new OpenGlWindow(800, 600, title, OpenGlVersion.OpenGl31);
 
             window.Run();
         }

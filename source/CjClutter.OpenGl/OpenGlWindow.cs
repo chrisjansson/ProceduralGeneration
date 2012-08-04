@@ -17,7 +17,7 @@ namespace CjClutter.OpenGl
                                                                                          };
 
         private QFont _qFont;
-        private double _frameFrequency;
+        private readonly FrameTimeCounter _frameTimeCounter = new FrameTimeCounter();
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -47,6 +47,8 @@ namespace CjClutter.OpenGl
         {
             ProcessKeyboardInput();
 
+            _frameTimeCounter.UpdateFrameTime(e.Time);
+
             GL.ClearColor(Color4.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
@@ -62,30 +64,20 @@ namespace CjClutter.OpenGl
 
             GL.End();
 
-            CalculateFrameFrequency(e.Time);
-
-            QFontScopeRunner(() =>
-                {
-                    _qFont.PrintToVBO(_frameFrequency.ToString("#"), Vector2.Zero, Color.Black);
-                    _qFont.LoadVBOs();
-                    _qFont.DrawVBOs();
-                    _qFont.ResetVBOs();
-                });
+            DrawDebugText();
 
             SwapBuffers();
         }
 
-        private void CalculateFrameFrequency(double frameTime)
+        private void DrawDebugText()
         {
-            var newFrameFrequency = 1/frameTime;
-            _frameFrequency = (newFrameFrequency + _frameFrequency)/2;
-        }
-
-        private void QFontScopeRunner(Action qFontCode)
-        {
-            QFont.Begin();
-            qFontCode();
-            QFont.End();
+            QFontExtensions.RunInQFontScope(() =>
+                {
+                    _qFont.PrintToVBO(_frameTimeCounter.ToOutputString(), Vector2.Zero, Color.Black);
+                    _qFont.LoadVBOs();
+                    _qFont.DrawVBOs();
+                    _qFont.ResetVBOs();
+                });
         }
 
         private void ProcessKeyboardInput()
