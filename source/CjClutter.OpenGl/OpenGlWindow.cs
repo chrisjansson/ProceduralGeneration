@@ -38,7 +38,7 @@ namespace CjClutter.OpenGl
             var font = new Font(FontFamily.GenericSansSerif, 10);
             _qFont = QFontFactory.Create(font);
 
-            _improvedPerlinNoise = new ImprovedPerlinNoise();
+            _improvedPerlinNoise = new ImprovedPerlinNoise(214322345);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)

@@ -86,6 +86,31 @@ namespace CjClutter.OpenGl.Noise
                 _p[256 + i] = _permutation[i];
             }
         }
+
+        public ImprovedPerlinNoise(int seed)
+        {
+            var random = new Random(seed);
+
+            for (int i = 0; i < 256; i++)
+            {
+                _permutation[i] = i;
+            }
+
+            for (int i = 0; i < 256; i++)
+            {
+                int k = random.Next(256 - i) + i;
+                int l = _permutation[i];
+
+                _permutation[i] = _permutation[k];
+                _permutation[k] = l;
+            }
+
+            for (int i = 0; i < 256; i++)
+            {
+                _p[i] = _permutation[i];
+                _p[i + 256] = _permutation[i];
+            }
+        }
     }
 
 
