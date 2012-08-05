@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using CjClutter.OpenGl.Noise;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -18,6 +19,7 @@ namespace CjClutter.OpenGl
 
         private QFont _qFont;
         private readonly FrameTimeCounter _frameTimeCounter = new FrameTimeCounter();
+        private ImprovedPerlinNoise _improvedPerlinNoise;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -35,6 +37,8 @@ namespace CjClutter.OpenGl
         {
             var font = new Font(FontFamily.GenericSansSerif, 10);
             _qFont = QFontFactory.Create(font);
+
+            _improvedPerlinNoise = new ImprovedPerlinNoise();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -48,15 +52,27 @@ namespace CjClutter.OpenGl
 
             GL.Color3(Color.Green);
 
-            GL.Rotate(e.Time * 10, 0, 0, 1);
+            GL.Begin(BeginMode.LineStrip);
 
-            GL.Begin(BeginMode.Triangles);
 
-            GL.Vertex3(-0.5, -0.5, 0);
-            GL.Vertex3(0.5, -0.5, 0);
-            GL.Vertex3(0.5, 0.5, 0);
+            for (int i = 0; i < 100; i++)
+            {
+                var noise = _improvedPerlinNoise.Noise(i / 10.0, 0, 0);
+                GL.Vertex2(-0.5 + i / 100.0, noise);
+            }
+
 
             GL.End();
+
+            //GL.Rotate(e.Time * 10, 0, 0, 1);
+
+            //GL.Begin(BeginMode.Triangles);
+
+            //GL.Vertex3(-0.5, -0.5, 0);
+            //GL.Vertex3(0.5, -0.5, 0);
+            //GL.Vertex3(0.5, 0.5, 0);
+
+            //GL.End();
 
             DrawDebugText();
 

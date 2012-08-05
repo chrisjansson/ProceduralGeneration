@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FrameTimeCounter.cs" />
+    <Compile Include="Noise\ImprovedPerlinNoise.cs" />
     <Compile Include="OpenGlVersion.cs" />
     <Compile Include="OpenGlWindow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
