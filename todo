@@ -1,0 +1,8 @@
+* improved perlin noise
+* simplex noise
+* styra en perlin noise height map kvadrant med piltangenter som ger offset xy
+* file.readalllines vs stream
+* boids
+* awesomium för gränssnitt
+* resource manager, load font
+* enkel scene graph 	
