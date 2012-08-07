@@ -1,26 +1,12 @@
 ﻿namespace CjClutter.OpenGl.Noise
 {
-    public class FractalBrownianMotionSettings
-    {
-        public FractalBrownianMotionSettings(int octaves, double amplitude, double frequency)
-        {
-            Octaves = octaves;
-            Amplitude = amplitude;
-            Frequency = frequency;
-        }
-
-        public int Octaves { get; private set; }
-        public double Amplitude { get; private set; }
-        public double Frequency { get; private set; }
-    }
-
     public class FractalBrownianMotion
     {
-        private const double Lacunarity = 2.0;
-        private const double Gain = 0.5;
+        private const double Lacunarity = 2.0; //1.8715 or 2.1042 can help reduce artifacts in some algorithms
+        private const double Gain = 0.5; //Generally 1/Lacunarity
 
         private readonly ImprovedPerlinNoise _noiseGenerator;
-        private FractalBrownianMotionSettings _settings;
+        private readonly FractalBrownianMotionSettings _settings;
 
         public FractalBrownianMotion(ImprovedPerlinNoise noiseGenerator, FractalBrownianMotionSettings settings)
         {
@@ -30,18 +16,20 @@
 
         public double Noise(double x, double y, double z)
         {
-            var total = 0.0;
             var frequency = _settings.Frequency;
-            var amplitude = Gain;
+            var amplitude = _settings.Amplitude;
+            var octaves = _settings.Octaves;
 
-            for (var i = 0; i < _settings.Octaves; i++)
+            var result = 0.0;
+
+            for (var i = 0; i < octaves; i++)
             {
-                total += _noiseGenerator.Noise(x * frequency, y * frequency, z * frequency) * amplitude;
+                result += _noiseGenerator.Noise(x * frequency, y * frequency, z * frequency) * amplitude;
                 frequency *= Lacunarity;
                 amplitude *= Gain;
             }
 
-            return total;
+            return result;
         }
     }
 }

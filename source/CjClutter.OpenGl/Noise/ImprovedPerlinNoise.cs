@@ -4,13 +4,47 @@ namespace CjClutter.OpenGl.Noise
 {
     public class ImprovedPerlinNoise
     {
+        public ImprovedPerlinNoise()
+        {
+            for (var i = 0; i < 256; i++)
+            {
+                _p[i] = _permutation[i];
+                _p[256 + i] = _permutation[i];
+            }
+        }
+
+        public ImprovedPerlinNoise(int seed)
+        {
+            var random = new Random(seed);
+
+            for (var i = 0; i < 256; i++)
+            {
+                _permutation[i] = i;
+            }
+
+            for (var i = 0; i < 256; i++)
+            {
+                var k = random.Next(256 - i) + i;
+                var l = _permutation[i];
+
+                _permutation[i] = _permutation[k];
+                _permutation[k] = l;
+            }
+
+            for (var i = 0; i < 256; i++)
+            {
+                _p[i] = _permutation[i];
+                _p[i + 256] = _permutation[i];
+            }
+        }
+
         public double Noise(double x, double y, double z)
         {
             // FIND UNIT CUBE THAT
             // CONTAINS POINT.
-            int X = (int)Math.Floor(x) & 255;
-            int Y = (int)Math.Floor(y) & 255;
-            int Z = (int)Math.Floor(z) & 255;
+            var X = (int)Math.Floor(x) & 255;
+            var Y = (int)Math.Floor(y) & 255;
+            var Z = (int)Math.Floor(z) & 255;
 
             x -= Math.Floor(x);                                // FIND RELATIVE X,Y,Z
             y -= Math.Floor(y);                                // OF POINT IN CUBE.
@@ -18,27 +52,27 @@ namespace CjClutter.OpenGl.Noise
 
             // COMPUTE FADE CURVES
             // FOR EACH OF X,Y,Z.
-            double u = Fade(x);
-            double v = Fade(y);
-            double w = Fade(z);
+            var u = Fade(x);
+            var v = Fade(y);
+            var w = Fade(z);
 
             // HASH COORDINATES OF
             // THE 8 CUBE CORNERS.
-            int A = _p[X] + Y;
-            int AA = _p[A] + Z;
-            int AB = _p[A + 1] + Z;
-            int B = _p[X + 1] + Y;
-            int BA = _p[B] + Z;
-            int BB = _p[B + 1] + Z;
+            var a = _p[X] + Y;
+            var aa = _p[a] + Z;
+            var ab = _p[a + 1] + Z;
+            var b = _p[X + 1] + Y;
+            var ba = _p[b] + Z;
+            var bb = _p[b + 1] + Z;
 
-            return Lerp(w, Lerp(v, Lerp(u, Grad(_p[AA], x, y, z),  // AND ADD
-                                           Grad(_p[BA], x - 1, y, z)), // BLENDED
-                                   Lerp(u, Grad(_p[AB], x, y - 1, z),  // RESULTS
-                                           Grad(_p[BB], x - 1, y - 1, z))),// FROM  8
-                           Lerp(v, Lerp(u, Grad(_p[AA + 1], x, y, z - 1),  // CORNERS
-                                           Grad(_p[BA + 1], x - 1, y, z - 1)), // OF CUBE
-                                   Lerp(u, Grad(_p[AB + 1], x, y - 1, z - 1),
-                                           Grad(_p[BB + 1], x - 1, y - 1, z - 1))));
+            return Lerp(w, Lerp(v, Lerp(u, Grad(_p[aa], x, y, z),  // AND ADD
+                                           Grad(_p[ba], x - 1, y, z)), // BLENDED
+                                   Lerp(u, Grad(_p[ab], x, y - 1, z),  // RESULTS
+                                           Grad(_p[bb], x - 1, y - 1, z))),// FROM  8
+                           Lerp(v, Lerp(u, Grad(_p[aa + 1], x, y, z - 1),  // CORNERS
+                                           Grad(_p[ba + 1], x - 1, y, z - 1)), // OF CUBE
+                                   Lerp(u, Grad(_p[ab + 1], x, y - 1, z - 1),
+                                           Grad(_p[bb + 1], x - 1, y - 1, z - 1))));
         }
 
         private double Fade(double t)
@@ -53,9 +87,9 @@ namespace CjClutter.OpenGl.Noise
 
         private double Grad(int hash, double x, double y, double z)
         {
-            int h = hash & 15;                      // CONVERT LO 4 BITS OF HASH CODE
-            double u = h < 8 ? x : y;               // INTO 12 GRADIENT DIRECTIONS.
-            double v = h < 4 ? y : h == 12 || h == 14 ? x : z;
+            var h = hash & 15;                      // CONVERT LO 4 BITS OF HASH CODE
+            var u = h < 8 ? x : y;               // INTO 12 GRADIENT DIRECTIONS.
+            var v = h < 4 ? y : h == 12 || h == 14 ? x : z;
 
             return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
         }
@@ -77,41 +111,5 @@ namespace CjClutter.OpenGl.Noise
                 49,192,214, 31,181,199,106,157,184, 84,204,176,115,121,50,45,127, 4,150,254,
                 138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180
             };
-
-        public ImprovedPerlinNoise()
-        {
-            for (int i = 0; i < 256; i++)
-            {
-                _p[i] = _permutation[i];
-                _p[256 + i] = _permutation[i];
-            }
-        }
-
-        public ImprovedPerlinNoise(int seed)
-        {
-            var random = new Random(seed);
-
-            for (int i = 0; i < 256; i++)
-            {
-                _permutation[i] = i;
-            }
-
-            for (int i = 0; i < 256; i++)
-            {
-                int k = random.Next(256 - i) + i;
-                int l = _permutation[i];
-
-                _permutation[i] = _permutation[k];
-                _permutation[k] = l;
-            }
-
-            for (int i = 0; i < 256; i++)
-            {
-                _p[i] = _permutation[i];
-                _p[i + 256] = _permutation[i];
-            }
-        }
     }
-
-
 }
