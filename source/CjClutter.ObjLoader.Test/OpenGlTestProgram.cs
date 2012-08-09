@@ -25,11 +25,13 @@ namespace ObjLoader.Test
             Console.WriteLine(stopwatch.Elapsed.TotalSeconds);
 
             stopwatch.Reset();
+
+            var simplexNoise = new SimplexNoise();
             stopwatch.Start();
 
             for (int i = 0; i < 10000000; i++)
             {
-                var noise = SimplexNoise.Noise(i, i, i);
+                var noise = simplexNoise.Noise(i, i, i);
             }
 
             stopwatch.Stop();
