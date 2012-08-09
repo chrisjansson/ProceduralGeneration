@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using CjClutter.OpenGl;
+using CjClutter.OpenGl.Noise;
 
 namespace ObjLoader.Test
 {
@@ -10,9 +12,32 @@ namespace ObjLoader.Test
             const string title = "OpenGl test program";
             Console.WriteLine(title);
 
-            var window = new OpenGlWindow(800, 600, title, OpenGlVersion.OpenGl31);
+            var improvedPerlinNoise = new ImprovedPerlinNoise();
 
-            window.Run();
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            for (int i = 0; i < 10000000; i++)
+            {
+                var noise = improvedPerlinNoise.Noise(i, i, i);
+            }
+
+            stopwatch.Stop();
+            Console.WriteLine(stopwatch.Elapsed.TotalSeconds);
+
+            stopwatch.Reset();
+            stopwatch.Start();
+
+            for (int i = 0; i < 10000000; i++)
+            {
+                var noise = SimplexNoise.Noise(i, i, i);
+            }
+
+            stopwatch.Stop();
+            Console.WriteLine(stopwatch.Elapsed.TotalSeconds);
+
+            //var window = new OpenGlWindow(800, 600, title, OpenGlVersion.OpenGl31);
+
+            //window.Run();
         }
     }
 }

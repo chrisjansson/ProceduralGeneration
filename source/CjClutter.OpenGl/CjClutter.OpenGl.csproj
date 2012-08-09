@@ -51,6 +51,7 @@
     <Compile Include="Noise\FractalBrownianMotion.cs" />
     <Compile Include="Noise\FractalBrownianMotionSettings.cs" />
     <Compile Include="Noise\ImprovedPerlinNoise.cs" />
+    <Compile Include="Noise\SimplexNoise.cs" />
     <Compile Include="OpenGlVersion.cs" />
     <Compile Include="OpenGlWindow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
