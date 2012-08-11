@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using CjClutter.OpenGl.Noise;
 using OpenTK;
@@ -19,7 +20,8 @@ namespace CjClutter.OpenGl
 
         private QFont _qFont;
         private readonly FrameTimeCounter _frameTimeCounter = new FrameTimeCounter();
-        private ImprovedPerlinNoise _improvedPerlinNoise;
+        private SimplexNoise _simplexNoise;
+        private Stopwatch _stopwatch;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -38,7 +40,9 @@ namespace CjClutter.OpenGl
             var font = new Font(FontFamily.GenericSansSerif, 10);
             _qFont = QFontFactory.Create(font);
 
-            _improvedPerlinNoise = new ImprovedPerlinNoise(214322345);
+            _simplexNoise = new SimplexNoise();
+            _stopwatch = new Stopwatch();
+            _stopwatch.Start();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -55,10 +59,10 @@ namespace CjClutter.OpenGl
             GL.Begin(BeginMode.LineStrip);
 
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 200; i++)
             {
-                var noise = _improvedPerlinNoise.Noise(i / 10.0, 0, 0);
-                GL.Vertex2(-0.5 + i / 100.0, noise);
+                var noise = _simplexNoise.Noise(i/10.0, _stopwatch.Elapsed.TotalSeconds/10);
+                GL.Vertex2(-1 + i / 100.0, noise);
             }
 
 

@@ -31,7 +31,7 @@ namespace ObjLoader.Test
 
             for (int i = 0; i < 10000000; i++)
             {
-                var noise = simplexNoise.Noise(i, i, i);
+                var noise = simplexNoise.Noise(i, i);
             }
 
             stopwatch.Stop();
