@@ -23,7 +23,7 @@ namespace CjClutter.OpenGl
 
         private QFont _qFont;
         private readonly FrameTimeCounter _frameTimeCounter = new FrameTimeCounter();
-        private SimplexNoise _simplexNoise;
+        private INoiseGenerator _noiseGenerator;
         private Stopwatch _stopwatch;
         private double[,] _heightMap;
 
@@ -49,7 +49,7 @@ namespace CjClutter.OpenGl
 
             _heightMap = new double[TerrainWidth, TerrainHeight];
 
-            _simplexNoise = new SimplexNoise();
+            _noiseGenerator = new SimplexNoise();
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
         }
@@ -84,7 +84,7 @@ namespace CjClutter.OpenGl
                 {
                     var xin = i/(double) TerrainWidth*2;
                     var yin = j/(double) TerrainHeight*2;
-                    _heightMap[i, j] = 0.2 * _simplexNoise.Noise(xin, yin, elapsedseconds);
+                    _heightMap[i, j] = 0.2 * _noiseGenerator.Noise(xin, yin, elapsedseconds);
                 }
             }
 
@@ -113,25 +113,8 @@ namespace CjClutter.OpenGl
                     GL.Vertex3(x3, z3, y3);
                 }
             }
-
-            //for (int i = 0; i < 200; i++)
-            //{
-            //    var noise = _simplexNoise.Noise(i / 10.0, _stopwatch.Elapsed.TotalSeconds / 10);
-            //    GL.Vertex2(-1 + i / 100.0, noise);
-            //}
-
-
+        
             GL.End();
-
-            //GL.Rotate(e.Time * 10, 0, 0, 1);
-
-            //GL.Begin(BeginMode.Triangles);
-
-            //GL.Vertex3(-0.5, -0.5, 0);
-            //GL.Vertex3(0.5, -0.5, 0);
-            //GL.Vertex3(0.5, 0.5, 0);
-
-            //GL.End();
 
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
 
