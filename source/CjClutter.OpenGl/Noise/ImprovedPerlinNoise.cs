@@ -2,7 +2,7 @@
 
 namespace CjClutter.OpenGl.Noise
 {
-    public class ImprovedPerlinNoise
+    public class ImprovedPerlinNoise : INoiseGenerator
     {
         public ImprovedPerlinNoise()
         {
@@ -36,6 +36,11 @@ namespace CjClutter.OpenGl.Noise
                 _p[i] = _permutation[i];
                 _p[i + 256] = _permutation[i];
             }
+        }
+
+        public double Noise(double x, double y)
+        {
+            return Noise(x, y, 0);
         }
 
         public double Noise(double x, double y, double z)

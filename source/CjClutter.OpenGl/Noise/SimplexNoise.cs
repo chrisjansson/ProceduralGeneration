@@ -28,7 +28,7 @@ using System;
 namespace CjClutter.OpenGl.Noise
 {
 
-    public class SimplexNoise
+    public class SimplexNoise : INoiseGenerator
     {
         private readonly Grad[] _grad3 =
             {
