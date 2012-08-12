@@ -108,18 +108,18 @@ namespace CjClutter.OpenGl.Noise
             return g.X * x + g.Y * y + g.Z * z + g.W * w;
         }
 
-        public double Noise(double xin, double yin)
+        public double Noise(double x, double y)
         {
             double n0, n1, n2; // Noise contributions from the three corners
             // Skew the input space to determine which simplex cell we're in
-            double s = (xin + yin) * _f2; // Hairy factor for 2D
-            var i = Fastfloor(xin + s);
-            var j = Fastfloor(yin + s);
+            double s = (x + y) * _f2; // Hairy factor for 2D
+            var i = Fastfloor(x + s);
+            var j = Fastfloor(y + s);
             var t = (i + j) * _g2;
             var X0 = i - t; // Unskew the cell origin back to (x,y) space
             var Y0 = j - t;
-            var x0 = xin - X0; // The x,y distances from the cell origin
-            var y0 = yin - Y0;
+            var x0 = x - X0; // The x,y distances from the cell origin
+            var y0 = y - Y0;
             // For the 2D case, the simplex shape is an equilateral triangle.
             // Determine which simplex we are in.
             int i1, j1; // Offsets for second (middle) corner of simplex in (i,j) coords
@@ -165,21 +165,21 @@ namespace CjClutter.OpenGl.Noise
             return 70.0 * (n0 + n1 + n2);
         }
 
-        public double Noise(double xin, double yin, double zin)
+        public double Noise(double x, double y, double z)
         {
             double n0, n1, n2, n3; // Noise contributions from the four corners
             // Skew the input space to determine which simplex cell we're in
-            var s = (xin + yin + zin) * F3; // Very nice and simple skew factor for 3D
-            var i = Fastfloor(xin + s);
-            var j = Fastfloor(yin + s);
-            var k = Fastfloor(zin + s);
+            var s = (x + y + z) * F3; // Very nice and simple skew factor for 3D
+            var i = Fastfloor(x + s);
+            var j = Fastfloor(y + s);
+            var k = Fastfloor(z + s);
             var t = (i + j + k) * G3;
             var X0 = i - t; // Unskew the cell origin back to (x,y,z) space
             var Y0 = j - t;
             var Z0 = k - t;
-            var x0 = xin - X0; // The x,y,z distances from the cell origin
-            var y0 = yin - Y0;
-            var z0 = zin - Z0;
+            var x0 = x - X0; // The x,y,z distances from the cell origin
+            var y0 = y - Y0;
+            var z0 = z - Z0;
             // For the 3D case, the simplex shape is a slightly irregular tetrahedron.
             // Determine which simplex we are in.
             int i1, j1, k1; // Offsets for second corner of simplex in (i,j,k) coords
