@@ -27,9 +27,8 @@ namespace CjClutter.OpenGl
         private INoiseGenerator _noiseGenerator;
         private Stopwatch _stopwatch;
         private double[,] _heightMap;
-        private MouseInputProcessor _mouseInputProcessor = new MouseInputProcessor();
-
-
+        private readonly MouseInputProcessor _mouseInputProcessor = new MouseInputProcessor();
+        
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
             width,
@@ -145,12 +144,16 @@ namespace CjClutter.OpenGl
 
         private void ProcessKeyboardInput()
         {
-            var deviceId = Keyboard.DeviceID;
-            var keyboardState = OpenTK.Input.Keyboard.GetState(deviceId.ToInt32());
+            if(!Focused)
+            {
+                return;
+            }
 
+            var keyboardState = OpenTK.Input.Keyboard.GetState();
+            
             foreach (var keyboardInputActionPair in _keyboardInputActions)
             {
-                if (keyboardState.IsKeyDown(keyboardInputActionPair.Key) && Focused)
+                if (keyboardState.IsKeyDown(keyboardInputActionPair.Key))
                 {
                     keyboardInputActionPair.Value(this);
                 }
@@ -164,8 +167,7 @@ namespace CjClutter.OpenGl
                 return;
             }
 
-            var mouseId = Mouse.DeviceID.ToInt32();
-            var mouseState = OpenTK.Input.Mouse.GetState(mouseId);
+            var mouseState = OpenTK.Input.Mouse.GetState();
 
             _mouseInputProcessor.Update(mouseState);
         }
