@@ -89,9 +89,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FrameTimeCounter.cs" />
+    <Compile Include="Input\MouseInputProcessor.cs" />
     <Compile Include="Noise\FractalBrownianMotion.cs" />
     <Compile Include="Noise\FractalBrownianMotionSettings.cs" />
     <Compile Include="Noise\ImprovedPerlinNoise.cs" />
+    <Compile Include="Noise\INoiseGenerator.cs" />
     <Compile Include="Noise\SimplexNoise.cs" />
     <Compile Include="OpenGlVersion.cs" />
     <Compile Include="OpenGlWindow.cs" />
