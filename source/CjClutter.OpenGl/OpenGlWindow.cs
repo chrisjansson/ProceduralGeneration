@@ -54,6 +54,11 @@ namespace CjClutter.OpenGl
             _noiseGenerator = new SimplexNoise();
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
+
+            _mouseInputProcessor.Subscribe(MouseButton.Right, () => GL.Color3(Color.DodgerBlue));
+            _mouseInputProcessor.Subscribe(MouseButton.Left, () => GL.Color3(Color.Green));
+            
+            GL.Color3(Color.Green);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -73,8 +78,6 @@ namespace CjClutter.OpenGl
 
             GL.ClearColor(Color4.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            GL.Color3(Color.Green);
 
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
             GL.Begin(BeginMode.Quads);
