@@ -28,6 +28,7 @@ namespace CjClutter.OpenGl
         private Stopwatch _stopwatch;
         private double[,] _heightMap;
         private readonly MouseInputProcessor _mouseInputProcessor = new MouseInputProcessor();
+        private readonly MouseInputObservable _mouseInputObservable;
         
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -42,6 +43,7 @@ namespace CjClutter.OpenGl
             GraphicsContextFlags.Default)
         {
             VSync = VSyncMode.Off;
+             _mouseInputObservable = new MouseInputObservable(_mouseInputProcessor);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -55,8 +57,10 @@ namespace CjClutter.OpenGl
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
 
-            _mouseInputProcessor.Subscribe(MouseButton.Right, () => GL.Color3(Color.DodgerBlue));
-            _mouseInputProcessor.Subscribe(MouseButton.Left, () => GL.Color3(Color.Green));
+
+
+            _mouseInputObservable.Subscribe(MouseButton.Right, () => GL.Color3(Color.DodgerBlue));
+            _mouseInputObservable.Subscribe(MouseButton.Left, () => GL.Color3(Color.Green));
             
             GL.Color3(Color.Green);
         }
@@ -173,6 +177,7 @@ namespace CjClutter.OpenGl
             var mouseState = OpenTK.Input.Mouse.GetState();
 
             _mouseInputProcessor.Update(mouseState);
+            _mouseInputObservable.ProcessMouseButtons();
         }
     }
 }

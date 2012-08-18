@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using OpenTK.Input;
-using System.Linq;
+﻿using OpenTK.Input;
 
 namespace CjClutter.OpenGl.Input
 {
@@ -9,91 +6,43 @@ namespace CjClutter.OpenGl.Input
     {
         private MouseState _previousFrameMouseState;
         private MouseState _currentFrameMouseState;
-        private readonly Dictionary<MouseButton, List<Action>> _mouseButtonDictionary;
-
 
         public MouseInputProcessor()
         {
             _previousFrameMouseState = new MouseState();
-            _mouseButtonDictionary = new Dictionary<MouseButton, List<Action>>();
+            _currentFrameMouseState = new MouseState();
         }
 
         public void Update(MouseState mouseState)
         {
-            _currentFrameMouseState = mouseState;
-
-            foreach (var mouseButton in _mouseButtonDictionary.Keys)
-            {
-                ProcessMouseButton(mouseButton);
-            }
-
             _previousFrameMouseState = _currentFrameMouseState;
+            _currentFrameMouseState = mouseState;
+        }
+        
+        public bool WasButtonReleased(MouseButton button)
+        {
+            var previouseMouseButtonState = _previousFrameMouseState[button];
+            var currentMouseButtonState = _currentFrameMouseState[button];
+
+            return previouseMouseButtonState && !currentMouseButtonState;
         }
 
-        private void ProcessMouseButton(MouseButton mouseButton)
+        public bool WasButtonPressed(MouseButton button)
         {
-            var isButtonPressedInPreviousUpdate = _previousFrameMouseState[mouseButton];
-            var isButtonPressedInCurrentUpdate = _currentFrameMouseState[mouseButton];
+            var previouseMouseButtonState = _previousFrameMouseState[button];
+            var currentMouseButtonState = _currentFrameMouseState[button];
 
-            var buttonStateChanged = isButtonPressedInPreviousUpdate != isButtonPressedInCurrentUpdate;
-
-            if (buttonStateChanged && isButtonPressedInCurrentUpdate)
-            {
-                FireMouseDown(mouseButton);
-            }
-            else if (buttonStateChanged)
-            {
-                FireMouseUp(mouseButton);
-            }
+            return !previouseMouseButtonState && currentMouseButtonState;
         }
 
-        private void FireMouseDown(MouseButton mouseButton)
+        public bool IsButtonDown(MouseButton button)
         {
-            var mouseButtonActions = _mouseButtonDictionary[mouseButton];
-            foreach (var mouseButtonAction in mouseButtonActions)
-            {
-                mouseButtonAction();
-            }
+            return _currentFrameMouseState.IsButtonDown(button);
         }
 
-        private void FireMouseUp(MouseButton mouseButton)
+        public bool IsButtonUp(MouseButton button)
         {
-            var mouseButtonActions = _mouseButtonDictionary[mouseButton];
-            foreach (var mouseButtonAction in mouseButtonActions)
-            {
-                mouseButtonAction();
-            }
-        }
-
-        public void Subscribe(MouseButton mouseButton, Action action)
-        {
-            List<Action> actions;
-            var hasActions = _mouseButtonDictionary.TryGetValue(mouseButton, out actions);
-            
-            if(!hasActions)
-            {
-                actions = new List<Action>();
-                _mouseButtonDictionary.Add(mouseButton, actions);
-            }
-
-            actions.Add(action);
-        }
-
-        public void UnSubscribe(MouseButton mouseButton, Action action)
-        {
-            List<Action> actions;
-            var hasActions = _mouseButtonDictionary.TryGetValue(mouseButton, out actions);
-
-            if (!hasActions)
-            {
-                return;
-            }
-
-            var actionsToRemove = actions.Where(x => x.Target == action.Target && x.Method == action.Method);
-            foreach (var actionToRemove in actionsToRemove)
-            {
-                actions.Remove(actionToRemove);
-            }
+            return _currentFrameMouseState.IsButtonUp(button);
         }
     }
 }
