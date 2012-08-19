@@ -91,6 +91,7 @@
     <Compile Include="FrameTimeCounter.cs" />
     <Compile Include="Input\MouseInputObservable.cs" />
     <Compile Include="Input\MouseInputProcessor.cs" />
+    <Compile Include="Input\MultiValueDictionary.cs" />
     <Compile Include="Noise\FractalBrownianMotion.cs" />
     <Compile Include="Noise\FractalBrownianMotionSettings.cs" />
     <Compile Include="Noise\ImprovedPerlinNoise.cs" />
