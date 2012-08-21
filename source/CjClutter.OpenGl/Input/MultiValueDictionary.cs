@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace CjClutter.OpenGl.Input
 {
@@ -70,25 +71,25 @@ namespace CjClutter.OpenGl.Input
             return _dictionary.Remove(key);
         }
 
-        public List<TValue> this[TKey key]
+        public IEnumerable<TValue> this[TKey key]
         {
             get { return _dictionary[key]; }
-            set { _dictionary[key] = value; }
+            set { _dictionary[key] = value.ToList(); }
         }
 
-        public ICollection<TKey> Keys
-        {
-            get { return _dictionary.Keys; }
-        }
+        //public ICollection<TKey> Keys
+        //{
+        //    get { return _dictionary.Keys; }
+        //}
 
-        public ICollection<List<TValue>> Values
-        {
-            get { return _dictionary.Values; }
-        }
+        //public ICollection<List<TValue>> Values
+        //{
+        //    get { return _dictionary.Values; }
+        //}
 
-        public bool TryGetValue(TKey key, out TValue value)
-        {
-            throw new System.NotImplementedException();
-        }
+        //public bool TryGetValue(TKey key, out TValue value)
+        //{
+        //    throw new System.NotImplementedException();
+        //}
     }
 }

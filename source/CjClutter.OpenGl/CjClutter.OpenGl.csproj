@@ -72,6 +72,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.0.12054\lib\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK">
       <HintPath>..\..\includes\OpenTK.dll</HintPath>
     </Reference>
@@ -89,6 +92,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FrameTimeCounter.cs" />
+    <Compile Include="Input\ActionComparer.cs" />
+    <Compile Include="Input\ActionComparerTests.cs" />
+    <Compile Include="Input\ByteArrayComparer.cs" />
+    <Compile Include="Input\ByteArrayComparerTests.cs" />
     <Compile Include="Input\MouseInputObservable.cs" />
     <Compile Include="Input\MouseInputProcessor.cs" />
     <Compile Include="Input\MultiValueDictionary.cs" />
@@ -102,6 +109,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QFontExtensions.cs" />
     <Compile Include="QFontFactory.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
