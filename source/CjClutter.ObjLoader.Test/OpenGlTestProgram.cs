@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Threading.Tasks;
 using CjClutter.OpenGl;
 using CjClutter.OpenGl.Noise;
 
@@ -16,5 +16,6 @@ namespace ObjLoader.Test
 
             window.Run();
         }
+
     }
 }

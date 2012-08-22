@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace CjClutter.OpenGl.Input
 {
-    public class ActionComparer : IEqualityComparer<Action>
+    public class DelegateComparer : IEqualityComparer<Delegate>
     {
         readonly ByteArrayComparer _byteArrayComparer = new ByteArrayComparer();
 
-        public bool Equals(Action x, Action y)
+        public bool Equals(Delegate x, Delegate y)
         {
             if(x.Target != y.Target)
             {
@@ -17,10 +17,10 @@ namespace CjClutter.OpenGl.Input
             var firstMethodBody = x.Method.GetMethodBody().GetILAsByteArray();
             var secondMethodBody = y.Method.GetMethodBody().GetILAsByteArray();
 
-            return _byteArrayComparer.Equals(firstMethodBody, secondMethodBody);
+            return _byteArrayComparer.Equals(firstMethodBody, secondMethodBody);            
         }
 
-        public int GetHashCode(Action obj)
+        public int GetHashCode(Delegate obj)
         {
             return obj.GetHashCode();
         }

@@ -4,14 +4,14 @@ using NUnit.Framework;
 namespace CjClutter.OpenGl.Input
 {
     [TestFixture]
-    public class ActionComparerTests
+    public class DelegateComparerTests
     {
-        private ActionComparer _comparer;
+        private DelegateComparer _comparer;
 
         [SetUp]
         public void SetUp()
         {
-            _comparer = new ActionComparer();
+            _comparer = new DelegateComparer();
         }
 
         [Test]
