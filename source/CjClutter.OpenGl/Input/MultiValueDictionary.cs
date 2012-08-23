@@ -41,24 +41,28 @@ namespace CjClutter.OpenGl.Input
             _dictionary.Clear();
         }
 
-        public bool Contains(KeyValuePair<TKey, TValue> item)
+        public bool Contains(TKey key, TValue item)
         {
-            if (!ContainsKey(item.Key))
+            if (!ContainsKey(key))
             {
                 return false;
             }
 
-            return _dictionary[item.Key].Contains(item.Value);
+            var container = _dictionary[key];
+            return container.Contains(item, _equalityComparer);
         }
 
-        public bool Remove(KeyValuePair<TKey, TValue> item)
+        public bool Remove(TKey key, TValue item)
         {
-            if (!ContainsKey(item.Key))
+            if (!ContainsKey(key))
             {
                 return false;
             }
 
-            return _dictionary[item.Key].Remove(item.Value);
+            var container = _dictionary[key];
+            var numberOfItemsRemoved = container.RemoveAll(x => _equalityComparer.Equals(x, item));
+
+            return numberOfItemsRemoved > 0;
         }
 
         public bool ContainsKey(TKey key)
@@ -77,10 +81,10 @@ namespace CjClutter.OpenGl.Input
             set { _dictionary[key] = value.ToList(); }
         }
 
-        //public ICollection<TKey> Keys
-        //{
-        //    get { return _dictionary.Keys; }
-        //}
+        public ICollection<TKey> Keys
+        {
+            get { return _dictionary.Keys; }
+        }
 
         //public ICollection<List<TValue>> Values
         //{

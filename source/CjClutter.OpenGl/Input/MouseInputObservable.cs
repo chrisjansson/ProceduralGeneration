@@ -8,12 +8,14 @@ namespace CjClutter.OpenGl.Input
     public class MouseInputObservable
     {
         private readonly MouseInputProcessor _mouseInputProcessor;
-        private readonly Dictionary<MouseButton, List<Action>> _mouseButtonDictionary;
+        private readonly MultiValueDictionary<MouseButton, Action> _mouseButtonDictionary;
 
         public MouseInputObservable(MouseInputProcessor mouseInputProcessor)
         {
             _mouseInputProcessor = mouseInputProcessor;
-            _mouseButtonDictionary = new Dictionary<MouseButton, List<Action>>();
+
+            var delegateComparer = new DelegateComparer();
+            _mouseButtonDictionary = new MultiValueDictionary<MouseButton, Action>(delegateComparer);
         }
 
         public void ProcessMouseButtons()
@@ -56,33 +58,12 @@ namespace CjClutter.OpenGl.Input
 
         public void Subscribe(MouseButton mouseButton, Action action)
         {
-            List<Action> actions;
-            var hasActions = _mouseButtonDictionary.TryGetValue(mouseButton, out actions);
-
-            if (!hasActions)
-            {
-                actions = new List<Action>();
-                _mouseButtonDictionary.Add(mouseButton, actions);
-            }
-
-            actions.Add(action);
+            _mouseButtonDictionary.Add(mouseButton, action);
         }
 
         public void Unsubscribe(MouseButton mouseButton, Action action)
         {
-            List<Action> actions;
-            var hasActions = _mouseButtonDictionary.TryGetValue(mouseButton, out actions);
-
-            if (!hasActions)
-            {
-                return;
-            }
-
-            var actionsToRemove = actions.Where(x => x.Target == action.Target && x.Method == action.Method);
-            foreach (var actionToRemove in actionsToRemove)
-            {
-                actions.Remove(actionToRemove);
-            }
+            _mouseButtonDictionary.Remove(mouseButton, action);
         }
     }
 }
