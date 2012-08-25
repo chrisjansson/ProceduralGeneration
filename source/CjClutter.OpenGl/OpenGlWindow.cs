@@ -59,8 +59,8 @@ namespace CjClutter.OpenGl
 
 
 
-            _mouseInputObservable.Subscribe(MouseButton.Right, () => GL.Color3(Color.DodgerBlue));
-            _mouseInputObservable.Subscribe(MouseButton.Left, () => GL.Color3(Color.Green));
+            _mouseInputObservable.SubscribeMouseButtonDown(MouseButton.Right, () => GL.Color3(Color.DodgerBlue));
+            _mouseInputObservable.SubscribeMouseButtonDown(MouseButton.Left, () => GL.Color3(Color.Green));
             
             GL.Color3(Color.Green);
         }
