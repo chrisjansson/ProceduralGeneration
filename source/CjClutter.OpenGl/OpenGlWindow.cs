@@ -43,7 +43,9 @@ namespace CjClutter.OpenGl
             GraphicsContextFlags.Default)
         {
             VSync = VSyncMode.Off;
-             _mouseInputObservable = new MouseInputObservable(_mouseInputProcessor);
+
+            var buttonUpEventEvaluator = new ButtonUpActionEvaluator(_mouseInputProcessor);
+            _mouseInputObservable = new MouseInputObservable(buttonUpEventEvaluator);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -57,10 +59,8 @@ namespace CjClutter.OpenGl
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
 
-
-
-            _mouseInputObservable.SubscribeMouseButtonDown(MouseButton.Right, () => GL.Color3(Color.DodgerBlue));
-            _mouseInputObservable.SubscribeMouseButtonDown(MouseButton.Left, () => GL.Color3(Color.Green));
+            _mouseInputObservable.SubscribeMouseButton(MouseButton.Right, () => GL.Color3(Color.DodgerBlue));
+            _mouseInputObservable.SubscribeMouseButton(MouseButton.Left, () => GL.Color3(Color.Green));
             
             GL.Color3(Color.Green);
         }

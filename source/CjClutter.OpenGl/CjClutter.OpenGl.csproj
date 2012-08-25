@@ -96,6 +96,7 @@
     <Compile Include="Input\DelegateComparerTests.cs" />
     <Compile Include="Input\ByteArrayComparer.cs" />
     <Compile Include="Input\ByteArrayComparerTests.cs" />
+    <Compile Include="Input\IButtonEventEvaluator.cs" />
     <Compile Include="Input\MouseInputObservable.cs" />
     <Compile Include="Input\MouseInputProcessor.cs" />
     <Compile Include="Input\MultiValueDictionary.cs" />

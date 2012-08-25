@@ -5,26 +5,21 @@ namespace CjClutter.OpenGl.Input
 {
     public class MouseInputObservable
     {
-        private readonly MouseInputProcessor _mouseInputProcessor;
+        private readonly IButtonEventEvaluator _eventEvaluator;
 
-        private readonly MultiValueDictionary<MouseButton, Action> _mouseButtonDownDictionary;
-        private MultiValueDictionary<MouseButton, Action> _mouseButtonUpDictionary;
-        private MultiValueDictionary<MouseButton, Action> _mouseButtonChangedDictionary;
+        private readonly MultiValueDictionary<MouseButton, Action> _mouseButtonDictionary;
 
-        public MouseInputObservable(MouseInputProcessor mouseInputProcessor)
+        public MouseInputObservable(IButtonEventEvaluator eventEvaluator)
         {
-            _mouseInputProcessor = mouseInputProcessor;
+            _eventEvaluator = eventEvaluator;
 
             var delegateComparer = new DelegateComparer();
-
-            _mouseButtonDownDictionary = new MultiValueDictionary<MouseButton, Action>(delegateComparer);
-            _mouseButtonUpDictionary = new MultiValueDictionary<MouseButton, Action>(delegateComparer);
-            _mouseButtonChangedDictionary = new MultiValueDictionary<MouseButton, Action>(delegateComparer);
+            _mouseButtonDictionary = new MultiValueDictionary<MouseButton, Action>(delegateComparer);
         }
 
         public void ProcessMouseButtons()
         {
-            foreach (var mouseButton in _mouseButtonDownDictionary.Keys)
+            foreach (var mouseButton in _mouseButtonDictionary.Keys)
             {
                 ProcessMouseButton(mouseButton);
             }
@@ -32,60 +27,29 @@ namespace CjClutter.OpenGl.Input
 
         private void ProcessMouseButton(MouseButton mouseButton)
         {
-            if (_mouseInputProcessor.WasButtonPressed(mouseButton))
+            if(_eventEvaluator.ShouldButtonActionBeFired(mouseButton))
             {
-                FireMouseDown(mouseButton);
-                FireMouseChanged(mouseButton);
-
-            }
-            else if (_mouseInputProcessor.WasButtonReleased(mouseButton))
-            {
-                FireMouseUp(mouseButton);
-                FireMouseChanged(mouseButton);
+                FireMouseAction(mouseButton);
             }
         }
 
-        private void FireMouseChanged(MouseButton mouseButton)
+        private void FireMouseAction(MouseButton mouseButton)
         {
-            
-        }
-
-        private void FireMouseDown(MouseButton mouseButton)
-        {
-            var mouseButtonActions = _mouseButtonDownDictionary[mouseButton];
+            var mouseButtonActions = _mouseButtonDictionary[mouseButton];
             foreach (var mouseButtonAction in mouseButtonActions)
             {
                 mouseButtonAction();
             }
         }
 
-        private void FireMouseUp(MouseButton mouseButton)
+        public void SubscribeMouseButton(MouseButton mouseButton, Action action)
         {
-            //var mouseButtonActions = _mouseButtonDownDictionary[mouseButton];
-            //foreach (var mouseButtonAction in mouseButtonActions)
-            //{
-            //    mouseButtonAction();
-            //}
+            _mouseButtonDictionary.Add(mouseButton, action);
         }
 
-        public void SubscribeMouseButtonDown(MouseButton mouseButton, Action action)
+        public void UnsubscribeMouseButton(MouseButton mouseButton, Action action)
         {
-            _mouseButtonDownDictionary.Add(mouseButton, action);
-        }
-
-        public void UnsubscribeMouseButtonDown(MouseButton mouseButton, Action action)
-        {
-            _mouseButtonDownDictionary.Remove(mouseButton, action);
-        }
-
-        public void SubscribeMouseButtonUp(MouseButton mouseButton, Action action)
-        {
-            //_mouseButtonDownDictionary.Add(mouseButton, action);
-        }
-
-        public void UnsubscribeMouseButtonUp(MouseButton mouseButton, Action action)
-        {
-            //_mouseButtonDownDictionary.Remove(mouseButton, action);
+            _mouseButtonDictionary.Remove(mouseButton, action);
         }
     }
 }
