@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using CjClutter.OpenGl.Input;
+using CjClutter.OpenGl.Input.Mouse;
 using CjClutter.OpenGl.Noise;
 using OpenTK;
 using OpenTK.Graphics;

@@ -1,17 +1,17 @@
 ﻿using System;
 using OpenTK.Input;
 
-namespace CjClutter.OpenGl.Input
+namespace CjClutter.OpenGl.Input.Mouse
 {
     public class MouseInputObservable
     {
-        private readonly IButtonEventEvaluator _eventEvaluator;
+        private readonly IButtonActionEvaluator _actionEvaluator;
 
         private readonly MultiValueDictionary<MouseButton, Action> _mouseButtonDictionary;
 
-        public MouseInputObservable(IButtonEventEvaluator eventEvaluator)
+        public MouseInputObservable(IButtonActionEvaluator actionEvaluator)
         {
-            _eventEvaluator = eventEvaluator;
+            _actionEvaluator = actionEvaluator;
 
             var delegateComparer = new DelegateComparer();
             _mouseButtonDictionary = new MultiValueDictionary<MouseButton, Action>(delegateComparer);
@@ -27,7 +27,7 @@ namespace CjClutter.OpenGl.Input
 
         private void ProcessMouseButton(MouseButton mouseButton)
         {
-            if(_eventEvaluator.ShouldButtonActionBeFired(mouseButton))
+            if(_actionEvaluator.ShouldButtonActionBeFired(mouseButton))
             {
                 FireMouseAction(mouseButton);
             }
