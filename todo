@@ -1,5 +1,4 @@
-* improved perlin noise
-* simplex noise
+* malla in trackball kameran för opentk
 * styra en perlin noise height map kvadrant med piltangenter som ger offset xy
 * file.readalllines vs stream
 * boids
