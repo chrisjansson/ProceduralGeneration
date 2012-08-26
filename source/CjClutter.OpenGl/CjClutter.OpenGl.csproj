@@ -92,7 +92,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FrameTimeCounter.cs" />
+    <Compile Include="Input\Keboard\IKeyActionEvaluator.cs" />
+    <Compile Include="Input\Keboard\KeyActionEvaluatorBase.cs" />
+    <Compile Include="Input\Keboard\KeyboardInputObservable.cs" />
     <Compile Include="Input\Keboard\KeyboardInputProcessor.cs" />
+    <Compile Include="Input\Keboard\KeyChangedActionEvaluator.cs" />
+    <Compile Include="Input\Keboard\KeyDownActionEvaluator.cs" />
+    <Compile Include="Input\Keboard\KeyUpActionEvaluator.cs" />
     <Compile Include="Input\Mouse\ButtonActionEvaluatorBase.cs" />
     <Compile Include="Input\Mouse\ButtonChangedActionEvaluator.cs" />
     <Compile Include="Input\Mouse\ButtonDownActionEvaluator.cs" />

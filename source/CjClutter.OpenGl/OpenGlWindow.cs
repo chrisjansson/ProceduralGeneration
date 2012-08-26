@@ -1,8 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using CjClutter.OpenGl.Input;
+using CjClutter.OpenGl.Input.Keboard;
 using CjClutter.OpenGl.Input.Mouse;
 using CjClutter.OpenGl.Noise;
 using OpenTK;
@@ -18,11 +17,6 @@ namespace CjClutter.OpenGl
         private const int TerrainWidth = 256;
         private const int TerrainHeight = 256;
 
-        private readonly Dictionary<Key, Action<GameWindow>> _keyboardInputActions = new Dictionary<Key, Action<GameWindow>>
-                                                                                         {
-                                                                                             { Key.Escape, w => w.Exit() },
-                                                                                         };
-
         private QFont _qFont;
         private readonly FrameTimeCounter _frameTimeCounter = new FrameTimeCounter();
         private INoiseGenerator _noiseGenerator;
@@ -30,7 +24,9 @@ namespace CjClutter.OpenGl
         private double[,] _heightMap;
         private readonly MouseInputProcessor _mouseInputProcessor = new MouseInputProcessor();
         private readonly MouseInputObservable _mouseInputObservable;
-        
+        private readonly KeyboardInputProcessor _keyboardInputProcessor = new KeyboardInputProcessor();
+        private readonly KeyboardInputObservable _keyboardInputObservable;
+
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
             width,
@@ -47,6 +43,9 @@ namespace CjClutter.OpenGl
 
             var buttonUpEventEvaluator = new ButtonUpActionEvaluator(_mouseInputProcessor);
             _mouseInputObservable = new MouseInputObservable(buttonUpEventEvaluator);
+
+            var keyUpActionEvaluator = new KeyUpActionEvaluator(_keyboardInputProcessor);
+            _keyboardInputObservable = new KeyboardInputObservable(keyUpActionEvaluator);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -62,7 +61,11 @@ namespace CjClutter.OpenGl
 
             _mouseInputObservable.SubscribeMouseButton(MouseButton.Right, () => GL.Color3(Color.DodgerBlue));
             _mouseInputObservable.SubscribeMouseButton(MouseButton.Left, () => GL.Color3(Color.Green));
-            
+
+            _keyboardInputObservable.SubscribeKey(Key.Left, () => GL.Color3(Color.Aqua));
+            _keyboardInputObservable.SubscribeKey(Key.Right, () => GL.Color3(Color.DarkGoldenrod));
+            _keyboardInputObservable.SubscribeKey(Key.Escape, Exit);
+
             GL.Color3(Color.Green);
         }
 
@@ -159,13 +162,8 @@ namespace CjClutter.OpenGl
 
             var keyboardState = OpenTK.Input.Keyboard.GetState();
             
-            foreach (var keyboardInputActionPair in _keyboardInputActions)
-            {
-                if (keyboardState.IsKeyDown(keyboardInputActionPair.Key))
-                {
-                    keyboardInputActionPair.Value(this);
-                }
-            }
+            _keyboardInputProcessor.Update(keyboardState);
+            _keyboardInputObservable.ProcessKeys();
         }
 
         private void ProcessMouseInput()
