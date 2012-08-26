@@ -92,16 +92,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FrameTimeCounter.cs" />
-    <Compile Include="Input\ButtonActionEvaluatorBase.cs" />
-    <Compile Include="Input\ButtonDownActionEvaluator.cs" />
-    <Compile Include="Input\ButtonUpActionEvaluator.cs" />
+    <Compile Include="Input\Keboard\KeyboardInputProcessor.cs" />
+    <Compile Include="Input\Mouse\ButtonActionEvaluatorBase.cs" />
+    <Compile Include="Input\Mouse\ButtonChangedActionEvaluator.cs" />
+    <Compile Include="Input\Mouse\ButtonDownActionEvaluator.cs" />
+    <Compile Include="Input\Mouse\ButtonUpActionEvaluator.cs" />
     <Compile Include="Input\DelegateComparer.cs" />
     <Compile Include="Input\DelegateComparerTests.cs" />
     <Compile Include="Input\ByteArrayComparer.cs" />
     <Compile Include="Input\ByteArrayComparerTests.cs" />
-    <Compile Include="Input\IButtonActionEvaluator.cs" />
-    <Compile Include="Input\MouseInputObservable.cs" />
-    <Compile Include="Input\MouseInputProcessor.cs" />
+    <Compile Include="Input\Mouse\IButtonActionEvaluator.cs" />
+    <Compile Include="Input\Mouse\MouseInputObservable.cs" />
+    <Compile Include="Input\Mouse\MouseInputProcessor.cs" />
     <Compile Include="Input\MultiValueDictionary.cs" />
     <Compile Include="Noise\FractalBrownianMotion.cs" />
     <Compile Include="Noise\FractalBrownianMotionSettings.cs" />
