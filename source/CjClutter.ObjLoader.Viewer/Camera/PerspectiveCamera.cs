@@ -6,7 +6,7 @@ namespace CjClutter.ObjLoader.Viewer.Camera
     {
         public PerspectiveCamera()
         {
-            Position = new Vector3d(0, 0, 20);
+            Position = new Vector3d(0, 0, 2);
             Target = new Vector3d(0, 0, 0);
             Up = new Vector3d(0, 1, 0);
         }

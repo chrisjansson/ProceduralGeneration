@@ -50,5 +50,13 @@ namespace CjClutter.OpenGl.Input.Mouse
         {
             return new Vector2d(_currentFrameMouseState.X, _currentFrameMouseState.Y);
         }
+
+        public Vector2d GetMousePositionDelta()
+        {
+            var x = _currentFrameMouseState.X - _previousFrameMouseState.X;
+            var y = _currentFrameMouseState.Y - _previousFrameMouseState.Y;
+
+            return new Vector2d(x, y);
+        }
     }
 }

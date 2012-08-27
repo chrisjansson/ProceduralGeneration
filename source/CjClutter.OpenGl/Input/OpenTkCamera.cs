@@ -1,4 +1,6 @@
-﻿using CjClutter.ObjLoader.Viewer.Camera;
+﻿using System;
+using System.Drawing;
+using CjClutter.ObjLoader.Viewer.Camera;
 using CjClutter.OpenGl.Input.Mouse;
 using OpenTK;
 using OpenTK.Input;
@@ -9,15 +11,17 @@ namespace CjClutter.OpenGl.Input
     {
         private readonly MouseInputProcessor _mouseInputProcessor;
         private readonly ITrackballCamera _trackballCamera;
+        private readonly OpenGlWindow _openGlWindow;
 
         private bool _mouseDown;
         private Vector2d _mouseDownPosition;
         private Vector2d _currentMousePosition;
 
-        public OpenTkCamera(MouseInputProcessor mouseInputProcessor, ITrackballCamera trackballCamera)
+        public OpenTkCamera(MouseInputProcessor mouseInputProcessor, ITrackballCamera trackballCamera, OpenGlWindow openGlWindow)
         {
             _mouseInputProcessor = mouseInputProcessor;
             _trackballCamera = trackballCamera;
+            _openGlWindow = openGlWindow;
         }
 
         public void Update()
@@ -41,7 +45,7 @@ namespace CjClutter.OpenGl.Input
             if (!_mouseDown && _mouseInputProcessor.WasButtonPressed(MouseButton.Left))
             {
                 _mouseDown = true;
-                _mouseDownPosition = _mouseInputProcessor.GetMousePosition();
+                _mouseDownPosition = _currentMousePosition;
             }
         }
 
@@ -64,7 +68,16 @@ namespace CjClutter.OpenGl.Input
 
         private void GetCurrentMousePosition()
         {
-            _currentMousePosition = _mouseInputProcessor.GetMousePosition();
+            var currentMousePosition = new Vector2d(_openGlWindow.Mouse.X, _openGlWindow.Mouse.Y);
+            _currentMousePosition = TransformToRelative(currentMousePosition);
+        }
+
+        public Vector2d TransformToRelative(Vector2d absoluteCoordinate)
+        {
+            var x = absoluteCoordinate.X / _openGlWindow.Width * 2 - 1;
+            var y = (_openGlWindow.Height - absoluteCoordinate.Y) / _openGlWindow.Height * 2 - 1;
+
+            return new Vector2d(x, y);
         }
     }
 }

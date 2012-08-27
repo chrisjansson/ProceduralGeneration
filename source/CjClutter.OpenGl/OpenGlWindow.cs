@@ -1,6 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using CjClutter.ObjLoader.Viewer.Camera;
+using CjClutter.OpenGl.Input;
 using CjClutter.OpenGl.Input.Keboard;
 using CjClutter.OpenGl.Input.Mouse;
 using CjClutter.OpenGl.Noise;
@@ -26,6 +28,7 @@ namespace CjClutter.OpenGl
         private readonly MouseInputObservable _mouseInputObservable;
         private readonly KeyboardInputProcessor _keyboardInputProcessor = new KeyboardInputProcessor();
         private readonly KeyboardInputObservable _keyboardInputObservable;
+        private OpenTkCamera _openTkCamera;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -46,6 +49,10 @@ namespace CjClutter.OpenGl
 
             var keyUpActionEvaluator = new KeyUpActionEvaluator(_keyboardInputProcessor);
             _keyboardInputObservable = new KeyboardInputObservable(keyUpActionEvaluator);
+
+            var trackballCameraRotationCalculator = new TrackballCameraRotationCalculator();
+            var trackballCamera = new TrackballCamera(trackballCameraRotationCalculator);
+            _openTkCamera = new OpenTkCamera(_mouseInputProcessor, trackballCamera, this);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -59,8 +66,8 @@ namespace CjClutter.OpenGl
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
 
-            _mouseInputObservable.SubscribeMouseButton(MouseButton.Right, () => GL.Color3(Color.DodgerBlue));
-            _mouseInputObservable.SubscribeMouseButton(MouseButton.Left, () => GL.Color3(Color.Green));
+            //_mouseInputObservable.SubscribeMouseButton(MouseButton.Right, () => GL.Color3(Color.DodgerBlue));
+            //_mouseInputObservable.SubscribeMouseButton(MouseButton.Left, () => GL.Color3(Color.Green));
 
             _keyboardInputObservable.SubscribeKey(Key.Left, () => GL.Color3(Color.Aqua));
             _keyboardInputObservable.SubscribeKey(Key.Right, () => GL.Color3(Color.DarkGoldenrod));
@@ -80,7 +87,8 @@ namespace CjClutter.OpenGl
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadMatrix(ref perspectiveMatrix);
 
-            var lookAtMatrix = Matrix4d.LookAt(2, 2, 0, 0, 0, 0, 0, 1, 0);
+            //var lookAtMatrix = Matrix4d.LookAt(2, 2, 0, 0, 0, 0, 0, 1, 0);
+            var lookAtMatrix = _openTkCamera.GetCameraMatrix();
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref lookAtMatrix);
 
@@ -177,6 +185,8 @@ namespace CjClutter.OpenGl
 
             _mouseInputProcessor.Update(mouseState);
             _mouseInputObservable.ProcessMouseButtons();
+
+            _openTkCamera.Update();
         }
     }
 }
