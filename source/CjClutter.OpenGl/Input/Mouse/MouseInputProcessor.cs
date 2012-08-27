@@ -1,4 +1,5 @@
-﻿using OpenTK.Input;
+﻿using OpenTK;
+using OpenTK.Input;
 
 namespace CjClutter.OpenGl.Input.Mouse
 {
@@ -43,6 +44,11 @@ namespace CjClutter.OpenGl.Input.Mouse
         public bool IsButtonUp(MouseButton button)
         {
             return _currentFrameMouseState.IsButtonUp(button);
+        }
+
+        public Vector2d GetMousePosition()
+        {
+            return new Vector2d(_currentFrameMouseState.X, _currentFrameMouseState.Y);
         }
     }
 }

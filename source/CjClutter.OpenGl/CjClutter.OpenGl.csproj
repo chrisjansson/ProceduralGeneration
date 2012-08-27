@@ -111,6 +111,7 @@
     <Compile Include="Input\Mouse\MouseInputObservable.cs" />
     <Compile Include="Input\Mouse\MouseInputProcessor.cs" />
     <Compile Include="Input\MultiValueDictionary.cs" />
+    <Compile Include="Input\OpenTkCamera.cs" />
     <Compile Include="Noise\FractalBrownianMotion.cs" />
     <Compile Include="Noise\FractalBrownianMotionSettings.cs" />
     <Compile Include="Noise\ImprovedPerlinNoise.cs" />
@@ -124,6 +125,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CjClutter.ObjLoader.Viewer\CjClutter.ObjLoader.Viewer.csproj">
+      <Project>{1F7A0CA1-BCA3-47E5-B56E-14C00F7BD9CB}</Project>
+      <Name>CjClutter.ObjLoader.Viewer</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,5 +1,4 @@
-﻿using System;
-using OpenTK;
+﻿using OpenTK;
 using CjClutter.ObjLoader.Viewer.Extensions;
 
 namespace CjClutter.ObjLoader.Viewer.Camera
