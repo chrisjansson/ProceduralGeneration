@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using CjClutter.ObjLoader.Viewer.Camera;
+using CjClutter.ObjLoader.Viewer.CoordinateSystems;
 using CjClutter.OpenGl.Input;
 using CjClutter.OpenGl.Input.Keboard;
 using CjClutter.OpenGl.Input.Mouse;
@@ -24,11 +25,11 @@ namespace CjClutter.OpenGl
         private INoiseGenerator _noiseGenerator;
         private Stopwatch _stopwatch;
         private double[,] _heightMap;
-        private readonly MouseInputProcessor _mouseInputProcessor = new MouseInputProcessor();
+        private MouseInputProcessor _mouseInputProcessor;
         private readonly MouseInputObservable _mouseInputObservable;
         private readonly KeyboardInputProcessor _keyboardInputProcessor = new KeyboardInputProcessor();
         private readonly KeyboardInputObservable _keyboardInputObservable;
-        private OpenTkCamera _openTkCamera;
+        private readonly OpenTkCamera _openTkCamera;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -44,6 +45,8 @@ namespace CjClutter.OpenGl
         {
             VSync = VSyncMode.Off;
 
+            _mouseInputProcessor = new MouseInputProcessor(this, new GuiToRelativeCoordinateTransformer());
+
             var buttonUpEventEvaluator = new ButtonUpActionEvaluator(_mouseInputProcessor);
             _mouseInputObservable = new MouseInputObservable(buttonUpEventEvaluator);
 
@@ -52,7 +55,7 @@ namespace CjClutter.OpenGl
 
             var trackballCameraRotationCalculator = new TrackballCameraRotationCalculator();
             var trackballCamera = new TrackballCamera(trackballCameraRotationCalculator);
-            _openTkCamera = new OpenTkCamera(_mouseInputProcessor, trackballCamera, this);
+            _openTkCamera = new OpenTkCamera(_mouseInputProcessor, trackballCamera);
         }
 
         protected override void OnLoad(EventArgs e)
