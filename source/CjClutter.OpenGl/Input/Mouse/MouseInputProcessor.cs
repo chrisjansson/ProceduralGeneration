@@ -1,15 +1,26 @@
-﻿using OpenTK;
+﻿using CjClutter.ObjLoader.Viewer.CoordinateSystems;
+using CjClutter.OpenGl.Gui;
+using OpenTK;
 using OpenTK.Input;
 
 namespace CjClutter.OpenGl.Input.Mouse
 {
     public class MouseInputProcessor
     {
+        private readonly GameWindow _gameWindow;
+        private readonly IGuiToRelativeCoordinateTransformer _guiToRelativeCoordinateTransformer;
+
         private MouseState _previousFrameMouseState;
         private MouseState _currentFrameMouseState;
 
-        public MouseInputProcessor()
+        public MouseInputProcessor(GameWindow gameWindow, IGuiToRelativeCoordinateTransformer guiToRelativeCoordinateTransformer)
         {
+            _gameWindow = gameWindow;
+            _guiToRelativeCoordinateTransformer = guiToRelativeCoordinateTransformer;
+
+            var gameWindowInterfaceSizeAdapter = new GameWindowInterfaceSizeAdapter { GameWindow = gameWindow };
+            _guiToRelativeCoordinateTransformer.Interface = gameWindowInterfaceSizeAdapter;
+
             _previousFrameMouseState = new MouseState();
             _currentFrameMouseState = new MouseState();
         }
@@ -19,7 +30,7 @@ namespace CjClutter.OpenGl.Input.Mouse
             _previousFrameMouseState = _currentFrameMouseState;
             _currentFrameMouseState = mouseState;
         }
-        
+
         public bool WasButtonReleased(MouseButton button)
         {
             var previouseMouseButtonState = _previousFrameMouseState[button];
@@ -57,6 +68,17 @@ namespace CjClutter.OpenGl.Input.Mouse
             var y = _currentFrameMouseState.Y - _previousFrameMouseState.Y;
 
             return new Vector2d(x, y);
+        }
+
+        public Vector2d GetRelativeMousePosition()
+        {
+            var mouseDevice = _gameWindow.Mouse;
+            
+            var x = mouseDevice.X;
+            var y = mouseDevice.Y;
+            var absoluteMouseCoordinates = new Vector2d(x, y);
+
+            return _guiToRelativeCoordinateTransformer.TransformToRelative(absoluteMouseCoordinates);
         }
     }
 }

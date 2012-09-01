@@ -92,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FrameTimeCounter.cs" />
+    <Compile Include="Gui\GameWindowInterfaceSizeAdapter.cs" />
     <Compile Include="Input\Keboard\IKeyActionEvaluator.cs" />
     <Compile Include="Input\Keboard\KeyActionEvaluatorBase.cs" />
     <Compile Include="Input\Keboard\KeyboardInputObservable.cs" />
