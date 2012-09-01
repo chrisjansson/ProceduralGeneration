@@ -39,7 +39,9 @@ namespace CjClutter.ObjLoader.Viewer
             _mouseInputAdapter.Target = this;
             _mouseInputAdapter.Source = view.GlControl;
 
-            _guiToRelativeCoordinateTransformer.Control = view.GlControl;
+            var controlInterfaceSizeAdapter = new ControlInterfaceSizeAdapter {Control = view.GlControl};
+
+            _guiToRelativeCoordinateTransformer.Interface = controlInterfaceSizeAdapter;
         }
 
         public void Browse()

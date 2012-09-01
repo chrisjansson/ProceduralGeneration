@@ -1,5 +1,4 @@
-﻿using System.Windows.Forms;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using OpenTK;
 using Rhino.Mocks;
 using FluentAssertions;
@@ -11,18 +10,18 @@ namespace CjClutter.ObjLoader.Viewer.CoordinateSystems
     public class GuiToRelativeCoordinateTransformerTests
     {
         private GuiToRelativeCoordinateTransformer _transformer;
-        private Control _controlMock;
+        private IInterfaceSize _interfaceSize;
 
         [SetUp]
         public void SetUp()
         {
             _transformer = new GuiToRelativeCoordinateTransformer();
             
-            _controlMock = MockRepository.GenerateMock<Control>();
-            _controlMock.Stub(x => x.Width).Return(400);
-            _controlMock.Stub(x => x.Height).Return(300);
+            _interfaceSize = MockRepository.GenerateMock<IInterfaceSize>();
+            _interfaceSize.Stub(x => x.Width).Return(400);
+            _interfaceSize.Stub(x => x.Height).Return(300);
 
-            _transformer.Control = _controlMock;
+            _transformer.Interface = _interfaceSize;
         }
 
         [Test]

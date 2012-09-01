@@ -102,8 +102,10 @@
     <Compile Include="Camera\ITrackballCamera.cs" />
     <Compile Include="Camera\ITrackballCameraRotationCalculator.cs" />
     <Compile Include="Camera\PerspectiveCamera.cs" />
+    <Compile Include="CoordinateSystems\ControlInterfaceSizeAdapter.cs" />
     <Compile Include="CoordinateSystems\GuiToRelativeCoordinateTransformerTests.cs" />
     <Compile Include="CoordinateSystems\IGuiToRelativeCoordinateTransformer.cs" />
+    <Compile Include="CoordinateSystems\IInterfaceSize.cs" />
     <Compile Include="Extensions\DoubleExtensions.cs" />
     <Compile Include="Extensions\DoubleExtensionsTests.cs" />
     <Compile Include="CoordinateSystems\GuiToRelativeCoordinateTransformer.cs" />
