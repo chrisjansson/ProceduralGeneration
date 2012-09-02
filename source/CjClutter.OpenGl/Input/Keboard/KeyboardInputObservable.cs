@@ -1,4 +1,6 @@
 ﻿using System;
+using CjClutter.Commons.Collections;
+using CjClutter.Commons.Comparators;
 using OpenTK.Input;
 
 namespace CjClutter.OpenGl.Input.Keboard

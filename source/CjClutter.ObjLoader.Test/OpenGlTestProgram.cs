@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CjClutter.OpenGl;
+using CjClutter.OpenGl.Gui;
 using CjClutter.OpenGl.Noise;
 
 namespace ObjLoader.Test

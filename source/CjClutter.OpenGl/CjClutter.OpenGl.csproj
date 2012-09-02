@@ -91,7 +91,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FrameTimeCounter.cs" />
+    <Compile Include="Gui\FrameTimeCounter.cs" />
     <Compile Include="Gui\GameWindowInterfaceSizeAdapter.cs" />
     <Compile Include="Input\Keboard\IKeyActionEvaluator.cs" />
     <Compile Include="Input\Keboard\KeyActionEvaluatorBase.cs" />
@@ -104,30 +104,29 @@
     <Compile Include="Input\Mouse\ButtonChangedActionEvaluator.cs" />
     <Compile Include="Input\Mouse\ButtonDownActionEvaluator.cs" />
     <Compile Include="Input\Mouse\ButtonUpActionEvaluator.cs" />
-    <Compile Include="Input\DelegateComparer.cs" />
-    <Compile Include="Input\DelegateComparerTests.cs" />
-    <Compile Include="Input\ByteArrayComparer.cs" />
-    <Compile Include="Input\ByteArrayComparerTests.cs" />
     <Compile Include="Input\Mouse\IButtonActionEvaluator.cs" />
     <Compile Include="Input\Mouse\MouseInputObservable.cs" />
     <Compile Include="Input\Mouse\MouseInputProcessor.cs" />
-    <Compile Include="Input\MultiValueDictionary.cs" />
     <Compile Include="Input\OpenTkCamera.cs" />
     <Compile Include="Noise\FractalBrownianMotion.cs" />
     <Compile Include="Noise\FractalBrownianMotionSettings.cs" />
     <Compile Include="Noise\ImprovedPerlinNoise.cs" />
     <Compile Include="Noise\INoiseGenerator.cs" />
     <Compile Include="Noise\SimplexNoise.cs" />
-    <Compile Include="OpenGlVersion.cs" />
-    <Compile Include="OpenGlWindow.cs" />
+    <Compile Include="Gui\OpenGlVersion.cs" />
+    <Compile Include="Gui\OpenGlWindow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QFontExtensions.cs" />
-    <Compile Include="QFontFactory.cs" />
+    <Compile Include="Gui\QFontExtensions.cs" />
+    <Compile Include="Gui\QFontFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CjClutter.Commons\CjClutter.Commons.csproj">
+      <Project>{FF713732-F7A4-40C8-B136-8EAA52A443FD}</Project>
+      <Name>CjClutter.Commons</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CjClutter.ObjLoader.Viewer\CjClutter.ObjLoader.Viewer.csproj">
       <Project>{1F7A0CA1-BCA3-47E5-B56E-14C00F7BD9CB}</Project>
       <Name>CjClutter.ObjLoader.Viewer</Name>

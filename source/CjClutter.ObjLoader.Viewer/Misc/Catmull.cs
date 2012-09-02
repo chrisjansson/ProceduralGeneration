@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CjClutter.ObjLoader.Viewer.Extensions;
 using OpenTK;
 using System.Linq;
 

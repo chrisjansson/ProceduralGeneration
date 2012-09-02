@@ -1,7 +1,8 @@
-﻿using NUnit.Framework;
+﻿using CjClutter.ObjLoader.Viewer.Extensions;
 using FluentAssertions;
+using NUnit.Framework;
 
-namespace CjClutter.ObjLoader.Viewer.Extensions
+namespace CjClutter.Commons.Extensions
 {
     [TestFixture]
     public class DoubleExtensionsTests

@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace CjClutter.OpenGl.Input
+namespace CjClutter.Commons.Comparators
 {
     [TestFixture]
     public class ByteArrayComparerTests

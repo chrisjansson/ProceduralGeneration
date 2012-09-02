@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CjClutter.OpenGl.Input
+namespace CjClutter.Commons.Comparators
 {
     public class DelegateComparer : IEqualityComparer<Delegate>
     {

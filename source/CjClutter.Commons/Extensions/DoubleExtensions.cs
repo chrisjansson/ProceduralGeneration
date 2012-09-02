@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CjClutter.ObjLoader.Viewer.Extensions
+namespace CjClutter.Commons.Extensions
 {
     public static class DoubleExtensions
     {

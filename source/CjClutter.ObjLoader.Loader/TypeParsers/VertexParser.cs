@@ -1,6 +1,5 @@
 using System;
-using ObjLoader.Loader.Data;
-using ObjLoader.Loader.Common;
+using CjClutter.Commons.Extensions;
 using ObjLoader.Loader.Data.DataStore;
 using ObjLoader.Loader.Data.VertexData;
 using ObjLoader.Loader.TypeParsers.Interfaces;

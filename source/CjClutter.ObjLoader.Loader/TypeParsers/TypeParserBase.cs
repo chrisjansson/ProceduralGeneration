@@ -1,4 +1,4 @@
-﻿using ObjLoader.Loader.Common;
+﻿using CjClutter.Commons.Extensions;
 using ObjLoader.Loader.TypeParsers.Interfaces;
 
 namespace ObjLoader.Loader.TypeParsers

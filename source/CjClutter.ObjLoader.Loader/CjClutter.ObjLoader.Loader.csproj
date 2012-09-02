@@ -102,13 +102,17 @@
     <Compile Include="TypeParsers\Interfaces\IUseMaterialParser.cs" />
     <Compile Include="TypeParsers\MaterialLibraryParser.cs" />
     <Compile Include="TypeParsers\NormalParser.cs" />
-    <Compile Include="Common\StringExtensions.cs" />
     <Compile Include="TypeParsers\TextureParser.cs" />
     <Compile Include="TypeParsers\TypeParserBase.cs" />
     <Compile Include="TypeParsers\UseMaterialParser.cs" />
     <Compile Include="TypeParsers\VertexParser.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\CjClutter.Commons\CjClutter.Commons.csproj">
+      <Project>{FF713732-F7A4-40C8-B136-8EAA52A443FD}</Project>
+      <Name>CjClutter.Commons</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

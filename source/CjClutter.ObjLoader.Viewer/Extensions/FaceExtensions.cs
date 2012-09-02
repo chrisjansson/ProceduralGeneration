@@ -1,8 +1,7 @@
 ﻿using System.Linq;
-using CjClutter.ObjLoader.Viewer.Extensions;
 using CjClutter.ObjLoader.Viewer.Misc;
 
-namespace CjClutter.ObjLoader.Viewer
+namespace CjClutter.ObjLoader.Viewer.Extensions
 {
     public static class FaceExtensions
     {

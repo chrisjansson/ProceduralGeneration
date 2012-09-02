@@ -13,7 +13,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using QuickFont;
 
-namespace CjClutter.OpenGl
+namespace CjClutter.OpenGl.Gui
 {
     public class OpenGlWindow : GameWindow
     {
