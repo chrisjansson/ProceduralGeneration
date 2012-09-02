@@ -25,7 +25,7 @@ namespace CjClutter.OpenGl
         private INoiseGenerator _noiseGenerator;
         private Stopwatch _stopwatch;
         private double[,] _heightMap;
-        private MouseInputProcessor _mouseInputProcessor;
+        private readonly MouseInputProcessor _mouseInputProcessor;
         private readonly MouseInputObservable _mouseInputObservable;
         private readonly KeyboardInputProcessor _keyboardInputProcessor = new KeyboardInputProcessor();
         private readonly KeyboardInputObservable _keyboardInputObservable;
