@@ -86,7 +86,7 @@ namespace CjClutter.OpenGl.Gui
 
             _frameTimeCounter.UpdateFrameTime(e.Time);
 
-            var perspectiveMatrix = Matrix4d.CreatePerspectiveFieldOfView(Math.PI/4, 1, 1, 100);
+            var perspectiveMatrix = Matrix4d.CreatePerspectiveFieldOfView(Math.PI / 4, 1, 1, 100);
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadMatrix(ref perspectiveMatrix);
 
@@ -101,14 +101,14 @@ namespace CjClutter.OpenGl.Gui
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
             GL.Begin(BeginMode.Quads);
 
-            var elapsedseconds = _stopwatch.Elapsed.TotalSeconds / 10;
+            var elapsedseconds = ElapsedTime.TotalSeconds / 10;
 
             for (var i = 0; i < TerrainWidth; i++)
             {
                 for (var j = 0; j < TerrainHeight; j++)
                 {
-                    var xin = i/(double) TerrainWidth*2;
-                    var yin = j/(double) TerrainHeight*2;
+                    var xin = i / (double)TerrainWidth * 2;
+                    var yin = j / (double)TerrainHeight * 2;
                     _heightMap[i, j] = 0.2 * _noiseGenerator.Noise(xin, yin, elapsedseconds);
                 }
             }
@@ -138,7 +138,7 @@ namespace CjClutter.OpenGl.Gui
                     GL.Vertex3(x3, z3, y3);
                 }
             }
-        
+
             GL.End();
 
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
@@ -166,13 +166,13 @@ namespace CjClutter.OpenGl.Gui
 
         private void ProcessKeyboardInput()
         {
-            if(!Focused)
+            if (!Focused)
             {
                 return;
             }
 
             var keyboardState = OpenTK.Input.Keyboard.GetState();
-            
+
             _keyboardInputProcessor.Update(keyboardState);
             _keyboardInputObservable.ProcessKeys();
         }
@@ -190,6 +190,14 @@ namespace CjClutter.OpenGl.Gui
             _mouseInputObservable.ProcessMouseButtons();
 
             _openTkCamera.Update();
+        }
+
+        public TimeSpan ElapsedTime
+        {
+            get
+            {
+                return _stopwatch.Elapsed;
+            }
         }
     }
 }
