@@ -7,6 +7,7 @@ using CjClutter.OpenGl.Input;
 using CjClutter.OpenGl.Input.Keboard;
 using CjClutter.OpenGl.Input.Mouse;
 using CjClutter.OpenGl.Noise;
+using CjClutter.OpenGl.OpenGl;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -60,6 +61,9 @@ namespace CjClutter.OpenGl.Gui
 
         protected override void OnLoad(EventArgs e)
         {
+            var s = GL.GetString(StringName.Version);
+            Console.WriteLine(s);
+
             var font = new Font(FontFamily.GenericSansSerif, 10);
             _qFont = QFontFactory.Create(font);
 
@@ -85,6 +89,12 @@ namespace CjClutter.OpenGl.Gui
             ProcessKeyboardInput();
 
             _frameTimeCounter.UpdateFrameTime(e.Time);
+
+
+            //var vertexBuffer = new VertexBuffer<float>();
+            //vertexBuffer.Generate();
+            //vertexBuffer.Bind();
+            //vertexBuffer.Destroy();
 
             var perspectiveMatrix = Matrix4d.CreatePerspectiveFieldOfView(Math.PI / 4, 1, 1, 100);
             GL.MatrixMode(MatrixMode.Projection);

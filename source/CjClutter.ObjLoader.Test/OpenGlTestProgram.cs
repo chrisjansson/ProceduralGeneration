@@ -8,6 +8,7 @@ namespace ObjLoader.Test
 {
     class OpenGlTestProgram
     {
+        [STAThread]
         static void Main(string[] args)
         {
             const string title = "OpenGl test program";
