@@ -1,10 +1,11 @@
-﻿using NUnit.Framework;
+﻿using CjClutter.Commons.Reflection;
+using NUnit.Framework;
 using FluentAssertions;
 
 namespace CjClutter.OpenGl.OpenGl.VertexTypes
 {
     [TestFixture]
-    public class VertexTests
+    public class Vertex3VTests
     {
         private Vertex3V _vertex3V;
 

@@ -6,7 +6,8 @@ namespace CjClutter.OpenGl.OpenGl.VertexTypes
     [StructLayout(LayoutKind.Sequential)]
     public struct Vertex3V : IBufferDataType
     {
-        public Vector3 Position { get; set; }
+        public Vector3 Position;
+
         public int SizeInBytes { get { return 12; } }
     }
 }

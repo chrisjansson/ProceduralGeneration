@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace CjClutter.OpenGl.OpenGl
+namespace CjClutter.Commons.Reflection
 {
     public class TypeSizeCalculator
     {

@@ -73,6 +73,10 @@
     <Compile Include="Extensions\NumericAssertionsExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reflection\FieldOffsetCalculator.cs" />
+    <Compile Include="Reflection\FieldOffsetCalculatorTests.cs" />
+    <Compile Include="Reflection\PropertyHelper.cs" />
+    <Compile Include="Reflection\PropertyHelperTests.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

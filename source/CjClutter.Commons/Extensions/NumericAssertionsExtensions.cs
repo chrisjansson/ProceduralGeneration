@@ -1,7 +1,7 @@
 using FluentAssertions;
 using FluentAssertions.Assertions;
 
-namespace CjClutter.ObjLoader.Viewer.Extensions
+namespace CjClutter.Commons.Extensions
 {
     public static class NumericAssertionsExtensions
     {

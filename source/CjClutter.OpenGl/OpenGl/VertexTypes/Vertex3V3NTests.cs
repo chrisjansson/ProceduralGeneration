@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using CjClutter.Commons.Reflection;
+using NUnit.Framework;
 using FluentAssertions;
 
 namespace CjClutter.OpenGl.OpenGl.VertexTypes
@@ -20,6 +21,16 @@ namespace CjClutter.OpenGl.OpenGl.VertexTypes
             var actualSize = TypeSizeCalculator.GetSize<Vertex3V3N>();
 
             _vertex3V3N.SizeInBytes.Should().Be(actualSize);
+        }
+
+        [Test]
+        public void Fields_has_correct_offsets()
+        {
+            var expectedPositionOffset = FieldOffsetCalculator.CalculateFieldOffset((Vertex3V3N x) => x.Position);
+            var expectedNormalOffset = FieldOffsetCalculator.CalculateFieldOffset((Vertex3V3N x) => x.Normal);
+
+            _vertex3V3N.PositionOffset.Should().Be(expectedPositionOffset);
+            _vertex3V3N.NormalOffset.Should().Be(expectedNormalOffset);
         }
     }
 }

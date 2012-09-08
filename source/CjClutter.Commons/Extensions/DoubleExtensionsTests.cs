@@ -1,5 +1,4 @@
-﻿using CjClutter.ObjLoader.Viewer.Extensions;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 
 namespace CjClutter.Commons.Extensions

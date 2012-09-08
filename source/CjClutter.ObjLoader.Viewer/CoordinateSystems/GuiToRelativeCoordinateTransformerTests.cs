@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using CjClutter.Commons.Extensions;
+using NUnit.Framework;
 using OpenTK;
 using Rhino.Mocks;
 using FluentAssertions;

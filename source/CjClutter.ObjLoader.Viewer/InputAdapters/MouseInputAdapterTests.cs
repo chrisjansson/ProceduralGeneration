@@ -1,4 +1,5 @@
 ﻿using System.Windows.Forms;
+using CjClutter.Commons.Extensions;
 using CjClutter.ObjLoader.Viewer.Extensions;
 using NUnit.Framework;
 using FluentAssertions;
