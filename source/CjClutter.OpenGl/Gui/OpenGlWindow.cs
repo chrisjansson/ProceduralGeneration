@@ -6,8 +6,6 @@ using CjClutter.ObjLoader.Viewer.CoordinateSystems;
 using CjClutter.OpenGl.Input;
 using CjClutter.OpenGl.Input.Keboard;
 using CjClutter.OpenGl.Input.Mouse;
-using CjClutter.OpenGl.Noise;
-using CjClutter.OpenGl.OpenGl;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -18,19 +16,15 @@ namespace CjClutter.OpenGl.Gui
 {
     public class OpenGlWindow : GameWindow
     {
-        private const int TerrainWidth = 256;
-        private const int TerrainHeight = 256;
-
         private QFont _qFont;
         private readonly FrameTimeCounter _frameTimeCounter = new FrameTimeCounter();
-        private INoiseGenerator _noiseGenerator;
         private Stopwatch _stopwatch;
-        private double[,] _heightMap;
         private readonly MouseInputProcessor _mouseInputProcessor;
         private readonly MouseInputObservable _mouseInputObservable;
         private readonly KeyboardInputProcessor _keyboardInputProcessor = new KeyboardInputProcessor();
         private readonly KeyboardInputObservable _keyboardInputObservable;
         private readonly OpenTkCamera _openTkCamera;
+        private readonly Scene.Scene _scene;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -44,7 +38,7 @@ namespace CjClutter.OpenGl.Gui
             openGlVersion.Minor,
             GraphicsContextFlags.Default)
         {
-            VSync = VSyncMode.Off;
+            VSync = VSyncMode.On;
 
             _mouseInputProcessor = new MouseInputProcessor(this, new GuiToRelativeCoordinateTransformer());
 
@@ -57,19 +51,15 @@ namespace CjClutter.OpenGl.Gui
             var trackballCameraRotationCalculator = new TrackballCameraRotationCalculator();
             var trackballCamera = new TrackballCamera(trackballCameraRotationCalculator);
             _openTkCamera = new OpenTkCamera(_mouseInputProcessor, trackballCamera);
+
+            _scene = new Scene.Scene();
         }
 
         protected override void OnLoad(EventArgs e)
         {
-            var s = GL.GetString(StringName.Version);
-            Console.WriteLine(s);
-
             var font = new Font(FontFamily.GenericSansSerif, 10);
             _qFont = QFontFactory.Create(font);
 
-            _heightMap = new double[TerrainWidth, TerrainHeight];
-
-            _noiseGenerator = new SimplexNoise();
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
 
@@ -90,12 +80,6 @@ namespace CjClutter.OpenGl.Gui
 
             _frameTimeCounter.UpdateFrameTime(e.Time);
 
-
-            //var vertexBuffer = new VertexBuffer<float>();
-            //vertexBuffer.Generate();
-            //vertexBuffer.Bind();
-            //vertexBuffer.Delete();
-
             var perspectiveMatrix = Matrix4d.CreatePerspectiveFieldOfView(Math.PI / 4, 1, 1, 100);
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadMatrix(ref perspectiveMatrix);
@@ -111,43 +95,8 @@ namespace CjClutter.OpenGl.Gui
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
             GL.Begin(BeginMode.Quads);
 
-            var elapsedseconds = ElapsedTime.TotalSeconds / 10;
-
-            for (var i = 0; i < TerrainWidth; i++)
-            {
-                for (var j = 0; j < TerrainHeight; j++)
-                {
-                    var xin = i / (double)TerrainWidth * 2;
-                    var yin = j / (double)TerrainHeight * 2;
-                    _heightMap[i, j] = 0.2 * _noiseGenerator.Noise(xin, yin, elapsedseconds);
-                }
-            }
-
-            for (var i = 0; i < TerrainWidth - 1; i++)
-            {
-                for (var j = 0; j < TerrainHeight - 1; j++)
-                {
-                    var x0 = -0.5 + ScaleTo(i, TerrainWidth);
-                    var x1 = -0.5 + ScaleTo(i + 1, TerrainWidth);
-                    var x2 = -0.5 + ScaleTo(i + 1, TerrainWidth);
-                    var x3 = -0.5 + ScaleTo(i, TerrainWidth);
-
-                    var y0 = -0.5 + ScaleTo(j, TerrainHeight);
-                    var y1 = -0.5 + ScaleTo(j, TerrainHeight);
-                    var y2 = -0.5 + ScaleTo(j + 1, TerrainHeight);
-                    var y3 = -0.5 + ScaleTo(j + 1, TerrainHeight);
-
-                    var z0 = _heightMap[i, j];
-                    var z1 = _heightMap[i + 1, j];
-                    var z2 = _heightMap[i + 1, j + 1];
-                    var z3 = _heightMap[i, j + 1];
-
-                    GL.Vertex3(x0, z0, y0);
-                    GL.Vertex3(x1, z1, y1);
-                    GL.Vertex3(x2, z2, y2);
-                    GL.Vertex3(x3, z3, y3);
-                }
-            }
+            //_scene.Update(ElapsedTime.TotalSeconds);
+            //_scene.Draw();
 
             GL.End();
 
@@ -156,11 +105,6 @@ namespace CjClutter.OpenGl.Gui
             DrawDebugText();
 
             SwapBuffers();
-        }
-
-        private double ScaleTo(double value, double max)
-        {
-            return value / max;
         }
 
         private void DrawDebugText()
