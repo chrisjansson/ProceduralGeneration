@@ -94,7 +94,7 @@ namespace CjClutter.OpenGl.Gui
             //var vertexBuffer = new VertexBuffer<float>();
             //vertexBuffer.Generate();
             //vertexBuffer.Bind();
-            //vertexBuffer.Destroy();
+            //vertexBuffer.Delete();
 
             var perspectiveMatrix = Matrix4d.CreatePerspectiveFieldOfView(Math.PI / 4, 1, 1, 100);
             GL.MatrixMode(MatrixMode.Projection);

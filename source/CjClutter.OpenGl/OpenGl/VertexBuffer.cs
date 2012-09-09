@@ -23,19 +23,15 @@ namespace CjClutter.OpenGl.OpenGl
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
-        public void Data(T[] bufferData, BufferUsageHint usageHint)
+        public void Data(T[] bufferData, BufferUsageHint usageHint = BufferUsageHint.StaticDraw)
         {
             var dataSize = bufferData.Length * _sizeInBytes;
-            var intPtr = new IntPtr(dataSize);
+            var size = new IntPtr(dataSize);
 
-            Bind();
-
-            GL.BufferData(BufferTarget.ArrayBuffer, intPtr, bufferData, usageHint);
-
-            Unbind();
+            GL.BufferData(BufferTarget.ArrayBuffer, size, bufferData, usageHint);
         }
 
-        public void Destroy()
+        public void Delete()
         {
             GL.DeleteBuffers(1, ref _vertexBufferObject);
             _vertexBufferObject = 0;

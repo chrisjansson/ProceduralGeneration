@@ -77,6 +77,8 @@
     <Compile Include="Reflection\FieldOffsetCalculatorTests.cs" />
     <Compile Include="Reflection\PropertyHelper.cs" />
     <Compile Include="Reflection\PropertyHelperTests.cs" />
+    <Compile Include="Reflection\TypeSizeCalculator.cs" />
+    <Compile Include="Reflection\TypeSizeCalculatorTests.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
