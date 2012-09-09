@@ -6,6 +6,7 @@ using CjClutter.ObjLoader.Viewer.CoordinateSystems;
 using CjClutter.OpenGl.Input;
 using CjClutter.OpenGl.Input.Keboard;
 using CjClutter.OpenGl.Input.Mouse;
+using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -24,7 +25,7 @@ namespace CjClutter.OpenGl.Gui
         private readonly KeyboardInputProcessor _keyboardInputProcessor = new KeyboardInputProcessor();
         private readonly KeyboardInputObservable _keyboardInputObservable;
         private readonly OpenTkCamera _openTkCamera;
-        private readonly Scene.Scene _scene;
+        private readonly Scene _scene;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -52,7 +53,7 @@ namespace CjClutter.OpenGl.Gui
             var trackballCamera = new TrackballCamera(trackballCameraRotationCalculator);
             _openTkCamera = new OpenTkCamera(_mouseInputProcessor, trackballCamera);
 
-            _scene = new Scene.Scene();
+            _scene = new Scene();
         }
 
         protected override void OnLoad(EventArgs e)
@@ -68,6 +69,8 @@ namespace CjClutter.OpenGl.Gui
             _keyboardInputObservable.SubscribeKey(Key.Escape, Exit);
 
             GL.Color3(Color.Green);
+
+            _scene.OnLoad();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -81,7 +84,6 @@ namespace CjClutter.OpenGl.Gui
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadMatrix(ref perspectiveMatrix);
 
-            //var lookAtMatrix = Matrix4d.LookAt(2, 2, 0, 0, 0, 0, 0, 1, 0);
             var lookAtMatrix = _openTkCamera.GetCameraMatrix();
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref lookAtMatrix);
