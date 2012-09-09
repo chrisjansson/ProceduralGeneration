@@ -38,7 +38,7 @@ namespace CjClutter.OpenGl.Gui
             openGlVersion.Minor,
             GraphicsContextFlags.Default)
         {
-            VSync = VSyncMode.On;
+            VSync = VSyncMode.Off;
 
             _mouseInputProcessor = new MouseInputProcessor(this, new GuiToRelativeCoordinateTransformer());
 
@@ -62,9 +62,6 @@ namespace CjClutter.OpenGl.Gui
 
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
-
-            //_mouseInputObservable.SubscribeMouseButton(MouseButton.Right, () => GL.Color3(Color.DodgerBlue));
-            //_mouseInputObservable.SubscribeMouseButton(MouseButton.Left, () => GL.Color3(Color.Green));
 
             _keyboardInputObservable.SubscribeKey(Key.Left, () => GL.Color3(Color.Aqua));
             _keyboardInputObservable.SubscribeKey(Key.Right, () => GL.Color3(Color.DarkGoldenrod));
@@ -92,15 +89,8 @@ namespace CjClutter.OpenGl.Gui
             GL.ClearColor(Color4.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-            GL.Begin(BeginMode.Quads);
-
-            //_scene.Update(ElapsedTime.TotalSeconds);
-            //_scene.Draw();
-
-            GL.End();
-
-            GL.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
+            _scene.Update(ElapsedTime.TotalSeconds);
+            _scene.Draw();
 
             DrawDebugText();
 

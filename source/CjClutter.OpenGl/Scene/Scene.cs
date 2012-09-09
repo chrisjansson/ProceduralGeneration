@@ -7,7 +7,6 @@ namespace CjClutter.OpenGl.Scene
     {
         private readonly SimplexNoise _noiseGenerator;
         private readonly double[,] _heightMap;
-        private double _nextDeadLine;
 
         private const int TerrainWidth = 256;
         private const int TerrainHeight = 256;
@@ -21,13 +20,6 @@ namespace CjClutter.OpenGl.Scene
 
         public void Update(double elapsedTime)
         {
-            if(elapsedTime < _nextDeadLine)
-            {
-                return;
-            }
-
-            _nextDeadLine = elapsedTime + 10;
-
             for (var i = 0; i < TerrainWidth; i++)
             {
                 for (var j = 0; j < TerrainHeight; j++)
@@ -41,6 +33,9 @@ namespace CjClutter.OpenGl.Scene
 
         public void Draw()
         {
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+            GL.Begin(BeginMode.Quads);
+
             for (var i = 0; i < TerrainWidth - 1; i++)
             {
                 for (var j = 0; j < TerrainHeight - 1; j++)
@@ -66,6 +61,9 @@ namespace CjClutter.OpenGl.Scene
                     GL.Vertex3(x3, z3, y3);
                 }
             }
+
+            GL.End();
+            GL.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
         }
 
         private double ScaleTo(double value, double max)
