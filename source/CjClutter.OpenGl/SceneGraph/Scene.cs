@@ -11,8 +11,8 @@ namespace CjClutter.OpenGl.SceneGraph
         private readonly SimplexNoise _noiseGenerator;
         private VertexBuffer<Vertex3V> _vertexBuffer;
 
-        private const int TerrainWidth = 256;
-        private const int TerrainHeight = 256;
+        private const int TerrainWidth = 1280;
+        private const int TerrainHeight = 1280;
 
         public Scene()
         {
@@ -83,10 +83,27 @@ namespace CjClutter.OpenGl.SceneGraph
             _renderProgram.AttachShader(vertexShader);
             _renderProgram.AttachShader(fragmentShader);
             _renderProgram.Link();
+            _renderProgram.Use();
 
             _vertexArrayObject = new VertexArrayObject();
             _vertexArrayObject.Create();
             _vertexArrayObject.Bind();
+
+            
+
+            _vertexBuffer.Bind();
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
+            GL.EnableVertexAttribArray(0);
+
+            _vertexArrayObject.Unbind();
+        }
+
+        public void Update(double elapsedTime) { }
+
+        public void Draw()
+        {
+            _vertexArrayObject.Bind();
+            _renderProgram.Use();
 
             var projectionLocation = GL.GetUniformLocation(_renderProgram.ProgramId, "projection");
             var viewLocation = GL.GetUniformLocation(_renderProgram.ProgramId, "view");
@@ -131,23 +148,11 @@ namespace CjClutter.OpenGl.SceneGraph
 
             GL.UniformMatrix4(viewLocation, false, ref viewMatrix);
 
-            _vertexBuffer.Bind();
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
-            GL.EnableVertexAttribArray(0);
-
-            _vertexArrayObject.Unbind();
-        }
-
-        public void Update(double elapsedTime) { }
-
-        public void Draw()
-        {
-            _vertexArrayObject.Bind();
-
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
             GL.DrawArrays(BeginMode.Triangles, 0, (TerrainWidth - 1) * (TerrainHeight - 1) * 3 * 2);
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
 
+            _renderProgram.Unbind();
             _vertexArrayObject.Unbind();
         }
 
