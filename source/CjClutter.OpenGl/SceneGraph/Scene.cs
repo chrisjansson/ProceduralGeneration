@@ -1,4 +1,6 @@
 using CjClutter.OpenGl.Noise;
+using CjClutter.OpenGl.OpenGl;
+using CjClutter.OpenGl.OpenGl.VertexTypes;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
@@ -7,20 +9,23 @@ namespace CjClutter.OpenGl.SceneGraph
     public class Scene
     {
         private readonly SimplexNoise _noiseGenerator;
-        private readonly Vector3d[,] _heightMap;
+        private VertexBuffer<Vertex3V> _vertexBuffer;
 
-        private const int TerrainWidth = 128;
-        private const int TerrainHeight = 128;
+        private const int TerrainWidth = 256;
+        private const int TerrainHeight = 256;
 
         public Scene()
         {
             _noiseGenerator = new SimplexNoise();
-
-            _heightMap = new Vector3d[TerrainWidth, TerrainHeight];
         }
+
+        public Matrix4d ViewMatrix { get; set; }
+        public Matrix4d ProjectionMatrix { get; set; }
 
         public void OnLoad()
         {
+            var heightMap = new Vector3[TerrainWidth, TerrainHeight];
+
             for (var i = 0; i < TerrainWidth; i++)
             {
                 for (var j = 0; j < TerrainHeight; j++)
@@ -31,41 +36,149 @@ namespace CjClutter.OpenGl.SceneGraph
                     var x = -0.5 + ScaleTo(i, TerrainWidth);
                     var z = -0.5 + ScaleTo(j, TerrainHeight);
 
-                    _heightMap[i, j] = new Vector3d(x, y, z);
+                    heightMap[i, j] = new Vector3((float)x, (float)y, (float)z);
                 }
             }
-        }
 
-        public void Update(double elapsedTime) {}
-
-        public void Draw()
-        {
-            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-            GL.Begin(BeginMode.Quads);
+            var vertices = new Vertex3V[(TerrainWidth - 1) * (TerrainHeight - 1) * 3 * 2];
+            var vertexIndex = 0;
 
             for (var i = 0; i < TerrainWidth - 1; i++)
             {
                 for (var j = 0; j < TerrainHeight - 1; j++)
                 {
-                    var v0 = _heightMap[i, j];
-                    var v1 = _heightMap[i + 1, j];
-                    var v2 = _heightMap[i + 1, j + 1];
-                    var v3 = _heightMap[i, j + 1];
+                    var v0 = heightMap[i, j];
+                    var v1 = heightMap[i + 1, j];
+                    var v2 = heightMap[i + 1, j + 1];
+                    var v3 = heightMap[i, j + 1];
 
-                    GL.Vertex3(v0);
-                    GL.Vertex3(v1);
-                    GL.Vertex3(v2);
-                    GL.Vertex3(v3);
+                    vertices[vertexIndex++] = new Vertex3V { Position = v0 };
+                    vertices[vertexIndex++] = new Vertex3V { Position = v1 };
+                    vertices[vertexIndex++] = new Vertex3V { Position = v2 };
+
+                    vertices[vertexIndex++] = new Vertex3V { Position = v0 };
+                    vertices[vertexIndex++] = new Vertex3V { Position = v2 };
+                    vertices[vertexIndex++] = new Vertex3V { Position = v3 };
                 }
             }
 
-            GL.End();
+            _vertexBuffer = new VertexBuffer<Vertex3V>();
+            _vertexBuffer.Generate();
+            _vertexBuffer.Bind();
+            _vertexBuffer.Data(vertices);
+            _vertexBuffer.Unbind();
+
+            var vertexShader = new Shader();
+            vertexShader.Create(ShaderType.VertexShader);
+            vertexShader.SetSource(VertexShader);
+            vertexShader.Compile();
+
+            var fragmentShader = new Shader();
+            fragmentShader.Create(ShaderType.FragmentShader);
+            fragmentShader.SetSource(FragmentShader);
+            fragmentShader.Compile();
+
+            _renderProgram = new Program();
+            _renderProgram.Create();
+            _renderProgram.AttachShader(vertexShader);
+            _renderProgram.AttachShader(fragmentShader);
+            _renderProgram.Link();
+
+            _vertexArrayObject = new VertexArrayObject();
+            _vertexArrayObject.Create();
+            _vertexArrayObject.Bind();
+
+            var projectionLocation = GL.GetUniformLocation(_renderProgram.ProgramId, "projection");
+            var viewLocation = GL.GetUniformLocation(_renderProgram.ProgramId, "view");
+
+            var projectionMatrix = new Matrix4(
+                (float)ProjectionMatrix.M11,
+                (float)ProjectionMatrix.M12,
+                (float)ProjectionMatrix.M13,
+                (float)ProjectionMatrix.M14,
+                (float)ProjectionMatrix.M21,
+                (float)ProjectionMatrix.M22,
+                (float)ProjectionMatrix.M23,
+                (float)ProjectionMatrix.M24,
+                (float)ProjectionMatrix.M31,
+                (float)ProjectionMatrix.M32,
+                (float)ProjectionMatrix.M33,
+                (float)ProjectionMatrix.M34,
+                (float)ProjectionMatrix.M41,
+                (float)ProjectionMatrix.M42,
+                (float)ProjectionMatrix.M43,
+                (float)ProjectionMatrix.M44);
+
+            GL.UniformMatrix4(projectionLocation, false, ref projectionMatrix);
+
+            var viewMatrix = new Matrix4(
+                (float)ViewMatrix.M11,
+                (float)ViewMatrix.M12,
+                (float)ViewMatrix.M13,
+                (float)ViewMatrix.M14,
+                (float)ViewMatrix.M21,
+                (float)ViewMatrix.M22,
+                (float)ViewMatrix.M23,
+                (float)ViewMatrix.M24,
+                (float)ViewMatrix.M31,
+                (float)ViewMatrix.M32,
+                (float)ViewMatrix.M33,
+                (float)ViewMatrix.M34,
+                (float)ViewMatrix.M41,
+                (float)ViewMatrix.M42,
+                (float)ViewMatrix.M43,
+                (float)ViewMatrix.M44);
+
+            GL.UniformMatrix4(viewLocation, false, ref viewMatrix);
+
+            _vertexBuffer.Bind();
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
+            GL.EnableVertexAttribArray(0);
+
+            _vertexArrayObject.Unbind();
+        }
+
+        public void Update(double elapsedTime) { }
+
+        public void Draw()
+        {
+            _vertexArrayObject.Bind();
+
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+            GL.DrawArrays(BeginMode.Triangles, 0, (TerrainWidth - 1) * (TerrainHeight - 1) * 3 * 2);
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
+
+            _vertexArrayObject.Unbind();
         }
 
         private double ScaleTo(double value, double max)
         {
             return value / max;
         }
+
+        private const string VertexShader = @"#version 330
+
+layout(location = 0)in vec4 vert;
+
+uniform mat4 projection;
+uniform mat4 view;
+uniform mat4 model;
+
+void main()
+{
+    gl_Position = projection * view * vert;
+}";
+
+        private const string FragmentShader = @"#version 330
+
+out vec4 fragColor;
+
+void main()
+{
+    fragColor = vec4(1.0, 0.0, 0.0, 1.0);
+}";
+
+        private Program _renderProgram;
+        private VertexArrayObject _vertexArrayObject;
     }
 }

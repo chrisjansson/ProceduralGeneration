@@ -91,6 +91,8 @@ namespace CjClutter.OpenGl.Gui
             GL.ClearColor(Color4.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+            _scene.ViewMatrix = _openTkCamera.GetCameraMatrix();
+            _scene.ProjectionMatrix = perspectiveMatrix;
             _scene.Update(ElapsedTime.TotalSeconds);
             _scene.Draw();
 
