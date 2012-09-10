@@ -36,9 +36,7 @@ namespace CjClutter.OpenGl.SceneGraph
             }
         }
 
-        public void Update(double elapsedTime)
-        {
-        }
+        public void Update(double elapsedTime) {}
 
         public void Draw()
         {
