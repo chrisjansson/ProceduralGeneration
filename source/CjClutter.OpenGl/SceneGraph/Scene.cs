@@ -12,8 +12,9 @@ namespace CjClutter.OpenGl.SceneGraph
         private readonly SimplexNoise _noiseGenerator;
         private VertexBuffer<Vertex3V> _vertexBuffer;
 
-        private const int TerrainWidth = 1280;
-        private const int TerrainHeight = 1280;
+        private const int TerrainWidth = 256;
+        private const int TerrainHeight = 256;
+        private const int NumberOfTriangles = (TerrainWidth - 1)*(TerrainHeight - 1)*2;
 
         public Scene()
         {
@@ -41,7 +42,7 @@ namespace CjClutter.OpenGl.SceneGraph
                 }
             }
 
-            var vertices = new Vertex3V[(TerrainWidth - 1) * (TerrainHeight - 1) * 3 * 2];
+            var vertices = new Vertex3V[NumberOfTriangles * 3];
             var vertexIndex = 0;
 
             for (var i = 0; i < TerrainWidth - 1; i++)
@@ -116,7 +117,7 @@ namespace CjClutter.OpenGl.SceneGraph
             GL.UniformMatrix4(viewLocation, false, ref viewMatrix);
 
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-            GL.DrawArrays(BeginMode.Triangles, 0, (TerrainWidth - 1) * (TerrainHeight - 1) * 3 * 2);
+            GL.DrawArrays(BeginMode.Triangles, 0, NumberOfTriangles * 3);
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
 
             _renderProgram.Unbind();
