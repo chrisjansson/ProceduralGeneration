@@ -3,6 +3,7 @@ using CjClutter.OpenGl.OpenGl;
 using CjClutter.OpenGl.OpenGl.VertexTypes;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using CjClutter.OpenGl.OpenTk;
 
 namespace CjClutter.OpenGl.SceneGraph
 {
@@ -108,44 +109,10 @@ namespace CjClutter.OpenGl.SceneGraph
             var projectionLocation = GL.GetUniformLocation(_renderProgram.ProgramId, "projection");
             var viewLocation = GL.GetUniformLocation(_renderProgram.ProgramId, "view");
 
-            var projectionMatrix = new Matrix4(
-                (float)ProjectionMatrix.M11,
-                (float)ProjectionMatrix.M12,
-                (float)ProjectionMatrix.M13,
-                (float)ProjectionMatrix.M14,
-                (float)ProjectionMatrix.M21,
-                (float)ProjectionMatrix.M22,
-                (float)ProjectionMatrix.M23,
-                (float)ProjectionMatrix.M24,
-                (float)ProjectionMatrix.M31,
-                (float)ProjectionMatrix.M32,
-                (float)ProjectionMatrix.M33,
-                (float)ProjectionMatrix.M34,
-                (float)ProjectionMatrix.M41,
-                (float)ProjectionMatrix.M42,
-                (float)ProjectionMatrix.M43,
-                (float)ProjectionMatrix.M44);
-
+            var projectionMatrix = ProjectionMatrix.ToMatrix4();
             GL.UniformMatrix4(projectionLocation, false, ref projectionMatrix);
 
-            var viewMatrix = new Matrix4(
-                (float)ViewMatrix.M11,
-                (float)ViewMatrix.M12,
-                (float)ViewMatrix.M13,
-                (float)ViewMatrix.M14,
-                (float)ViewMatrix.M21,
-                (float)ViewMatrix.M22,
-                (float)ViewMatrix.M23,
-                (float)ViewMatrix.M24,
-                (float)ViewMatrix.M31,
-                (float)ViewMatrix.M32,
-                (float)ViewMatrix.M33,
-                (float)ViewMatrix.M34,
-                (float)ViewMatrix.M41,
-                (float)ViewMatrix.M42,
-                (float)ViewMatrix.M43,
-                (float)ViewMatrix.M44);
-
+            var viewMatrix = ViewMatrix.ToMatrix4();
             GL.UniformMatrix4(viewLocation, false, ref viewMatrix);
 
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
