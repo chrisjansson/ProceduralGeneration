@@ -26,14 +26,6 @@ namespace CjClutter.OpenGl.OpenGl
             GL.LinkProgram(ProgramId);
         }
 
-        public Boolean LinkStatus()
-        {
-            int linkStatus;
-            GL.GetProgram(ProgramId, ProgramParameter.LinkStatus, out linkStatus);
-
-            return (Boolean)linkStatus;
-        }
-
         public void Use()
         {
             GL.UseProgram(ProgramId);

@@ -21,17 +21,6 @@ namespace CjClutter.OpenGl.OpenGl
             GL.CompileShader(ShaderId);
         }
 
-        public ShaderInfo GetCompileStatus()
-        {
-            int status;
-            GL.GetShader(ShaderId, ShaderParameter.CompileStatus, out status);
-
-            string message;
-            GL.GetShaderInfoLog(ShaderId, out message);
-
-            return new ShaderInfo(status, message);
-        }
-
         public void Delete()
         {
             GL.DeleteShader(ShaderId);

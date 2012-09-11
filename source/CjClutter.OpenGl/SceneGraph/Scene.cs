@@ -1,9 +1,9 @@
 using CjClutter.OpenGl.Noise;
 using CjClutter.OpenGl.OpenGl;
 using CjClutter.OpenGl.OpenGl.VertexTypes;
+using CjClutter.OpenGl.OpenTk;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using CjClutter.OpenGl.OpenTk;
 
 namespace CjClutter.OpenGl.SceneGraph
 {
@@ -91,13 +91,13 @@ namespace CjClutter.OpenGl.SceneGraph
             _vertexArrayObject.Create();
             _vertexArrayObject.Bind();
 
-            
-
             _vertexBuffer.Bind();
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
             GL.EnableVertexAttribArray(0);
 
             _vertexArrayObject.Unbind();
+
+            _renderProgram.Unbind();
         }
 
         public void Update(double elapsedTime) { }
@@ -122,6 +122,11 @@ namespace CjClutter.OpenGl.SceneGraph
 
             _renderProgram.Unbind();
             _vertexArrayObject.Unbind();
+        }
+
+        public void OnUnload()
+        {
+            _vertexBuffer.Delete();
         }
 
         private double ScaleTo(double value, double max)

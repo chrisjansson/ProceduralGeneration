@@ -73,6 +73,11 @@ namespace CjClutter.OpenGl.Gui
             _scene.OnLoad();
         }
 
+        protected override void OnUnload(EventArgs e)
+        {
+            _scene.OnUnload();
+        }
+
         protected override void OnResize(EventArgs e)
         {
             GL.Viewport(0, 0, Width, Height);

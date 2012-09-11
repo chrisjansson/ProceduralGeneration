@@ -95,6 +95,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OpenGl\Diagnostics\ProgramDiagnostics.cs" />
+    <Compile Include="OpenGl\Diagnostics\ShaderDiagnostics.cs" />
     <Compile Include="OpenGl\IBufferDataType.cs" />
     <Compile Include="Gui\FrameTimeCounter.cs" />
     <Compile Include="Gui\GameWindowInterfaceSizeAdapter.cs" />
@@ -122,7 +124,7 @@
     <Compile Include="Gui\OpenGlWindow.cs" />
     <Compile Include="OpenGl\Program.cs" />
     <Compile Include="OpenGl\Shader.cs" />
-    <Compile Include="OpenGl\ShaderInfo.cs" />
+    <Compile Include="OpenGl\Diagnostics\ShaderInfo.cs" />
     <Compile Include="OpenGl\VertexArrayObject.cs" />
     <Compile Include="OpenGl\VertexBuffer.cs" />
     <Compile Include="OpenGl\VertexTypes\Vertex3V.cs" />
