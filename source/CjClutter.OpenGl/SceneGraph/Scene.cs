@@ -1,5 +1,6 @@
 using CjClutter.OpenGl.Noise;
 using CjClutter.OpenGl.OpenGl;
+using CjClutter.OpenGl.OpenGl.Shaders;
 using CjClutter.OpenGl.OpenGl.VertexTypes;
 using CjClutter.OpenGl.OpenTk;
 using OpenTK;
@@ -70,21 +71,8 @@ namespace CjClutter.OpenGl.SceneGraph
             _vertexBuffer.Data(vertices);
             _vertexBuffer.Unbind();
 
-            var vertexShader = new Shader();
-            vertexShader.Create(ShaderType.VertexShader);
-            vertexShader.SetSource(VertexShader);
-            vertexShader.Compile();
-
-            var fragmentShader = new Shader();
-            fragmentShader.Create(ShaderType.FragmentShader);
-            fragmentShader.SetSource(FragmentShader);
-            fragmentShader.Compile();
-
-            _renderProgram = new Program();
-            _renderProgram.Create();
-            _renderProgram.AttachShader(vertexShader);
-            _renderProgram.AttachShader(fragmentShader);
-            _renderProgram.Link();
+            _simpleRenderProgram = new SimpleRenderProgram();
+            _simpleRenderProgram.Create();
 
             _vertexArrayObject = new VertexArrayObject();
             _vertexArrayObject.Create();
@@ -102,28 +90,28 @@ namespace CjClutter.OpenGl.SceneGraph
         public void Draw()
         {
             _vertexArrayObject.Bind();
-            _renderProgram.Use();
-
-            var projectionLocation = _renderProgram.GetUniformLocation("projection");
-            var viewLocation = _renderProgram.GetUniformLocation("view");
+            _simpleRenderProgram.Bind();
 
             var projectionMatrix = ProjectionMatrix.ToMatrix4();
-            GL.UniformMatrix4(projectionLocation, false, ref projectionMatrix);
+            _simpleRenderProgram.ProjectionMatrix = projectionMatrix;
+            _simpleRenderProgram.SetUniform(x => x.ProjectionMatrix);
 
             var viewMatrix = ViewMatrix.ToMatrix4();
-            GL.UniformMatrix4(viewLocation, false, ref viewMatrix);
+            _simpleRenderProgram.ViewMatrix = viewMatrix;
+            _simpleRenderProgram.SetUniform(x => x.ViewMatrix);
 
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
             GL.DrawArrays(BeginMode.Triangles, 0, NumberOfTriangles * 3);
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
 
-            _renderProgram.Unbind();
+            _simpleRenderProgram.Unbind();
             _vertexArrayObject.Unbind();
         }
 
         public void OnUnload()
         {
             _vertexBuffer.Delete();
+            _simpleRenderProgram.Delete();
         }
 
         private double ScaleTo(double value, double max)
@@ -131,29 +119,7 @@ namespace CjClutter.OpenGl.SceneGraph
             return value / max;
         }
 
-        private const string VertexShader = @"#version 330
-
-layout(location = 0)in vec4 vert;
-
-uniform mat4 projection;
-uniform mat4 view;
-uniform mat4 model;
-
-void main()
-{
-    gl_Position = projection * view * vert;
-}";
-
-        private const string FragmentShader = @"#version 330
-
-out vec4 fragColor;
-
-void main()
-{
-    fragColor = vec4(1.0, 0.0, 0.0, 1.0);
-}";
-
-        private Program _renderProgram;
         private VertexArrayObject _vertexArrayObject;
+        private SimpleRenderProgram _simpleRenderProgram;
     }
 }
