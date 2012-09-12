@@ -85,7 +85,6 @@ namespace CjClutter.OpenGl.SceneGraph
             _renderProgram.AttachShader(vertexShader);
             _renderProgram.AttachShader(fragmentShader);
             _renderProgram.Link();
-            _renderProgram.Use();
 
             _vertexArrayObject = new VertexArrayObject();
             _vertexArrayObject.Create();
@@ -96,8 +95,6 @@ namespace CjClutter.OpenGl.SceneGraph
             GL.EnableVertexAttribArray(0);
 
             _vertexArrayObject.Unbind();
-
-            _renderProgram.Unbind();
         }
 
         public void Update(double elapsedTime) { }
@@ -107,8 +104,8 @@ namespace CjClutter.OpenGl.SceneGraph
             _vertexArrayObject.Bind();
             _renderProgram.Use();
 
-            var projectionLocation = GL.GetUniformLocation(_renderProgram.ProgramId, "projection");
-            var viewLocation = GL.GetUniformLocation(_renderProgram.ProgramId, "view");
+            var projectionLocation = _renderProgram.GetUniformLocation("projection");
+            var viewLocation = _renderProgram.GetUniformLocation("view");
 
             var projectionMatrix = ProjectionMatrix.ToMatrix4();
             GL.UniformMatrix4(projectionLocation, false, ref projectionMatrix);

@@ -40,5 +40,10 @@ namespace CjClutter.OpenGl.OpenGl
         {
             GL.DeleteProgram(ProgramId);
         }
+
+        public int GetUniformLocation(string uniformName)
+        {
+            return GL.GetUniformLocation(ProgramId, uniformName);
+        }
     }
 }
