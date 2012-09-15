@@ -93,12 +93,10 @@ namespace CjClutter.OpenGl.SceneGraph
             _simpleRenderProgram.Bind();
 
             var projectionMatrix = ProjectionMatrix.ToMatrix4();
-            _simpleRenderProgram.ProjectionMatrix = projectionMatrix;
-            _simpleRenderProgram.SetUniform(x => x.ProjectionMatrix);
+            _simpleRenderProgram.ProjectionMatrix.Set(projectionMatrix);
 
             var viewMatrix = ViewMatrix.ToMatrix4();
-            _simpleRenderProgram.ViewMatrix = viewMatrix;
-            _simpleRenderProgram.SetUniform(x => x.ViewMatrix);
+            _simpleRenderProgram.ViewMatrix.Set(viewMatrix);
 
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
             GL.DrawArrays(BeginMode.Triangles, 0, NumberOfTriangles * 3);

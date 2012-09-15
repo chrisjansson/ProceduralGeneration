@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
 using CjClutter.Commons.Reflection;
-using CjClutter.OpenGl.OpenGl.Diagnostics;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
@@ -11,7 +10,7 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
     {
         private Shader _vertexShader;
         private Shader _fragmentShader;
-        public Program _program;
+        private Program _program;
 
         public void Create()
         {
@@ -31,8 +30,22 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
             _program.AttachShader(_fragmentShader);
             _program.Link();
 
-            var programDiagnostics = new ProgramDiagnostics();
-            var linkStatus = programDiagnostics.GetLinkStatus(_program);
+            var projectionLocation = GetUniformLocation(x => x.ProjectionMatrix);
+            ProjectionMatrix = new GenericUniform<Matrix4>(projectionLocation);
+
+            var viewLocation = GetUniformLocation(x => x.ViewMatrix);
+            ViewMatrix = new GenericUniform<Matrix4>(viewLocation);
+
+            var modelLocation = GetUniformLocation(x => x.ModelMatrix);
+            ModelMatrix = new GenericUniform<Matrix4>(modelLocation);
+        }
+
+        private int GetUniformLocation<T>(Expression<Func<SimpleRenderProgram, T>> getter)
+        {
+            var uniformName = PropertyHelper.GetPropertyName(getter);
+            var uniformLocation = GL.GetUniformLocation(_program.ProgramId, uniformName);
+
+            return uniformLocation;
         }
 
         public void Delete()
@@ -42,20 +55,9 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
             _program.Delete();
         }
 
-        public Matrix4 ProjectionMatrix { get; set; }
-        public Matrix4 ViewMatrix { get; set; }
-        public Matrix4 ModelMatrix { get; set; }
-
-        public void SetUniform(Expression<Func<SimpleRenderProgram, Matrix4>> getter)
-        {
-            var uniformName = PropertyHelper.GetPropertyName(getter);
-            var attribLocation = GL.GetUniformLocation(_program.ProgramId, uniformName);
-
-            var compiledGetter = getter.Compile();
-            var value = compiledGetter(this);
-
-            GL.UniformMatrix4(attribLocation, false, ref value);
-        }
+        public GenericUniform<Matrix4> ProjectionMatrix { get; private set; }
+        public GenericUniform<Matrix4> ViewMatrix { get; private set; }
+        public GenericUniform<Matrix4> ModelMatrix { get; private set; }
 
         public void Bind()
         {
