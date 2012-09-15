@@ -30,22 +30,18 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
             _program.AttachShader(_fragmentShader);
             _program.Link();
 
-            var projectionLocation = GetUniformLocation(x => x.ProjectionMatrix);
-            ProjectionMatrix = new GenericUniform<Matrix4>(projectionLocation);
-
-            var viewLocation = GetUniformLocation(x => x.ViewMatrix);
-            ViewMatrix = new GenericUniform<Matrix4>(viewLocation);
-
-            var modelLocation = GetUniformLocation(x => x.ModelMatrix);
-            ModelMatrix = new GenericUniform<Matrix4>(modelLocation);
+            RegisterUniform(() => ProjectionMatrix, x => ProjectionMatrix = x);
+            RegisterUniform(() => ViewMatrix, x => ViewMatrix = x);
+            RegisterUniform(() => ModelMatrix, x => ModelMatrix = x);
         }
 
-        private int GetUniformLocation<T>(Expression<Func<SimpleRenderProgram, T>> getter)
+        private void RegisterUniform<T>(Expression<Func<GenericUniform<T>>> getter, Action<GenericUniform<T>> setter)
         {
             var uniformName = PropertyHelper.GetPropertyName(getter);
-            var uniformLocation = GL.GetUniformLocation(_program.ProgramId, uniformName);
+            var uniformLocation = _program.GetUniformLocation(uniformName);
 
-            return uniformLocation;
+            var uniform = new GenericUniform<T>(uniformLocation);
+            setter(uniform);
         }
 
         public void Delete()

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
+﻿using OpenTK.Graphics.OpenGL;
 
 namespace CjClutter.OpenGl.OpenGl
 {
@@ -49,15 +46,9 @@ namespace CjClutter.OpenGl.OpenGl
             return GL.GetUniformLocation(ProgramId, uniformName);
         }
 
-        ////declarera egna delegate signaturer som klarar refar
-        //private Dictionary<Type, Action<int, .object>> _uniformMapping = new Dictionary<Type, Action<int, object>>
-        //    {
-        //        {typeof(Matrix4), (location, o) => GL.UniformMatrix4(location, false, ref o) }
-        //    };
-
-        //public void Uniform<T>(string uniformName, ref T value)
-        //{
-            
-        //}
+        public int GetAttributeLocation(string attributeName)
+        {
+            return GL.GetAttribLocation(ProgramId, attributeName);
+        }
     }
 }
