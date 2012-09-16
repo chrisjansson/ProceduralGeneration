@@ -1,3 +1,4 @@
+using System;
 using CjClutter.OpenGl.Noise;
 using CjClutter.OpenGl.OpenGl;
 using CjClutter.OpenGl.OpenGl.Shaders;
@@ -15,7 +16,7 @@ namespace CjClutter.OpenGl.SceneGraph
 
         private const int TerrainWidth = 256;
         private const int TerrainHeight = 256;
-        private const int NumberOfTriangles = (TerrainWidth - 1)*(TerrainHeight - 1)*2;
+        private const int NumberOfTriangles = (TerrainWidth - 1) * (TerrainHeight - 1) * 2;
 
         public Scene()
         {
@@ -85,7 +86,17 @@ namespace CjClutter.OpenGl.SceneGraph
             _vertexArrayObject.Unbind();
         }
 
-        public void Update(double elapsedTime) { }
+        public void Update(double elapsedTime)
+        {
+            _simpleRenderProgram.Bind();
+
+            var blue = (Math.Sin(elapsedTime) + 1) / 2;
+            var color = new Vector4(0.0f, 0.0f, (float)blue, 0.0f);
+
+            _simpleRenderProgram.Color.Set(color);
+
+            _simpleRenderProgram.Unbind();
+        }
 
         public void Draw()
         {
