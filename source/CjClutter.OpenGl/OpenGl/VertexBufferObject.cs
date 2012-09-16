@@ -3,7 +3,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace CjClutter.OpenGl.OpenGl
 {
-    public class VertexBuffer<T> where T : struct, IBufferDataType
+    public class VertexBufferObject<T> where T : struct, IBufferDataType
     {
         private int _vertexBufferObject;
         private readonly int _sizeInBytes = new T().SizeInBytes;

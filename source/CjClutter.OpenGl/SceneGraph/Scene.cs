@@ -12,7 +12,7 @@ namespace CjClutter.OpenGl.SceneGraph
     public class Scene
     {
         private readonly SimplexNoise _noiseGenerator;
-        private VertexBuffer<Vertex3V> _vertexBuffer;
+        private VertexBufferObject<Vertex3V> _vertexBufferObject;
 
         private const int TerrainWidth = 256;
         private const int TerrainHeight = 256;
@@ -66,11 +66,11 @@ namespace CjClutter.OpenGl.SceneGraph
                 }
             }
 
-            _vertexBuffer = new VertexBuffer<Vertex3V>();
-            _vertexBuffer.Generate();
-            _vertexBuffer.Bind();
-            _vertexBuffer.Data(vertices);
-            _vertexBuffer.Unbind();
+            _vertexBufferObject = new VertexBufferObject<Vertex3V>();
+            _vertexBufferObject.Generate();
+            _vertexBufferObject.Bind();
+            _vertexBufferObject.Data(vertices);
+            _vertexBufferObject.Unbind();
 
             _simpleRenderProgram = new SimpleRenderProgram();
             _simpleRenderProgram.Create();
@@ -79,7 +79,7 @@ namespace CjClutter.OpenGl.SceneGraph
             _vertexArrayObject.Create();
             _vertexArrayObject.Bind();
 
-            _vertexBuffer.Bind();
+            _vertexBufferObject.Bind();
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
             GL.EnableVertexAttribArray(0);
 
@@ -119,7 +119,7 @@ namespace CjClutter.OpenGl.SceneGraph
 
         public void OnUnload()
         {
-            _vertexBuffer.Delete();
+            _vertexBufferObject.Delete();
             _simpleRenderProgram.Delete();
         }
 
