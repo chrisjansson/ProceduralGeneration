@@ -1,16 +1,16 @@
-﻿using System;
-using System.Linq.Expressions;
-using CjClutter.Commons.Reflection;
-using OpenTK;
+﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 namespace CjClutter.OpenGl.OpenGl.Shaders
 {
-    public class SimpleRenderProgram
+    public class SimpleRenderProgram : RenderProgramBase
     {
         private Shader _vertexShader;
         private Shader _fragmentShader;
-        private Program _program;
+
+        public GenericUniform<Matrix4> ProjectionMatrix { get; private set; }
+        public GenericUniform<Matrix4> ViewMatrix { get; private set; }
+        public GenericUniform<Matrix4> ModelMatrix { get; private set; }
 
         public void Create()
         {
@@ -24,45 +24,25 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
             _fragmentShader.SetSource(FragmentShaderSource);
             _fragmentShader.Compile();
 
-            _program = new Program();
-            _program.Create();
-            _program.AttachShader(_vertexShader);
-            _program.AttachShader(_fragmentShader);
-            _program.Link();
+            Program = new Program();
+            Program.Create();
+            Program.AttachShader(_vertexShader);
+            Program.AttachShader(_fragmentShader);
+            Program.Link();
 
             RegisterUniform(() => ProjectionMatrix, x => ProjectionMatrix = x);
             RegisterUniform(() => ViewMatrix, x => ViewMatrix = x);
             RegisterUniform(() => ModelMatrix, x => ModelMatrix = x);
         }
 
-        private void RegisterUniform<T>(Expression<Func<GenericUniform<T>>> getter, Action<GenericUniform<T>> setter)
-        {
-            var uniformName = PropertyHelper.GetPropertyName(getter);
-            var uniformLocation = _program.GetUniformLocation(uniformName);
-
-            var uniform = new GenericUniform<T>(uniformLocation);
-            setter(uniform);
-        }
-
         public void Delete()
         {
-            _program.DetachShader(_vertexShader);
-            _program.DetachShader(_fragmentShader);
-            _program.Delete();
-        }
+            Program.DetachShader(_vertexShader);
+            Program.DetachShader(_fragmentShader);
+            Program.Delete();
 
-        public GenericUniform<Matrix4> ProjectionMatrix { get; private set; }
-        public GenericUniform<Matrix4> ViewMatrix { get; private set; }
-        public GenericUniform<Matrix4> ModelMatrix { get; private set; }
-
-        public void Bind()
-        {
-            _program.Use();
-        }
-
-        public void Unbind()
-        {
-            _program.Unbind();
+            _vertexShader.Delete();
+            _fragmentShader.Delete();
         }
 
         private const string VertexShaderSource = @"#version 330
