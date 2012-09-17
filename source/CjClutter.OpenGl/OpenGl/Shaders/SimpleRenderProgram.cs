@@ -3,7 +3,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace CjClutter.OpenGl.OpenGl.Shaders
 {
-    public class SimpleRenderProgram : RenderProgramBase
+    public class SimpleRenderProgram : RenderProgramBase, IBindable
     {
         private Shader _vertexShader;
         private Shader _fragmentShader;

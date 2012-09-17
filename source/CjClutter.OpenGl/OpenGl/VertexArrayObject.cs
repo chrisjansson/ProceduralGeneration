@@ -2,7 +2,7 @@
 
 namespace CjClutter.OpenGl.OpenGl
 {
-    public class VertexArrayObject
+    public class VertexArrayObject : IBindable
     {
         private int _array;
 

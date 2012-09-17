@@ -14,6 +14,9 @@ namespace CjClutter.OpenGl.SceneGraph
         private readonly SimplexNoise _noiseGenerator;
         private VertexBufferObject<Vertex3V> _vertexBufferObject;
 
+        private VertexArrayObject _vertexArrayObject;
+        private SimpleRenderProgram _simpleRenderProgram;
+
         private const int TerrainWidth = 256;
         private const int TerrainHeight = 256;
         private const int NumberOfTriangles = (TerrainWidth - 1) * (TerrainHeight - 1) * 2;
@@ -90,8 +93,8 @@ namespace CjClutter.OpenGl.SceneGraph
         {
             _simpleRenderProgram.Bind();
 
-            var blue = (Math.Sin(elapsedTime) + 1) / 2;
-            var color = new Vector4(0.0f, 0.0f, (float)blue, 0.0f);
+            var blue = (Math.Sin(elapsedTime) + 1) / 4;
+            var color = new Vector4(0.5f, 0.5f, (float)blue + 0.5f, 0.0f);
 
             _simpleRenderProgram.Color.Set(color);
 
@@ -100,21 +103,18 @@ namespace CjClutter.OpenGl.SceneGraph
 
         public void Draw()
         {
-            _vertexArrayObject.Bind();
-            _simpleRenderProgram.Bind();
+            RunWithResourcesBound(DrawMesh, _vertexArrayObject, _simpleRenderProgram);
+        }
 
+        private void DrawMesh()
+        {
             var projectionMatrix = ProjectionMatrix.ToMatrix4();
             _simpleRenderProgram.ProjectionMatrix.Set(projectionMatrix);
 
             var viewMatrix = ViewMatrix.ToMatrix4();
             _simpleRenderProgram.ViewMatrix.Set(viewMatrix);
 
-            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
             GL.DrawArrays(BeginMode.Triangles, 0, NumberOfTriangles * 3);
-            GL.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
-
-            _simpleRenderProgram.Unbind();
-            _vertexArrayObject.Unbind();
         }
 
         public void OnUnload()
@@ -123,12 +123,24 @@ namespace CjClutter.OpenGl.SceneGraph
             _simpleRenderProgram.Delete();
         }
 
+        private void RunWithResourcesBound(Action action, params IBindable[] bindables)
+        {
+            foreach (var bindable in bindables)
+            {
+                bindable.Bind();
+            }
+
+            action();
+
+            foreach (var bindable in bindables)
+            {
+                bindable.Unbind();
+            }
+        }
+
         private double ScaleTo(double value, double max)
         {
             return value / max;
         }
-
-        private VertexArrayObject _vertexArrayObject;
-        private SimpleRenderProgram _simpleRenderProgram;
     }
 }
