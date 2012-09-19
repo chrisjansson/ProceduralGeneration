@@ -3,7 +3,8 @@
     public class OpenGlVersion
     {
         public static OpenGlVersion OpenGl31 = new OpenGlVersion(3, 1);
-        
+        public static OpenGlVersion OpenGl33 = new OpenGlVersion(3, 3);
+
         public OpenGlVersion(int major, int minor)
         {
             Major = major;
