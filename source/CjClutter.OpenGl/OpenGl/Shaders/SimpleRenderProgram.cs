@@ -35,7 +35,7 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
             Program = new Program();
             Program.Create();
             Program.AttachShader(_vertexShader);
-            //Program.AttachShader(_geometryShader);
+            Program.AttachShader(_geometryShader);
             Program.AttachShader(_fragmentShader);
             Program.Link();
 
