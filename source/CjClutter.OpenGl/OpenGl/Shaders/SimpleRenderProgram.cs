@@ -1,5 +1,4 @@
-﻿using CjClutter.OpenGl.OpenGl.Diagnostics;
-using OpenTK;
+﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 namespace CjClutter.OpenGl.OpenGl.Shaders
