@@ -4,51 +4,58 @@ namespace CjClutter.OpenGl.OpenGl
 {
     public class Program
     {
+        private readonly IGl _gl;
+
+        public Program(IGl gl)
+        {
+            _gl = gl;
+        }
+
         public int ProgramId { get; private set; }
 
         public void Create()
         {
-            ProgramId = GL.CreateProgram();
+            ProgramId = _gl.CreateProgram();
         }
 
         public void AttachShader(Shader shader)
         {
-            GL.AttachShader(ProgramId, shader.ShaderId);
+            _gl.AttachShader(ProgramId, shader.ShaderId);
         }
 
         public void DetachShader(Shader shader)
         {
-            GL.DetachShader(ProgramId, shader.ShaderId);
+            _gl.DetachShader(ProgramId, shader.ShaderId);
         }
 
         public void Link()
         {
-            GL.LinkProgram(ProgramId);
+            _gl.LinkProgram(ProgramId);
         }
 
         public void Use()
         {
-            GL.UseProgram(ProgramId);
+            _gl.UseProgram(ProgramId);
         }
 
         public void Unbind()
         {
-            GL.UseProgram(0);    
+            _gl.UseProgram(0);
         }
 
         public void Delete()
         {
-            GL.DeleteProgram(ProgramId);
+            _gl.DeleteProgram(ProgramId);
         }
 
         public int GetUniformLocation(string uniformName)
         {
-            return GL.GetUniformLocation(ProgramId, uniformName);
+            return _gl.GetUniformLocation(ProgramId, uniformName);
         }
 
         public int GetAttributeLocation(string attributeName)
         {
-            return GL.GetAttribLocation(ProgramId, attributeName);
+            return _gl.GetAttribLocation(ProgramId, attributeName);
         }
     }
 }

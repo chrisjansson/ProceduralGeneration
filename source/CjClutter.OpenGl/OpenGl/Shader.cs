@@ -4,26 +4,33 @@ namespace CjClutter.OpenGl.OpenGl
 {
     public class Shader
     {
+        private readonly IGl _gl;
+
+        public Shader(IGl gl)
+        {
+            _gl = gl;
+        }
+
         public int ShaderId { get; private set; }
 
         public void Create(ShaderType shaderType)
         {
-            ShaderId = GL.CreateShader(shaderType);
+            ShaderId = _gl.CreateShader(shaderType);
         }
 
         public void SetSource(string source)
         {
-            GL.ShaderSource(ShaderId, source);
+            _gl.ShaderSource(ShaderId, source);
         }
 
         public void Compile()
         {
-            GL.CompileShader(ShaderId);
+            _gl.CompileShader(ShaderId);
         }
 
         public void Delete()
         {
-            GL.DeleteShader(ShaderId);
+            _gl.DeleteShader(ShaderId);
         }
     }
 }

@@ -8,30 +8,33 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
         private Shader _vertexShader;
         private Shader _fragmentShader;
         private Shader _geometryShader;
+        private readonly OpenGlResourceFactory _openGlResourceFactory;
 
         public GenericUniform<Matrix4> ProjectionMatrix { get; private set; }
         public GenericUniform<Matrix4> ViewMatrix { get; private set; }
         public GenericUniform<Matrix4> ModelMatrix { get; private set; }
         public GenericUniform<Vector4> Color { get; set; }
 
+        public SimpleRenderProgram()
+        {
+            _openGlResourceFactory = new OpenGlResourceFactory();
+        }
+
         public void Create()
         {
-            _vertexShader = new Shader();
-            _vertexShader.Create(ShaderType.VertexShader);
+            _vertexShader = _openGlResourceFactory.CreateShader(ShaderType.VertexShader);
             _vertexShader.SetSource(VertexShaderSource);
             _vertexShader.Compile();
 
-            _fragmentShader = new Shader();
-            _fragmentShader.Create(ShaderType.FragmentShader);
+            _fragmentShader = _openGlResourceFactory.CreateShader(ShaderType.FragmentShader);
             _fragmentShader.SetSource(FragmentShaderSource);
             _fragmentShader.Compile();
 
-            _geometryShader = new Shader();
-            _geometryShader.Create(ShaderType.GeometryShader);
+            _geometryShader = _openGlResourceFactory.CreateShader(ShaderType.GeometryShader);
             _geometryShader.SetSource(GeometryShaderSource);
             _geometryShader.Compile();
 
-            Program = new Program();
+            Program = _openGlResourceFactory.CreateProgram();
             Program.Create();
             Program.AttachShader(_vertexShader);
             Program.AttachShader(_geometryShader);

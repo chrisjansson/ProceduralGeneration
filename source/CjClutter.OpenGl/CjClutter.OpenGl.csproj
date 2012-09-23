@@ -124,6 +124,8 @@
     <Compile Include="Noise\SimplexNoise.cs" />
     <Compile Include="Gui\OpenGlVersion.cs" />
     <Compile Include="Gui\OpenGlWindow.cs" />
+    <Compile Include="OpenGl\OpenGl.cs" />
+    <Compile Include="OpenGl\OpenGlResourceFactory.cs" />
     <Compile Include="OpenGl\Program.cs" />
     <Compile Include="OpenGl\Shader.cs" />
     <Compile Include="OpenGl\Diagnostics\ShaderInfo.cs" />
