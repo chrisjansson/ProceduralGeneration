@@ -16,6 +16,7 @@ namespace CjClutter.OpenGl.SceneGraph
 
         private VertexArrayObject _vertexArrayObject;
         private SimpleRenderProgram _simpleRenderProgram;
+        private readonly OpenGlResourceFactory _openGlResourceFactory;
 
         private const int TerrainWidth = 256;
         private const int TerrainHeight = 256;
@@ -24,6 +25,7 @@ namespace CjClutter.OpenGl.SceneGraph
         public Scene()
         {
             _noiseGenerator = new SimplexNoise();
+            _openGlResourceFactory = new OpenGlResourceFactory();
         }
 
         public Matrix4d ViewMatrix { get; set; }
@@ -69,8 +71,7 @@ namespace CjClutter.OpenGl.SceneGraph
                 }
             }
 
-            _vertexBufferObject = new VertexBufferObject<Vertex3V>();
-            _vertexBufferObject.Generate();
+            _vertexBufferObject = _openGlResourceFactory.CreateVertexBufferObject<Vertex3V>();
             _vertexBufferObject.Bind();
             _vertexBufferObject.Data(vertices);
             _vertexBufferObject.Unbind();
@@ -78,8 +79,7 @@ namespace CjClutter.OpenGl.SceneGraph
             _simpleRenderProgram = new SimpleRenderProgram();
             _simpleRenderProgram.Create();
 
-            _vertexArrayObject = new VertexArrayObject();
-            _vertexArrayObject.Create();
+            _vertexArrayObject = _openGlResourceFactory.CreateVertexArrayObject();
             _vertexArrayObject.Bind();
 
             _vertexBufferObject.Bind();

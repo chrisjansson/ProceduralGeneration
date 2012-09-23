@@ -23,5 +23,21 @@ namespace CjClutter.OpenGl.OpenGl
 
             return shader;
         }
+
+        public VertexArrayObject CreateVertexArrayObject()
+        {
+            var vertexArrayObject = new VertexArrayObject();
+            vertexArrayObject.Create();
+
+            return vertexArrayObject;
+        }
+
+        public VertexBufferObject<T> CreateVertexBufferObject<T>() where T : struct, IBufferDataType
+        {
+            var vertexBufferObject = new VertexBufferObject<T>();
+            vertexBufferObject.Generate();
+
+            return vertexBufferObject;
+        }
     }
 }
