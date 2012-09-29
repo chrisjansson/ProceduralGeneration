@@ -1,4 +1,4 @@
-* malla in trackball kameran för opentk
+* Remove OpenGl projects dependency on Viewer project
 * styra en perlin noise height map kvadrant med piltangenter som ger offset xy
 * file.readalllines vs stream
 * boids
