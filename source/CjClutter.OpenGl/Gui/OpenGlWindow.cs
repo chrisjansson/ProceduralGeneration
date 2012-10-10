@@ -1,8 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
-using CjClutter.ObjLoader.Viewer.Camera;
-using CjClutter.ObjLoader.Viewer.CoordinateSystems;
+using CjClutter.OpenGl.Camera;
+using CjClutter.OpenGl.CoordinateSystems;
 using CjClutter.OpenGl.Input;
 using CjClutter.OpenGl.Input.Keboard;
 using CjClutter.OpenGl.Input.Mouse;

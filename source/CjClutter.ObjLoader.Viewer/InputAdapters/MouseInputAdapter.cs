@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using CjClutter.ObjLoader.Viewer.Extensions;
+using CjClutter.OpenGl.OpenTk;
 using OpenTK;
 
 namespace CjClutter.ObjLoader.Viewer.InputAdapters

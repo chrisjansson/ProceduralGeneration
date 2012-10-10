@@ -1,4 +1,4 @@
-﻿using CjClutter.ObjLoader.Viewer.Camera;
+﻿using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.Input.Mouse;
 using OpenTK;
 using OpenTK.Input;

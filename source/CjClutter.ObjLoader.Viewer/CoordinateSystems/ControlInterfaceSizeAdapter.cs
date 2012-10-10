@@ -1,5 +1,6 @@
 ﻿
 using System.Windows.Forms;
+using CjClutter.OpenGl.CoordinateSystems;
 
 namespace CjClutter.ObjLoader.Viewer.CoordinateSystems
 {

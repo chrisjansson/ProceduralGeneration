@@ -67,6 +67,10 @@
     <Reference Include="OpenTK">
       <HintPath>..\..\includes\OpenTK.dll</HintPath>
     </Reference>
+    <Reference Include="Rhino.Mocks, Version=3.6.0.0, Culture=neutral, PublicKeyToken=0b3305902db7183f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\RhinoMocks.3.6.1\lib\net\Rhino.Mocks.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -77,6 +81,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CoordinateSystems\GuiToRelativeCoordinateTransformerTests.cs" />
     <Compile Include="Loaders\MaterialLibraryLoaderTests.cs" />
     <Compile Include="Loaders\ObjLoaderTests.cs" />
     <Compile Include="LoaderTestProgram.cs" />
@@ -97,6 +102,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CjClutter.Commons\CjClutter.Commons.csproj">
+      <Project>{ff713732-f7a4-40c8-b136-8eaa52a443fd}</Project>
+      <Name>CjClutter.Commons</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CjClutter.ObjLoader.Loader\CjClutter.ObjLoader.Loader.csproj">
       <Project>{1FD37682-98D6-442F-8E15-646247C690DC}</Project>
       <Name>CjClutter.ObjLoader.Loader</Name>

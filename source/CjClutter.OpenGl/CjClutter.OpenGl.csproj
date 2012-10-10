@@ -95,6 +95,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Camera\CameraBase.cs" />
+    <Compile Include="Camera\ICamera.cs" />
+    <Compile Include="Camera\ITrackballCamera.cs" />
+    <Compile Include="Camera\ITrackballCameraRotationCalculator.cs" />
+    <Compile Include="Camera\PerspectiveCamera.cs" />
+    <Compile Include="Camera\TrackballCamera.cs" />
+    <Compile Include="Camera\TrackballCameraRotationCalculator.cs" />
+    <Compile Include="CoordinateSystems\GuiToRelativeCoordinateTransformer.cs" />
+    <Compile Include="CoordinateSystems\IGuiToRelativeCoordinateTransformer.cs" />
+    <Compile Include="CoordinateSystems\IInterfaceSize.cs" />
     <Compile Include="OpenGl\Diagnostics\ProgramDiagnostics.cs" />
     <Compile Include="OpenGl\Diagnostics\ShaderDiagnostics.cs" />
     <Compile Include="OpenGl\GenericUniform.cs" />
@@ -138,6 +148,7 @@
     <Compile Include="OpenGl\VertexTypes\Vertex3V3NTests.cs" />
     <Compile Include="OpenGl\VertexTypes\Vertex3VTests.cs" />
     <Compile Include="OpenTk\Matrix4dExtensions.cs" />
+    <Compile Include="OpenTk\PointExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Gui\QFontExtensions.cs" />
     <Compile Include="Gui\QFontFactory.cs" />
@@ -150,10 +161,6 @@
     <ProjectReference Include="..\CjClutter.Commons\CjClutter.Commons.csproj">
       <Project>{FF713732-F7A4-40C8-B136-8EAA52A443FD}</Project>
       <Name>CjClutter.Commons</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CjClutter.ObjLoader.Viewer\CjClutter.ObjLoader.Viewer.csproj">
-      <Project>{1F7A0CA1-BCA3-47E5-B56E-14C00F7BD9CB}</Project>
-      <Name>CjClutter.ObjLoader.Viewer</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

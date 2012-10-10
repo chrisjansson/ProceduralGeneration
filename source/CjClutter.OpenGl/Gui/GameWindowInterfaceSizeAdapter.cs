@@ -1,4 +1,4 @@
-﻿using CjClutter.ObjLoader.Viewer.CoordinateSystems;
+﻿using CjClutter.OpenGl.CoordinateSystems;
 using OpenTK;
 
 namespace CjClutter.OpenGl.Gui

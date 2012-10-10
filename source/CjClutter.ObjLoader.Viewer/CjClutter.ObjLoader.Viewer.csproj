@@ -97,24 +97,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Camera\CameraBase.cs" />
-    <Compile Include="Camera\ICamera.cs" />
-    <Compile Include="Camera\ITrackballCamera.cs" />
-    <Compile Include="Camera\ITrackballCameraRotationCalculator.cs" />
-    <Compile Include="Camera\PerspectiveCamera.cs" />
     <Compile Include="CoordinateSystems\ControlInterfaceSizeAdapter.cs" />
-    <Compile Include="CoordinateSystems\GuiToRelativeCoordinateTransformerTests.cs" />
-    <Compile Include="CoordinateSystems\IGuiToRelativeCoordinateTransformer.cs" />
-    <Compile Include="CoordinateSystems\IInterfaceSize.cs" />
-    <Compile Include="CoordinateSystems\GuiToRelativeCoordinateTransformer.cs" />
-    <Compile Include="Extensions\Matrix4dExtensions.cs" />
     <Compile Include="InputAdapters\IMouseInputAdapter.cs" />
     <Compile Include="InputAdapters\IMouseInputTarget.cs" />
     <Compile Include="InputAdapters\MouseDragEventArgs.cs" />
     <Compile Include="InputAdapters\MouseInputAdapterTests.cs" />
     <Compile Include="InputAdapters\MouseMoveInputEventArguments.cs" />
     <Compile Include="InputAdapters\MouseInputAdapter.cs" />
-    <Compile Include="Extensions\PointExtensions.cs" />
     <Compile Include="IObjToMehsConverter.cs" />
     <Compile Include="IShellViewModel.cs" />
     <Compile Include="IShellView.cs" />
@@ -141,8 +130,6 @@
     <Compile Include="Extensions\FaceExtensions.cs" />
     <Compile Include="Misc\FaceTests.cs" />
     <Compile Include="Screen.cs" />
-    <Compile Include="Camera\TrackballCamera.cs" />
-    <Compile Include="Camera\TrackballCameraRotationCalculator.cs" />
     <Page Include="OpenGlUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -186,6 +173,10 @@
     <ProjectReference Include="..\CjClutter.ObjLoader.Loader\CjClutter.ObjLoader.Loader.csproj">
       <Project>{1FD37682-98D6-442F-8E15-646247C690DC}</Project>
       <Name>CjClutter.ObjLoader.Loader</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CjClutter.OpenGl\CjClutter.OpenGl.csproj">
+      <Project>{f8718fbf-110a-42a2-9ca0-e35ae8222c08}</Project>
+      <Name>CjClutter.OpenGl</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

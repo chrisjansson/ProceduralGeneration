@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Forms;
-using CjClutter.ObjLoader.Viewer.Camera;
+using CjClutter.OpenGl.Camera;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Color = System.Drawing.Color;

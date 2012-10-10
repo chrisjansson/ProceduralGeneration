@@ -1,6 +1,6 @@
 using OpenTK.Graphics.OpenGL;
 
-namespace CjClutter.OpenGl.OpenGl
+namespace CjClutter.OpenGl.OpenGl.Diagnostics
 {
     public class ShaderInfo
     {
