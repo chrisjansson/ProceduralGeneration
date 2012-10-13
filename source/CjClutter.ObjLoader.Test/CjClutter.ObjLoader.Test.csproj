@@ -82,6 +82,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoordinateSystems\GuiToRelativeCoordinateTransformerTests.cs" />
+    <Compile Include="KeyArgTests.cs" />
+    <Compile Include="KeyDictionaryTests.cs" />
     <Compile Include="Loaders\MaterialLibraryLoaderTests.cs" />
     <Compile Include="Loaders\ObjLoaderTests.cs" />
     <Compile Include="LoaderTestProgram.cs" />
