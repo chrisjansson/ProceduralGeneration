@@ -46,7 +46,6 @@ namespace CjClutter.OpenGl.Gui
             var buttonUpEventEvaluator = new ButtonUpActionEvaluator(_mouseInputProcessor);
             _mouseInputObservable = new MouseInputObservable(buttonUpEventEvaluator);
 
-            //var keyUpActionEvaluator = new KeyUpActionEvaluator(_keyboardInputProcessor);
             _keyboardInputObservable = new KeyboardInputObservable(_keyboardInputProcessor);
 
             var trackballCameraRotationCalculator = new TrackballCameraRotationCalculator();
@@ -66,8 +65,8 @@ namespace CjClutter.OpenGl.Gui
 
             var esc = new KeyArg(Key.Escape);
             var altEnter = new KeyArg(Key.AltLeft, Key.Enter);
-            _keyboardInputObservable.SubscribeKey(esc, Exit);
-            _keyboardInputObservable.SubscribeKey(altEnter, ToggleFullScren);
+            _keyboardInputObservable.SubscribeKey(esc, KeyArgDirection.Down, Exit);
+            _keyboardInputObservable.SubscribeKey(altEnter, KeyArgDirection.Down | KeyArgDirection.Up, ToggleFullScren);
 
             GL.Color3(Color.Green);
 

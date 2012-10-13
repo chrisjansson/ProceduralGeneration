@@ -105,6 +105,8 @@
     <Compile Include="CoordinateSystems\GuiToRelativeCoordinateTransformer.cs" />
     <Compile Include="CoordinateSystems\IGuiToRelativeCoordinateTransformer.cs" />
     <Compile Include="CoordinateSystems\IInterfaceSize.cs" />
+    <Compile Include="Input\Keboard\KeyArgActionPair.cs" />
+    <Compile Include="Input\Keboard\KeyArgDirection.cs" />
     <Compile Include="KeyArg.cs" />
     <Compile Include="KeyDictionary.cs" />
     <Compile Include="OpenGl\Diagnostics\ProgramDiagnostics.cs" />
