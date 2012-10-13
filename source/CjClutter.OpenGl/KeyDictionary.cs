@@ -29,5 +29,16 @@ namespace CjClutter.OpenGl
             get { return _keys[key]; }
             set { _keys[key] = value; }
         }
+
+        public void Update(KeyboardState keyboardState)
+        {
+            var array = _keys.Keys.ToArray();
+
+            for (var i = 0; i < array.Length; i++)
+            {
+                var key = array[i];
+                _keys[key] = keyboardState[key];
+            }
+        }
     }
 }

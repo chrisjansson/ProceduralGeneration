@@ -46,8 +46,8 @@ namespace CjClutter.OpenGl.Gui
             var buttonUpEventEvaluator = new ButtonUpActionEvaluator(_mouseInputProcessor);
             _mouseInputObservable = new MouseInputObservable(buttonUpEventEvaluator);
 
-            var keyUpActionEvaluator = new KeyUpActionEvaluator(_keyboardInputProcessor);
-            _keyboardInputObservable = new KeyboardInputObservable(keyUpActionEvaluator);
+            //var keyUpActionEvaluator = new KeyUpActionEvaluator(_keyboardInputProcessor);
+            _keyboardInputObservable = new KeyboardInputObservable(_keyboardInputProcessor);
 
             var trackballCameraRotationCalculator = new TrackballCameraRotationCalculator();
             var trackballCamera = new TrackballCamera(trackballCameraRotationCalculator);
@@ -64,13 +64,26 @@ namespace CjClutter.OpenGl.Gui
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
 
-            _keyboardInputObservable.SubscribeKey(Key.Left, () => GL.Color3(Color.Aqua));
-            _keyboardInputObservable.SubscribeKey(Key.Right, () => GL.Color3(Color.DarkGoldenrod));
-            _keyboardInputObservable.SubscribeKey(Key.Escape, Exit);
+            var esc = new KeyArg(Key.Escape);
+            var altEnter = new KeyArg(Key.AltLeft, Key.Enter);
+            _keyboardInputObservable.SubscribeKey(esc, Exit);
+            _keyboardInputObservable.SubscribeKey(altEnter, ToggleFullScren);
 
             GL.Color3(Color.Green);
 
             _scene.OnLoad();
+        }
+
+        private void ToggleFullScren()
+        {
+            if (WindowState == WindowState.Fullscreen)
+            {
+                WindowState = WindowState.Normal;
+            }
+            else if(WindowState == WindowState.Normal)
+            {
+                WindowState = WindowState.Fullscreen;
+            }
         }
 
         protected override void OnUnload(EventArgs e)

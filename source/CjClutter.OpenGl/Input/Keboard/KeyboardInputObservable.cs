@@ -1,56 +1,88 @@
 ﻿using System;
 using CjClutter.Commons.Collections;
 using CjClutter.Commons.Comparators;
-using OpenTK.Input;
 
 namespace CjClutter.OpenGl.Input.Keboard
 {
     public class KeyboardInputObservable
     {
-        private readonly IKeyActionEvaluator _actionEvaluator;
-        private readonly MultiValueDictionary<Key, Action> _keyDictionary;
+        private readonly KeyboardInputProcessor _keyboardInputProcessor;
+        private readonly MultiValueDictionary<KeyArg, Action> _keyDictionary;
 
-        public KeyboardInputObservable(IKeyActionEvaluator actionEvaluator)
+        public KeyboardInputObservable(KeyboardInputProcessor keyboardInputProcessor)
         {
-            _actionEvaluator = actionEvaluator;
+            _keyboardInputProcessor = keyboardInputProcessor;
 
             var delegateComparer = new DelegateComparer();
-            _keyDictionary = new MultiValueDictionary<Key, Action>(delegateComparer);
+            _keyDictionary = new MultiValueDictionary<KeyArg, Action>(delegateComparer);
+        }
+
+        public void SubscribeKey(KeyArg keyArg, Action action)
+        {
+            _keyDictionary.Add(keyArg, action);
         }
 
         public void ProcessKeys()
         {
-            foreach (var key in _keyDictionary.Keys)
+            foreach (var keyArg in _keyDictionary.Keys)
             {
-                ProcessKey(key);
+                ProcessKeyArg(keyArg);
             }
         }
 
-        private void ProcessKey(Key key)
+        private void ProcessKeyArg(KeyArg keyArg)
         {
-            if (_actionEvaluator.ShouldKeyActionBeFired(key))
+            var keyDictionary = _keyboardInputProcessor.KeyDictionary;
+
+            var isArgumentTrue = keyArg.IsArgumentTrue(keyDictionary);
+            if(isArgumentTrue)
             {
-                FireKeyAction(key);
+                FireKeyArgAction(keyArg);
             }
         }
 
-        private void FireKeyAction(Key key)
+        private void FireKeyArgAction(KeyArg keyArg)
         {
-            var mouseButtonActions = _keyDictionary[key];
-            foreach (var mouseButtonAction in mouseButtonActions)
+            var actions = _keyDictionary[keyArg];
+            foreach (var action in actions)
             {
-                mouseButtonAction();
+                action();
             }
         }
 
-        public void SubscribeKey(Key key, Action action)
-        {
-            _keyDictionary.Add(key, action);
-        }
+        //public void ProcessKeys()
+        //{
+        //    foreach (var key in _keyDictionary.Keys)
+        //    {
+        //        ProcessKey(key);
+        //    }
+        //}
 
-        public void UnsubscribeKey(Key key, Action action)
-        {
-            _keyDictionary.Remove(key, action);
-        }
+        //private void ProcessKey(Key key)
+        //{
+        //    if (_actionEvaluator.ShouldKeyActionBeFired(key))
+        //    {
+        //        FireKeyAction(key);
+        //    }
+        //}
+
+        //private void FireKeyAction(Key key)
+        //{
+        //    var mouseButtonActions = _keyDictionary[key];
+        //    foreach (var mouseButtonAction in mouseButtonActions)
+        //    {
+        //        mouseButtonAction();
+        //    }
+        //}
+
+        //public void SubscribeKey(Key key, Action action)
+        //{
+        //    _keyDictionary.Add(key, action);
+        //}
+
+        //public void UnsubscribeKey(Key key, Action action)
+        //{
+        //    _keyDictionary.Remove(key, action);
+        //}
     }
 }

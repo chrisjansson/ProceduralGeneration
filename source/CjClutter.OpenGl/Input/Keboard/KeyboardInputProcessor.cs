@@ -7,16 +7,22 @@ namespace CjClutter.OpenGl.Input.Keboard
         private KeyboardState _previousKeyboardState;
         private KeyboardState _currentKeyboardState;
 
+        public KeyDictionary KeyDictionary { get; private set; }
+
         public KeyboardInputProcessor()
         {
             _previousKeyboardState = new KeyboardState();
             _currentKeyboardState = new KeyboardState();
+
+            KeyDictionary = new KeyDictionary();
         }
 
         public void Update(KeyboardState keyboardState)
         {
             _previousKeyboardState = _currentKeyboardState;
             _currentKeyboardState = keyboardState;
+
+            KeyDictionary.Update(keyboardState);
         }
 
         public bool WasKeyReleased(Key key)
