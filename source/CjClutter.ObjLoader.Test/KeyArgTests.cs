@@ -1,4 +1,6 @@
-﻿using CjClutter.OpenGl;
+﻿using System;
+using System.Collections.Generic;
+using CjClutter.OpenGl;
 using NUnit.Framework;
 using OpenTK.Input;
 using FluentAssertions;
@@ -102,6 +104,30 @@ namespace ObjLoader.Test
 
             var isArgumentTrue = combination.IsArgumentTrue(_keys);
             isArgumentTrue.Should().BeTrue();
+        }
+
+        [Test]
+        public void Equals_returns_false_for_key_args_with_different_keys()
+        {
+            _left.Should().NotBe(_right);
+        }
+
+        [Test]
+        public void Equals_returns_true_for_key_args_with_same_keys()
+        {
+            var keyArg1 = new KeyArg(Key.Left, Key.Right);
+            var keyArg2 = new KeyArg(Key.Right, Key.Left);
+
+            keyArg1.Should().Be(keyArg2);
+        }
+
+        [Test]
+        public void Has_same_hash_code_when_order_is_reversed()
+        {
+            var keyArg1 = new KeyArg(Key.Left, Key.Right);
+            var keyArg2 = new KeyArg(Key.Right, Key.Left);
+
+            keyArg1.GetHashCode().Should().Be(keyArg2.GetHashCode());
         }
     }
 }

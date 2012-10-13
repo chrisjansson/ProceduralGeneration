@@ -1,4 +1,5 @@
-﻿using OpenTK.Input;
+﻿using System;
+using OpenTK.Input;
 using System.Linq;
 
 namespace CjClutter.OpenGl
@@ -57,6 +58,35 @@ namespace CjClutter.OpenGl
             }
 
             return true;
+        }
+
+        protected bool Equals(KeyArg other)
+        {
+            var keys = other.Keys;
+
+            return Keys.All(keys.Contains);
+        }
+
+        public override bool Equals(object obj)
+        {
+            //if (ReferenceEquals(null, obj)) return false;
+            //if (obj.GetType() != GetType()) return false;
+            return Equals((KeyArg) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hash = 0;
+                for (int i = 0; i < Keys.Length; i++)
+                {
+                    var key = Keys[i];
+                    hash = hash ^ key.GetHashCode();
+                }
+
+                return hash;    
+            }
         }
     }
 }
