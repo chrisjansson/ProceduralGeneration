@@ -103,12 +103,6 @@ namespace CjClutter.OpenGl.Gui
             _frameTimeCounter.UpdateFrameTime(e.Time);
 
             var perspectiveMatrix = Matrix4d.CreatePerspectiveFieldOfView(Math.PI / 4, 1, 1, 100);
-            //GL.MatrixMode(MatrixMode.Projection);
-            //GL.LoadMatrix(ref perspectiveMatrix);
-
-            //var lookAtMatrix = _openTkCamera.GetCameraMatrix();
-            //GL.MatrixMode(MatrixMode.Modelview);
-            //GL.LoadMatrix(ref lookAtMatrix);
 
             GL.ClearColor(Color4.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
