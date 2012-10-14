@@ -8,30 +8,30 @@ namespace CjClutter.OpenGl.Input.Keboard
     {
         private readonly KeyboardInputProcessor _keyboardInputProcessor;
 
-        private readonly HashSet<KeyArg> _keyArgsDown = new HashSet<KeyArg>();
+        private readonly HashSet<KeyCombination> _keyArgsDown = new HashSet<KeyCombination>();
 
         private readonly List<KeyArgActionPair> _keyArgDownPairs = new List<KeyArgActionPair>();
         private readonly List<KeyArgActionPair> _keyArgUpPairs = new List<KeyArgActionPair>();
 
-        private ILookup<KeyArg, KeyArgActionPair> _keyArgUpLookUp;
-        private ILookup<KeyArg, KeyArgActionPair> _keyArgDownLookUp;
-        private IEnumerable<KeyArg> _allKeyArgs;
+        private ILookup<KeyCombination, KeyArgActionPair> _keyArgUpLookUp;
+        private ILookup<KeyCombination, KeyArgActionPair> _keyArgDownLookUp;
+        private IEnumerable<KeyCombination> _allKeyArgs;
 
         public KeyboardInputObservable(KeyboardInputProcessor keyboardInputProcessor)
         {
             _keyboardInputProcessor = keyboardInputProcessor;
         }
 
-        public void SubscribeKey(KeyArg keyArg, KeyArgDirection keyargDirection, Action action)
+        public void SubscribeKey(KeyCombination keyCombination, CombinationDirection keyargDirection, Action action)
         {
-            var keyArgActionPair = new KeyArgActionPair { KeyArg = keyArg, Action = action };
+            var keyArgActionPair = new KeyArgActionPair { KeyCombination = keyCombination, Action = action };
 
-            if ((keyargDirection & KeyArgDirection.Up) == KeyArgDirection.Up)
+            if ((keyargDirection & CombinationDirection.Up) == CombinationDirection.Up)
             {
                 _keyArgUpPairs.Add(keyArgActionPair);
             }
 
-            if ((keyargDirection & KeyArgDirection.Down) == KeyArgDirection.Down)
+            if ((keyargDirection & CombinationDirection.Down) == CombinationDirection.Down)
             {
                 _keyArgDownPairs.Add(keyArgActionPair);
             }
@@ -41,12 +41,12 @@ namespace CjClutter.OpenGl.Input.Keboard
 
         private void GenerateLookups()
         {
-            _keyArgUpLookUp = _keyArgUpPairs.ToLookup(x => x.KeyArg);
-            _keyArgDownLookUp = _keyArgDownPairs.ToLookup(x => x.KeyArg);
+            _keyArgUpLookUp = _keyArgUpPairs.ToLookup(x => x.KeyCombination);
+            _keyArgDownLookUp = _keyArgDownPairs.ToLookup(x => x.KeyCombination);
 
 
-            var downKeyArgs = _keyArgDownPairs.Select(x => x.KeyArg);
-            var upKeyArgs = _keyArgUpPairs.Select(x => x.KeyArg);
+            var downKeyArgs = _keyArgDownPairs.Select(x => x.KeyCombination);
+            var upKeyArgs = _keyArgUpPairs.Select(x => x.KeyCombination);
 
             _allKeyArgs = downKeyArgs
                 .Union(upKeyArgs)
@@ -61,44 +61,44 @@ namespace CjClutter.OpenGl.Input.Keboard
             }
         }
 
-        private void ProcessKeyArg(KeyArg keyArg)
+        private void ProcessKeyArg(KeyCombination keyCombination)
         {
             var keyDictionary = _keyboardInputProcessor.KeyDictionary;
 
-            var isArgumentTrue = keyArg.IsArgumentTrue(keyDictionary);
-            var keyArgIsDown = _keyArgsDown.Contains(keyArg);
+            var isArgumentTrue = keyCombination.IsArgumentTrue(keyDictionary);
+            var keyArgIsDown = _keyArgsDown.Contains(keyCombination);
 
             if (isArgumentTrue && !keyArgIsDown)
             {
-                KeyArgDown(keyArg);
+                KeyArgDown(keyCombination);
             }
             else if (!isArgumentTrue && keyArgIsDown)
             {
-                KeyArgUp(keyArg);
+                KeyArgUp(keyCombination);
             }
         }
 
-        private void KeyArgUp(KeyArg keyArg)
+        private void KeyArgUp(KeyCombination keyCombination)
         {
-            _keyArgsDown.Remove(keyArg);
-            FireKeyArgUp(keyArg);
+            _keyArgsDown.Remove(keyCombination);
+            FireKeyArgUp(keyCombination);
         }
 
-        private void KeyArgDown(KeyArg keyArg)
+        private void KeyArgDown(KeyCombination keyCombination)
         {
-            _keyArgsDown.Add(keyArg);
-            FireKeyArgDown(keyArg);
+            _keyArgsDown.Add(keyCombination);
+            FireKeyArgDown(keyCombination);
         }
 
-        private void FireKeyArgUp(KeyArg keyArg)
+        private void FireKeyArgUp(KeyCombination keyCombination)
         {
-            var actions = _keyArgUpLookUp[keyArg];
+            var actions = _keyArgUpLookUp[keyCombination];
             FireKeyActionPairActions(actions);
         }
 
-        private void FireKeyArgDown(KeyArg keyArg)
+        private void FireKeyArgDown(KeyCombination keyCombination)
         {
-            var actions = _keyArgDownLookUp[keyArg];
+            var actions = _keyArgDownLookUp[keyCombination];
             FireKeyActionPairActions(actions);
         }
 

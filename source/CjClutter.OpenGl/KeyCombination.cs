@@ -4,16 +4,16 @@ using System.Linq;
 
 namespace CjClutter.OpenGl
 {
-    public class KeyArg
+    public class KeyCombination
     {
-        public KeyArg(params Key[] keys)
+        public KeyCombination(params Key[] keys)
         {
             Keys = keys;
         }
 
         public Key[] Keys { get; private set; }
 
-        public static KeyArg operator &(KeyArg a, KeyArg b)
+        public static KeyCombination operator &(KeyCombination a, KeyCombination b)
         {
             var left = a.Keys;
             var right = b.Keys;
@@ -22,10 +22,10 @@ namespace CjClutter.OpenGl
                 .Distinct()
                 .ToArray();
 
-            return new KeyArg(combinedKeys);
+            return new KeyCombination(combinedKeys);
         }
 
-        public static bool operator false(KeyArg a)
+        public static bool operator false(KeyCombination a)
         {
             if(a == null)
             {
@@ -35,7 +35,7 @@ namespace CjClutter.OpenGl
             return false;
         }
 
-        public static bool operator true(KeyArg a)
+        public static bool operator true(KeyCombination a)
         {
             if (a == null)
             {
@@ -60,7 +60,7 @@ namespace CjClutter.OpenGl
             return true;
         }
 
-        protected bool Equals(KeyArg other)
+        protected bool Equals(KeyCombination other)
         {
             var keys = other.Keys;
 
@@ -69,7 +69,7 @@ namespace CjClutter.OpenGl
 
         public override bool Equals(object obj)
         {
-            return Equals((KeyArg) obj);
+            return Equals((KeyCombination) obj);
         }
 
         public override int GetHashCode()
@@ -87,8 +87,8 @@ namespace CjClutter.OpenGl
             }
         }
 
-        public static KeyArg Esc = new KeyArg(Key.Escape);
-        public static KeyArg LeftAlt = new KeyArg(Key.AltLeft);
-        public static KeyArg Enter = new KeyArg(Key.Enter);
+        public static KeyCombination Esc = new KeyCombination(Key.Escape);
+        public static KeyCombination LeftAlt = new KeyCombination(Key.AltLeft);
+        public static KeyCombination Enter = new KeyCombination(Key.Enter);
     }
 }

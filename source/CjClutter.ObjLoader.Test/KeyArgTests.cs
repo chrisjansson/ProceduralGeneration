@@ -11,22 +11,22 @@ namespace ObjLoader.Test
     public class KeyArgTests
     {
         private KeyDictionary _keys;
-        private KeyArg _left;
-        private KeyArg _right;
+        private KeyCombination _left;
+        private KeyCombination _right;
 
         [SetUp]
         public void SetUp()
         {
             _keys = new KeyDictionary();
 
-            _left = new KeyArg(Key.Left);
-            _right = new KeyArg(Key.Right);
+            _left = new KeyCombination(Key.Left);
+            _right = new KeyCombination(Key.Right);
         }
 
         [Test]
         public void IsArgumentTrue_returns_false_when_key_is_not_down()
         {
-            var keyArg = new KeyArg(Key.A);
+            var keyArg = new KeyCombination(Key.A);
 
             var isArgumentTrue = keyArg.IsArgumentTrue(_keys);
             isArgumentTrue.Should().Be(false);
@@ -35,7 +35,7 @@ namespace ObjLoader.Test
         [Test]
         public void IsArgumentTrue_returns_true_when_key_is_down()
         {
-            var keyArg = new KeyArg(Key.Left);
+            var keyArg = new KeyCombination(Key.Left);
             _keys[Key.Left] = true;
 
             var isArgumentTrue = keyArg.IsArgumentTrue(_keys);
@@ -56,7 +56,7 @@ namespace ObjLoader.Test
         [Test]
         public void Combining_three_args_returns_new_arg_with_all_keys()
         {
-            var space = new KeyArg(Key.Space);
+            var space = new KeyCombination(Key.Space);
             var combination = _left && _right && space;
 
             combination.Should().NotBeNull();
@@ -115,8 +115,8 @@ namespace ObjLoader.Test
         [Test]
         public void Equals_returns_true_for_key_args_with_same_keys()
         {
-            var keyArg1 = new KeyArg(Key.Left, Key.Right);
-            var keyArg2 = new KeyArg(Key.Right, Key.Left);
+            var keyArg1 = new KeyCombination(Key.Left, Key.Right);
+            var keyArg2 = new KeyCombination(Key.Right, Key.Left);
 
             keyArg1.Should().Be(keyArg2);
         }
@@ -124,8 +124,8 @@ namespace ObjLoader.Test
         [Test]
         public void Has_same_hash_code_when_order_is_reversed()
         {
-            var keyArg1 = new KeyArg(Key.Left, Key.Right);
-            var keyArg2 = new KeyArg(Key.Right, Key.Left);
+            var keyArg1 = new KeyCombination(Key.Left, Key.Right);
+            var keyArg2 = new KeyCombination(Key.Right, Key.Left);
 
             keyArg1.GetHashCode().Should().Be(keyArg2.GetHashCode());
         }

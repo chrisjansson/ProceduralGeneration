@@ -3,7 +3,7 @@ using System;
 namespace CjClutter.OpenGl.Input.Keboard
 {
     [Flags]
-    public enum KeyArgDirection
+    public enum CombinationDirection
     {
         Up = 1,
         Down = 2

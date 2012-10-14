@@ -4,7 +4,7 @@ namespace CjClutter.OpenGl.Input.Keboard
 {
     public class KeyArgActionPair
     {
-        public KeyArg KeyArg { get; set; }
+        public KeyCombination KeyCombination { get; set; }
         public Action Action { get; set; }
     }
 }

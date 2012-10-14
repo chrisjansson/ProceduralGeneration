@@ -10,7 +10,6 @@ using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Input;
 using QuickFont;
 
 namespace CjClutter.OpenGl.Gui
@@ -63,8 +62,8 @@ namespace CjClutter.OpenGl.Gui
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
 
-            _keyboardInputObservable.SubscribeKey(KeyArg.Esc, KeyArgDirection.Down, Exit);
-            _keyboardInputObservable.SubscribeKey(KeyArg.LeftAlt && KeyArg.Enter, KeyArgDirection.Down, ToggleFullScren);
+            _keyboardInputObservable.SubscribeKey(KeyCombination.Esc, CombinationDirection.Down, Exit);
+            _keyboardInputObservable.SubscribeKey(KeyCombination.LeftAlt && KeyCombination.Enter, CombinationDirection.Down, ToggleFullScren);
 
             _scene.OnLoad();
         }
