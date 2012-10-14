@@ -69,8 +69,6 @@ namespace CjClutter.OpenGl
 
         public override bool Equals(object obj)
         {
-            //if (ReferenceEquals(null, obj)) return false;
-            //if (obj.GetType() != GetType()) return false;
             return Equals((KeyArg) obj);
         }
 
@@ -88,5 +86,9 @@ namespace CjClutter.OpenGl
                 return hash;    
             }
         }
+
+        public static KeyArg Esc = new KeyArg(Key.Escape);
+        public static KeyArg LeftAlt = new KeyArg(Key.AltLeft);
+        public static KeyArg Enter = new KeyArg(Key.Enter);
     }
 }

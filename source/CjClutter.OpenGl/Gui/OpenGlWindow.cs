@@ -63,12 +63,8 @@ namespace CjClutter.OpenGl.Gui
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
 
-            var esc = new KeyArg(Key.Escape);
-            var altEnter = new KeyArg(Key.AltLeft, Key.Enter);
-            _keyboardInputObservable.SubscribeKey(esc, KeyArgDirection.Down, Exit);
-            _keyboardInputObservable.SubscribeKey(altEnter, KeyArgDirection.Down | KeyArgDirection.Up, ToggleFullScren);
-
-            GL.Color3(Color.Green);
+            _keyboardInputObservable.SubscribeKey(KeyArg.Esc, KeyArgDirection.Down, Exit);
+            _keyboardInputObservable.SubscribeKey(KeyArg.LeftAlt && KeyArg.Enter, KeyArgDirection.Down, ToggleFullScren);
 
             _scene.OnLoad();
         }
@@ -93,6 +89,10 @@ namespace CjClutter.OpenGl.Gui
         protected override void OnResize(EventArgs e)
         {
             GL.Viewport(0, 0, Width, Height);
+
+            var aspect = (double)Width/Height;
+            var perspectiveMatrix = Matrix4d.CreatePerspectiveFieldOfView(Math.PI / 4, aspect, 1, 100);
+            _scene.ProjectionMatrix = perspectiveMatrix;
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -102,13 +102,11 @@ namespace CjClutter.OpenGl.Gui
 
             _frameTimeCounter.UpdateFrameTime(e.Time);
 
-            var perspectiveMatrix = Matrix4d.CreatePerspectiveFieldOfView(Math.PI / 4, 1, 1, 100);
-
             GL.ClearColor(Color4.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             _scene.ViewMatrix = _openTkCamera.GetCameraMatrix();
-            _scene.ProjectionMatrix = perspectiveMatrix;
+            
             _scene.Update(ElapsedTime.TotalSeconds);
             _scene.Draw();
 
