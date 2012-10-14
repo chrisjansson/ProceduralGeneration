@@ -90,5 +90,7 @@ namespace CjClutter.OpenGl
         public static KeyCombination Esc = new KeyCombination(Key.Escape);
         public static KeyCombination LeftAlt = new KeyCombination(Key.AltLeft);
         public static KeyCombination Enter = new KeyCombination(Key.Enter);
+        public static KeyCombination O = new KeyCombination(Key.O);
+        public static KeyCombination P = new KeyCombination(Key.P);
     }
 }

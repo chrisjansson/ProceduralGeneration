@@ -25,6 +25,7 @@ namespace CjClutter.OpenGl.Gui
         private readonly KeyboardInputObservable _keyboardInputObservable;
         private readonly OpenTkCamera _openTkCamera;
         private readonly Scene _scene;
+        private Func<Matrix4d> _createaProjectionMatrix;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -62,8 +63,15 @@ namespace CjClutter.OpenGl.Gui
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
 
+            Func<Matrix4d> perspectiveMatrixFactory = () => Matrix4d.CreatePerspectiveFieldOfView(Math.PI/4, (double)Width/Height, 1, 100);
+            Func<Matrix4d> orthoGraphicMatrixFactory = () => Matrix4d.CreateOrthographic(2, 2, 1, 100);
+
+            _createaProjectionMatrix = perspectiveMatrixFactory;
+
             _keyboardInputObservable.SubscribeKey(KeyCombination.Esc, CombinationDirection.Down, Exit);
             _keyboardInputObservable.SubscribeKey(KeyCombination.LeftAlt && KeyCombination.Enter, CombinationDirection.Down, ToggleFullScren);
+            _keyboardInputObservable.SubscribeKey(KeyCombination.O, CombinationDirection.Down, () => SwitchProjectionMatrix(perspectiveMatrixFactory));
+            _keyboardInputObservable.SubscribeKey(KeyCombination.P, CombinationDirection.Down, () => SwitchProjectionMatrix(orthoGraphicMatrixFactory));
 
             _scene.OnLoad();
         }
@@ -90,13 +98,21 @@ namespace CjClutter.OpenGl.Gui
             _scene.OnUnload();
         }
 
+        private void SwitchProjectionMatrix(Func<Matrix4d> factory)
+        {
+            _createaProjectionMatrix = factory;
+            SetProjectionMatrix();
+        }
+
+        private void SetProjectionMatrix()
+        {
+            _scene.ProjectionMatrix = _createaProjectionMatrix();
+        }
+
         protected override void OnResize(EventArgs e)
         {
             GL.Viewport(0, 0, Width, Height);
-
-            var aspect = (double)Width/Height;
-            var perspectiveMatrix = Matrix4d.CreatePerspectiveFieldOfView(Math.PI / 4, aspect, 1, 100);
-            _scene.ProjectionMatrix = perspectiveMatrix;
+            SetProjectionMatrix();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
