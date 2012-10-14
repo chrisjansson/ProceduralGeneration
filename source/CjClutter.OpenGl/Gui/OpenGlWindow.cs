@@ -68,6 +68,11 @@ namespace CjClutter.OpenGl.Gui
             _scene.OnLoad();
         }
 
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            _scene.OnUnload();
+        }
+
         private void ToggleFullScren()
         {
             if (WindowState == WindowState.Fullscreen)
