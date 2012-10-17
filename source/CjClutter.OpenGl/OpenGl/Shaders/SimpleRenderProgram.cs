@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using CjClutter.OpenGl.OpenGl.Diagnostics;
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 namespace CjClutter.OpenGl.OpenGl.Shaders
@@ -75,17 +76,35 @@ void main()
         private const string GeometryShaderSource = @"
 #version 330
 
+vec2 WIN_SCALE = vec2(800, 600);
+noperspective out vec3 dist;
+
 layout(triangles) in;
 layout (triangle_strip, max_vertices=3) out;
 
 void main() 
 {
-    for(int i = 0; i < 3; i++)
-    {
-        gl_Position = gl_in[i].gl_Position;
+    vec2 p0 = WIN_SCALE * gl_in[0].gl_Position.xy/gl_in[0].gl_Position.w;
+    vec2 p1 = WIN_SCALE * gl_in[1].gl_Position.xy/gl_in[1].gl_Position.w;
+    vec2 p2 = WIN_SCALE * gl_in[2].gl_Position.xy/gl_in[2].gl_Position.w;
 
-        EmitVertex();
-    }
+    vec2 v0 = p2-p1;
+    vec2 v1 = p2-p0;
+    vec2 v2 = p1-p0;
+    float area = abs(v1.x*v2.y - v1.y * v2.x);
+
+    dist = vec3(area/length(v0),0,0);
+    gl_Position = gl_in[0].gl_Position;
+    EmitVertex();
+
+    dist = vec3(0,area/length(v1),0);
+    gl_Position = gl_in[1].gl_Position;
+    EmitVertex();
+
+    dist = vec3(0,0,area/length(v2));
+    gl_Position = gl_in[2].gl_Position;
+    EmitVertex();
+
     EndPrimitive();
 }
 ";
@@ -96,9 +115,14 @@ void main()
 uniform vec4 Color;
 out vec4 fragColor;
 
+noperspective in vec3 dist;
+
 void main()
 {
-    fragColor = Color;
+    float nearD = min(min(dist[0],dist[1]),dist[2]);
+    float edgeIntensity = exp2(-1.0*nearD*nearD);
+
+    fragColor = (edgeIntensity * vec4(0.1,0.1,0.1,1.0)) + ((1.0-edgeIntensity) * Color);
 }
 ";
     }

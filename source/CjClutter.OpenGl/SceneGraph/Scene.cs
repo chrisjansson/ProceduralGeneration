@@ -18,8 +18,8 @@ namespace CjClutter.OpenGl.SceneGraph
         private SimpleRenderProgram _simpleRenderProgram;
         private readonly OpenGlResourceFactory _openGlResourceFactory;
 
-        private const int TerrainWidth = 256;
-        private const int TerrainHeight = 256;
+        private const int TerrainWidth = 512;
+        private const int TerrainHeight = 512;
         private const int NumberOfTriangles = (TerrainWidth - 1) * (TerrainHeight - 1) * 2;
 
         public Scene()
@@ -108,6 +108,8 @@ namespace CjClutter.OpenGl.SceneGraph
 
         private void DrawMesh()
         {
+            GL.Enable(EnableCap.DepthTest);
+
             var projectionMatrix = ProjectionMatrix.ToMatrix4();
             _simpleRenderProgram.ProjectionMatrix.Set(projectionMatrix);
 
