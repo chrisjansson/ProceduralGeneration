@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using Awesomium.Core;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.CoordinateSystems;
 using CjClutter.OpenGl.Input;
@@ -9,6 +10,7 @@ using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using FrameEventArgs = OpenTK.FrameEventArgs;
 
 namespace CjClutter.OpenGl.Gui
 {
@@ -51,7 +53,18 @@ namespace CjClutter.OpenGl.Gui
 
             _scene = new Scene();
 
-            WebCore.CreateWebView()
+            using (var webView = WebCore.CreateWebView(1024, 768))
+            {
+                webView.Source = new Uri("http://www.google.com");
+
+                while (webView.IsLoading)
+                {
+                    WebCore.Update();
+                }
+
+                var surface = (BitmapSurface)webView.Surface;
+                surface.SaveToPNG("result.png", true);
+            }
         }
 
         protected override void OnLoad(EventArgs e)
