@@ -82,9 +82,6 @@
     <Reference Include="OpenTK">
       <HintPath>..\..\includes\OpenTK.dll</HintPath>
     </Reference>
-    <Reference Include="QuickFont">
-      <HintPath>..\..\includes\QuickFont.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -154,8 +151,6 @@
     <Compile Include="OpenTk\Matrix4dExtensions.cs" />
     <Compile Include="OpenTk\PointExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Gui\QFontExtensions.cs" />
-    <Compile Include="Gui\QFontFactory.cs" />
     <Compile Include="SceneGraph\Scene.cs" />
   </ItemGroup>
   <ItemGroup>

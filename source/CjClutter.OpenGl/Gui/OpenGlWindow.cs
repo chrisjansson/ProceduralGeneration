@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Drawing;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.CoordinateSystems;
 using CjClutter.OpenGl.Input;
@@ -10,13 +9,11 @@ using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using QuickFont;
 
 namespace CjClutter.OpenGl.Gui
 {
     public class OpenGlWindow : GameWindow
     {
-        private QFont _qFont;
         private readonly FrameTimeCounter _frameTimeCounter = new FrameTimeCounter();
         private Stopwatch _stopwatch;
         private readonly MouseInputProcessor _mouseInputProcessor;
@@ -57,9 +54,6 @@ namespace CjClutter.OpenGl.Gui
 
         protected override void OnLoad(EventArgs e)
         {
-            var font = new Font(FontFamily.GenericSansSerif, 10);
-            _qFont = QFontFactory.Create(font);
-
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
 
@@ -130,20 +124,7 @@ namespace CjClutter.OpenGl.Gui
             _scene.Update(ElapsedTime.TotalSeconds);
             _scene.Draw();
 
-            DrawDebugText();
-
             SwapBuffers();
-        }
-
-        private void DrawDebugText()
-        {
-            QFontExtensions.RunInQFontScope(() =>
-                {
-                    _qFont.ResetVBOs();
-                    _qFont.PrintToVBO(_frameTimeCounter.ToOutputString(), Vector2.Zero, Color.Black);
-                    _qFont.LoadVBOs();
-                    _qFont.DrawVBOs();
-                });
         }
 
         private void ProcessKeyboardInput()

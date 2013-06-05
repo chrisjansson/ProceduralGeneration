@@ -7,6 +7,8 @@ using CjClutter.OpenGl.OpenTk;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
+//Mesh { Vertices, Faces }
+
 namespace CjClutter.OpenGl.SceneGraph
 {
     public class Scene
