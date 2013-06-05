@@ -73,12 +73,12 @@ namespace CjClutter.OpenGl.Gui
             _keyboardInputObservable.SubscribeKey(KeyCombination.O, CombinationDirection.Down, () => SwitchProjectionMatrix(perspectiveMatrixFactory));
             _keyboardInputObservable.SubscribeKey(KeyCombination.P, CombinationDirection.Down, () => SwitchProjectionMatrix(orthoGraphicMatrixFactory));
 
-            _scene.OnLoad();
+            _scene.Load();
         }
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
-            _scene.OnUnload();
+            _scene.Unload();
         }
 
         private void ToggleFullScren()
@@ -95,7 +95,7 @@ namespace CjClutter.OpenGl.Gui
 
         protected override void OnUnload(EventArgs e)
         {
-            _scene.OnUnload();
+            _scene.Unload();
         }
 
         private void SwitchProjectionMatrix(Func<Matrix4d> factory)

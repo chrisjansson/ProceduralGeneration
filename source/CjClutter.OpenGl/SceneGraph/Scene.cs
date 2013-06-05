@@ -18,8 +18,8 @@ namespace CjClutter.OpenGl.SceneGraph
         private SimpleRenderProgram _simpleRenderProgram;
         private readonly OpenGlResourceFactory _openGlResourceFactory;
 
-        private const int TerrainWidth = 512;
-        private const int TerrainHeight = 512;
+        private const int TerrainWidth = 32;
+        private const int TerrainHeight = 32;
         private const int NumberOfTriangles = (TerrainWidth - 1) * (TerrainHeight - 1) * 2;
 
         public Scene()
@@ -31,7 +31,7 @@ namespace CjClutter.OpenGl.SceneGraph
         public Matrix4d ViewMatrix { get; set; }
         public Matrix4d ProjectionMatrix { get; set; }
 
-        public void OnLoad()
+        public void Load()
         {
             var heightMap = new Vector3[TerrainWidth, TerrainHeight];
 
@@ -119,7 +119,7 @@ namespace CjClutter.OpenGl.SceneGraph
             GL.DrawArrays(BeginMode.Triangles, 0, NumberOfTriangles * 3);
         }
 
-        public void OnUnload()
+        public void Unload()
         {
             _vertexBufferObject.Delete();
             _simpleRenderProgram.Delete();
