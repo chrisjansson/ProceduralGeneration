@@ -50,6 +50,8 @@ namespace CjClutter.OpenGl.Gui
             _openTkCamera = new OpenTkCamera(_mouseInputProcessor, trackballCamera);
 
             _scene = new Scene();
+
+            WebCore.CreateWebView()
         }
 
         protected override void OnLoad(EventArgs e)
