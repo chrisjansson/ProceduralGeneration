@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using Awesomium.Core;
 using CjClutter.OpenGl.Camera;
@@ -26,6 +28,7 @@ namespace CjClutter.OpenGl.Gui
         private readonly OpenTkCamera _openTkCamera;
         private readonly Scene _scene;
         private Func<Matrix4d> _createaProjectionMatrix;
+        private Hud _hud;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -54,6 +57,7 @@ namespace CjClutter.OpenGl.Gui
 
             _scene = new Scene();
 
+            _hud = new Hud();
             using (var webView = WebCore.CreateWebView(1024, 768))
             {
                 webView.Source = new Uri("http://www.google.com");
@@ -64,20 +68,28 @@ namespace CjClutter.OpenGl.Gui
                 }
 
                 var surface = (BitmapSurface)webView.Surface;
-
                 var bytes = new byte[surface.Width * surface.Height * 4];
 
                 var handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
                 IntPtr addrOfPinnedObject = handle.AddrOfPinnedObject();
                 surface.CopyTo(addrOfPinnedObject, surface.Width * 4, 4, true, false);
                 handle.Free();
+                _hud.SetTexture(bytes);
             }
 
-            int texture = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, texture);
+            //var bmp = new Bitmap("result.png");
+            //var bmp_data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-            //GL.TexImage2D(TextureTarget.Texture2D, 0, pixelinternalformat);
+            //int texture;
+            //GL.GenTextures(1, out texture);
+            //GL.BindTexture(TextureTarget.Texture2D, texture);
 
+            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+            //GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bmp_data.Width, bmp_data.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bmp_data.Scan0);
+
+            //bmp.UnlockBits(bmp_data);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -152,7 +164,8 @@ namespace CjClutter.OpenGl.Gui
             //_scene.Update(ElapsedTime.TotalSeconds);
             //_scene.Draw();
 
-            //SwapBuffers();
+            _hud.Draw();
+            SwapBuffers();
         }
 
         private void ProcessKeyboardInput()
