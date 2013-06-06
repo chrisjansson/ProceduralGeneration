@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Awesomium.Core;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.CoordinateSystems;
@@ -63,8 +64,20 @@ namespace CjClutter.OpenGl.Gui
                 }
 
                 var surface = (BitmapSurface)webView.Surface;
-                surface.SaveToPNG("result.png", true);
+
+                var bytes = new byte[surface.Width * surface.Height * 4];
+
+                var handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+                IntPtr addrOfPinnedObject = handle.AddrOfPinnedObject();
+                surface.CopyTo(addrOfPinnedObject, surface.Width * 4, 4, true, false);
+                handle.Free();
             }
+
+            int texture = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+
+            //GL.TexImage2D(TextureTarget.Texture2D, 0, pixelinternalformat);
+
         }
 
         protected override void OnLoad(EventArgs e)
@@ -126,20 +139,20 @@ namespace CjClutter.OpenGl.Gui
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            ProcessMouseInput();
-            ProcessKeyboardInput();
+            //ProcessMouseInput();
+            //ProcessKeyboardInput();
 
-            _frameTimeCounter.UpdateFrameTime(e.Time);
+            //_frameTimeCounter.UpdateFrameTime(e.Time);
 
-            GL.ClearColor(Color4.White);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            //GL.ClearColor(Color4.White);
+            //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            _scene.ViewMatrix = _openTkCamera.GetCameraMatrix();
+            //_scene.ViewMatrix = _openTkCamera.GetCameraMatrix();
             
-            _scene.Update(ElapsedTime.TotalSeconds);
-            _scene.Draw();
+            //_scene.Update(ElapsedTime.TotalSeconds);
+            //_scene.Draw();
 
-            SwapBuffers();
+            //SwapBuffers();
         }
 
         private void ProcessKeyboardInput()
