@@ -32,9 +32,18 @@ namespace CjClutter.OpenGl.OpenGl
             return vertexArrayObject;
         }
 
-        public VertexBufferObject<T> CreateVertexBufferObject<T>() where T : struct, IBufferDataType
+        public VertexBufferObject<T> CreateVertexBufferObject<T>(BufferTarget bufferTarget) where T : struct, IBufferDataType
         {
-            var vertexBufferObject = new VertexBufferObject<T>();
+            var sizeInBytes = new T().SizeInBytes;
+            var vertexBufferObject = new VertexBufferObject<T>(bufferTarget, sizeInBytes);
+            vertexBufferObject.Generate();
+
+            return vertexBufferObject;
+        }
+
+        public VertexBufferObject<T> CreateVertexBufferObject<T>(BufferTarget bufferTarget, int sizeOfT) where T : struct
+        {
+            var vertexBufferObject = new VertexBufferObject<T>(bufferTarget, sizeOfT);
             vertexBufferObject.Generate();
 
             return vertexBufferObject;

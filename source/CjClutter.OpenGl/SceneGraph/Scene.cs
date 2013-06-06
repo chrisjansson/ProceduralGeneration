@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using CjClutter.OpenGl.Noise;
 using CjClutter.OpenGl.OpenGl;
 using CjClutter.OpenGl.OpenGl.Shaders;
@@ -6,11 +8,29 @@ using CjClutter.OpenGl.OpenGl.VertexTypes;
 using CjClutter.OpenGl.OpenTk;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-
-//Mesh { Vertices, Faces }
+using System.Linq;
 
 namespace CjClutter.OpenGl.SceneGraph
 {
+    public class Mesh
+    {
+        public Mesh()
+        {
+            Vertices = new List<Vertex3V>();
+            Faces = new List<Face3>();
+        }
+
+        public IList<Vertex3V> Vertices { get; private set; }
+        public IList<Face3> Faces { get; private set; }
+    }
+
+    public struct Face3
+    {
+        public ushort V0;
+        public ushort V1;
+        public ushort V2;
+    }
+
     public class Scene
     {
         private readonly SimplexNoise _noiseGenerator;
@@ -35,7 +55,7 @@ namespace CjClutter.OpenGl.SceneGraph
 
         public void Load()
         {
-            var heightMap = new Vector3[TerrainWidth, TerrainHeight];
+            var mesh = new Mesh();
 
             for (var i = 0; i < TerrainWidth; i++)
             {
@@ -47,36 +67,42 @@ namespace CjClutter.OpenGl.SceneGraph
                     var x = -0.5 + ScaleTo(i, TerrainWidth);
                     var z = -0.5 + ScaleTo(j, TerrainHeight);
 
-                    heightMap[i, j] = new Vector3((float)x, (float)y, (float)z);
+                    var position = new Vector3((float)x, (float)y, (float)z);
+                    var vertex = new Vertex3V { Position = position };
+                    mesh.Vertices.Add(vertex);
                 }
             }
-
-            var vertices = new Vertex3V[NumberOfTriangles * 3];
-            var vertexIndex = 0;
 
             for (var i = 0; i < TerrainWidth - 1; i++)
             {
                 for (var j = 0; j < TerrainHeight - 1; j++)
                 {
-                    var v0 = heightMap[i, j];
-                    var v1 = heightMap[i + 1, j];
-                    var v2 = heightMap[i + 1, j + 1];
-                    var v3 = heightMap[i, j + 1];
+                    var v0 = i * TerrainHeight + j;
+                    var v1 = (i + 1) * TerrainHeight + j;
+                    var v2 = (i + 1) * TerrainHeight + j + 1;
+                    var v3 = i * TerrainHeight + j + 1;
 
-                    vertices[vertexIndex++] = new Vertex3V { Position = v0 };
-                    vertices[vertexIndex++] = new Vertex3V { Position = v1 };
-                    vertices[vertexIndex++] = new Vertex3V { Position = v2 };
+                    var f0 = new Face3 { V0 = (ushort) v0, V1 = (ushort) v1, V2 = (ushort) v2 };
+                    var f1 = new Face3 { V0 = (ushort) v0, V1 = (ushort) v2, V2 = (ushort) v3 };
 
-                    vertices[vertexIndex++] = new Vertex3V { Position = v0 };
-                    vertices[vertexIndex++] = new Vertex3V { Position = v2 };
-                    vertices[vertexIndex++] = new Vertex3V { Position = v3 };
+                    mesh.Faces.Add(f0);
+                    mesh.Faces.Add(f1);
                 }
             }
 
-            _vertexBufferObject = _openGlResourceFactory.CreateVertexBufferObject<Vertex3V>();
+            _vertexBufferObject = _openGlResourceFactory.CreateVertexBufferObject<Vertex3V>(BufferTarget.ArrayBuffer);
             _vertexBufferObject.Bind();
-            _vertexBufferObject.Data(vertices);
+            _vertexBufferObject.Data(mesh.Vertices.ToArray());
             _vertexBufferObject.Unbind();
+
+            var faceIndices = mesh.Faces
+                .SelectMany(x => new[] { x.V0, x.V1, x.V2 })
+                .ToArray();
+
+            var elementArray = _openGlResourceFactory.CreateVertexBufferObject<ushort>(BufferTarget.ElementArrayBuffer, sizeof(ushort));
+            elementArray.Bind();
+            elementArray.Data(faceIndices);
+            elementArray.Unbind();
 
             _simpleRenderProgram = new SimpleRenderProgram();
             _simpleRenderProgram.Create();
@@ -85,10 +111,14 @@ namespace CjClutter.OpenGl.SceneGraph
             _vertexArrayObject.Bind();
 
             _vertexBufferObject.Bind();
+            elementArray.Bind();
+
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
             GL.EnableVertexAttribArray(0);
 
             _vertexArrayObject.Unbind();
+            _vertexBufferObject.Unbind();
+            elementArray.Unbind();
         }
 
         public void Update(double elapsedTime)
@@ -118,7 +148,7 @@ namespace CjClutter.OpenGl.SceneGraph
             var viewMatrix = ViewMatrix.ToMatrix4();
             _simpleRenderProgram.ViewMatrix.Set(viewMatrix);
 
-            GL.DrawArrays(BeginMode.Triangles, 0, NumberOfTriangles * 3);
+            GL.DrawElements(BeginMode.Triangles, NumberOfTriangles * 3, DrawElementsType.UnsignedShort, 0);
         }
 
         public void Unload()

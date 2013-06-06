@@ -3,10 +3,17 @@ using OpenTK.Graphics.OpenGL;
 
 namespace CjClutter.OpenGl.OpenGl
 {
-    public class VertexBufferObject<T> where T : struct, IBufferDataType
+    public class VertexBufferObject<T> where T : struct
     {
         private int _vertexBufferObject;
-        private readonly int _sizeInBytes = new T().SizeInBytes;
+        private readonly int _sizeInBytes;
+        private readonly BufferTarget _target;
+
+        public VertexBufferObject(BufferTarget target, int sizeOfT)
+        {
+            _target = target;
+            _sizeInBytes = sizeOfT;
+        }
 
         public void Generate()
         {
@@ -15,12 +22,12 @@ namespace CjClutter.OpenGl.OpenGl
 
         public void Bind()
         {
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
+            GL.BindBuffer(_target, _vertexBufferObject);
         }
 
         public void Unbind()
         {
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            GL.BindBuffer(_target, 0);
         }
 
         public void Data(T[] bufferData, BufferUsageHint usageHint = BufferUsageHint.StaticDraw)
@@ -28,7 +35,7 @@ namespace CjClutter.OpenGl.OpenGl
             var dataSize = bufferData.Length * _sizeInBytes;
             var size = new IntPtr(dataSize);
 
-            GL.BufferData(BufferTarget.ArrayBuffer, size, bufferData, usageHint);
+            GL.BufferData(_target, size, bufferData, usageHint);
         }
 
         public void Delete()

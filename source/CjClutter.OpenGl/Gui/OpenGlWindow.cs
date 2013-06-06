@@ -38,7 +38,7 @@ namespace CjClutter.OpenGl.Gui
             openGlVersion.Minor,
             GraphicsContextFlags.Default)
         {
-            VSync = VSyncMode.Off;
+            VSync = VSyncMode.On;
 
             _mouseInputProcessor = new MouseInputProcessor(this, new GuiToRelativeCoordinateTransformer());
 
