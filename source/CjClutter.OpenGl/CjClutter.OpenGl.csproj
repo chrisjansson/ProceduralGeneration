@@ -155,7 +155,10 @@
     <Compile Include="OpenTk\Matrix4dExtensions.cs" />
     <Compile Include="OpenTk\PointExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SceneGraph\Face3.cs" />
+    <Compile Include="SceneGraph\Mesh.cs" />
     <Compile Include="SceneGraph\Scene.cs" />
+    <Compile Include="SceneGraph\TerrainGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

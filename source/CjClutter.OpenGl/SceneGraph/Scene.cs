@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using CjClutter.OpenGl.Noise;
 using CjClutter.OpenGl.OpenGl;
 using CjClutter.OpenGl.OpenGl.Shaders;
 using CjClutter.OpenGl.OpenGl.VertexTypes;
@@ -12,41 +9,23 @@ using System.Linq;
 
 namespace CjClutter.OpenGl.SceneGraph
 {
-    public class Mesh
+    public class MeshResources
     {
-        public Mesh()
-        {
-            Vertices = new List<Vertex3V>();
-            Faces = new List<Face3>();
-        }
-
-        public IList<Vertex3V> Vertices { get; private set; }
-        public IList<Face3> Faces { get; private set; }
-    }
-
-    public struct Face3
-    {
-        public ushort V0;
-        public ushort V1;
-        public ushort V2;
+        public Mesh Mesh { get; set; }
+        
+        public VertexBufferObject<Vertex3V> VerticesVbo { get; set; }
+        public SimpleRenderProgram RenderProgram { get; set; }
+        public VertexArrayObject VertexArrayObject { get; set; }
+        public VertexBufferObject<ushort> IndexVbo { get; set; }
     }
 
     public class Scene
     {
-        private readonly SimplexNoise _noiseGenerator;
-        private VertexBufferObject<Vertex3V> _vertexBufferObject;
-
-        private VertexArrayObject _vertexArrayObject;
-        private SimpleRenderProgram _simpleRenderProgram;
         private readonly OpenGlResourceFactory _openGlResourceFactory;
-
-        private const int TerrainWidth = 32;
-        private const int TerrainHeight = 32;
-        private const int NumberOfTriangles = (TerrainWidth - 1) * (TerrainHeight - 1) * 2;
+        private MeshResources _meshResources;
 
         public Scene()
         {
-            _noiseGenerator = new SimplexNoise();
             _openGlResourceFactory = new OpenGlResourceFactory();
         }
 
@@ -55,106 +34,80 @@ namespace CjClutter.OpenGl.SceneGraph
 
         public void Load()
         {
-            var mesh = new Mesh();
+            var mesh = new TerrainGenerator().GenerateMesh();
+            _meshResources = new MeshResources();
+            _meshResources.Mesh = mesh;
 
-            for (var i = 0; i < TerrainWidth; i++)
-            {
-                for (var j = 0; j < TerrainHeight; j++)
-                {
-                    var xin = i / (double)TerrainWidth * 2;
-                    var yin = j / (double)TerrainHeight * 2;
-                    var y = 0.2 * _noiseGenerator.Noise(xin, yin);
-                    var x = -0.5 + ScaleTo(i, TerrainWidth);
-                    var z = -0.5 + ScaleTo(j, TerrainHeight);
-
-                    var position = new Vector3((float)x, (float)y, (float)z);
-                    var vertex = new Vertex3V { Position = position };
-                    mesh.Vertices.Add(vertex);
-                }
-            }
-
-            for (var i = 0; i < TerrainWidth - 1; i++)
-            {
-                for (var j = 0; j < TerrainHeight - 1; j++)
-                {
-                    var v0 = i * TerrainHeight + j;
-                    var v1 = (i + 1) * TerrainHeight + j;
-                    var v2 = (i + 1) * TerrainHeight + j + 1;
-                    var v3 = i * TerrainHeight + j + 1;
-
-                    var f0 = new Face3 { V0 = (ushort) v0, V1 = (ushort) v1, V2 = (ushort) v2 };
-                    var f1 = new Face3 { V0 = (ushort) v0, V1 = (ushort) v2, V2 = (ushort) v3 };
-
-                    mesh.Faces.Add(f0);
-                    mesh.Faces.Add(f1);
-                }
-            }
-
-            _vertexBufferObject = _openGlResourceFactory.CreateVertexBufferObject<Vertex3V>(BufferTarget.ArrayBuffer);
-            _vertexBufferObject.Bind();
-            _vertexBufferObject.Data(mesh.Vertices.ToArray());
-            _vertexBufferObject.Unbind();
+            _meshResources.VerticesVbo = _openGlResourceFactory.CreateVertexBufferObject<Vertex3V>(BufferTarget.ArrayBuffer);
+            _meshResources.VerticesVbo.Bind();
+            _meshResources.VerticesVbo.Data(mesh.Vertices.ToArray());
+            _meshResources.VerticesVbo.Unbind();
 
             var faceIndices = mesh.Faces
                 .SelectMany(x => new[] { x.V0, x.V1, x.V2 })
                 .ToArray();
 
-            var elementArray = _openGlResourceFactory.CreateVertexBufferObject<ushort>(BufferTarget.ElementArrayBuffer, sizeof(ushort));
-            elementArray.Bind();
-            elementArray.Data(faceIndices);
-            elementArray.Unbind();
+            if(faceIndices.Length > ushort.MaxValue) throw new NotSupportedException("Implement selection of index data type to allow for bigger ranges");
 
-            _simpleRenderProgram = new SimpleRenderProgram();
-            _simpleRenderProgram.Create();
+            _meshResources.IndexVbo = _openGlResourceFactory.CreateVertexBufferObject<ushort>(BufferTarget.ElementArrayBuffer, sizeof(ushort));
+            _meshResources.IndexVbo.Bind();
+            _meshResources.IndexVbo.Data(faceIndices);
+            _meshResources.IndexVbo.Unbind();
 
-            _vertexArrayObject = _openGlResourceFactory.CreateVertexArrayObject();
-            _vertexArrayObject.Bind();
+            _meshResources.RenderProgram = new SimpleRenderProgram();
+            _meshResources.RenderProgram.Create();
 
-            _vertexBufferObject.Bind();
-            elementArray.Bind();
+            _meshResources.VertexArrayObject = _openGlResourceFactory.CreateVertexArrayObject();
+            _meshResources.VertexArrayObject.Bind();
+
+            _meshResources.VerticesVbo.Bind();
+            _meshResources.IndexVbo.Bind();
 
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
             GL.EnableVertexAttribArray(0);
 
-            _vertexArrayObject.Unbind();
-            _vertexBufferObject.Unbind();
-            elementArray.Unbind();
+            _meshResources.VertexArrayObject.Unbind();
+            _meshResources.VerticesVbo.Unbind();
+            _meshResources.IndexVbo.Unbind();
         }
 
         public void Update(double elapsedTime)
         {
-            _simpleRenderProgram.Bind();
+            _meshResources.RenderProgram.Bind();
 
             var blue = (Math.Sin(elapsedTime) + 1) / 4;
             var color = new Vector4(0.5f, 0.5f, (float)blue + 0.5f, 0.0f);
 
-            _simpleRenderProgram.Color.Set(color);
+            _meshResources.RenderProgram.Color.Set(color);
 
-            _simpleRenderProgram.Unbind();
+            _meshResources.RenderProgram.Unbind();
         }
 
         public void Draw()
         {
-            RunWithResourcesBound(DrawMesh, _vertexArrayObject, _simpleRenderProgram);
+            RunWithResourcesBound(DrawMesh, _meshResources.VertexArrayObject, _meshResources.RenderProgram);
         }
 
         private void DrawMesh()
         {
             GL.Enable(EnableCap.DepthTest);
+            GL.CullFace(CullFaceMode.Back);
+            GL.Enable(EnableCap.CullFace);
+            GL.FrontFace(FrontFaceDirection.Cw);
 
             var projectionMatrix = ProjectionMatrix.ToMatrix4();
-            _simpleRenderProgram.ProjectionMatrix.Set(projectionMatrix);
+            _meshResources.RenderProgram.ProjectionMatrix.Set(projectionMatrix);
 
             var viewMatrix = ViewMatrix.ToMatrix4();
-            _simpleRenderProgram.ViewMatrix.Set(viewMatrix);
+            _meshResources.RenderProgram.ViewMatrix.Set(viewMatrix);
 
-            GL.DrawElements(BeginMode.Triangles, NumberOfTriangles * 3, DrawElementsType.UnsignedShort, 0);
+            GL.DrawElements(BeginMode.Triangles, _meshResources.Mesh.Faces.Count * 3, DrawElementsType.UnsignedShort, 0);
         }
 
         public void Unload()
         {
-            _vertexBufferObject.Delete();
-            _simpleRenderProgram.Delete();
+            _meshResources.RenderProgram.Delete();
+            _meshResources.VerticesVbo.Delete();
         }
 
         private void RunWithResourcesBound(Action action, params IBindable[] bindables)
@@ -170,11 +123,6 @@ namespace CjClutter.OpenGl.SceneGraph
             {
                 bindable.Unbind();
             }
-        }
-
-        private double ScaleTo(double value, double max)
-        {
-            return value / max;
         }
     }
 }
