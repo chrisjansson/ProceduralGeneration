@@ -122,11 +122,11 @@ void main()
 in vec2 TextureCoordinate;
 out vec4 fragColor;
 
-uniform sampler2D texture;
+uniform sampler2D textureSampler;
 
 void main()
 {
-    fragColor = texture(texture, TextureCoordinate);
+    fragColor = texture(textureSampler, TextureCoordinate);
 }";
     }
 }
