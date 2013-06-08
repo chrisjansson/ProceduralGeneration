@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Awesomium.Core;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.CoordinateSystems;
@@ -58,8 +59,22 @@ namespace CjClutter.OpenGl.Gui
             _scene = new Scene();
 
             _hud = new Hud();
+
+            var thread = new Thread(UploadHud);
+            thread.Start();
+
+            thread.Join();
+        }
+
+        private void UploadHud()
+        {
+            Context.MakeCurrent(WindowInfo);
+
             using (var webView = WebCore.CreateWebView(1024, 768))
             {
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+
                 webView.LoadHTML("<html>Hello World!</html>");
 
                 while (webView.IsLoading)
@@ -75,9 +90,11 @@ namespace CjClutter.OpenGl.Gui
                 surface.CopyTo(addrOfPinnedObject, surface.Width * 4, 4, true, false);
                 handle.Free();
                 _hud.SetTexture(bytes);
+
+                stopwatch.Stop();
+                TimeSpan timeSpan = stopwatch.Elapsed;
             }
         }
-
         protected override void OnLoad(EventArgs e)
         {
             _stopwatch = new Stopwatch();
