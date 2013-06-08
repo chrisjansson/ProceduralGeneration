@@ -84,20 +84,10 @@
     <Compile Include="CoordinateSystems\GuiToRelativeCoordinateTransformerTests.cs" />
     <Compile Include="KeyArgTests.cs" />
     <Compile Include="KeyDictionaryTests.cs" />
-    <Compile Include="Loaders\MaterialLibraryLoaderTests.cs" />
-    <Compile Include="Loaders\ObjLoaderTests.cs" />
-    <Compile Include="LoaderTestProgram.cs" />
     <Compile Include="OpenGlTestProgram.cs" />
     <Compile Include="OperationTimer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TimingTestProgram.cs" />
-    <Compile Include="TypeParsers\FaceParserTests.cs" />
-    <Compile Include="TypeParsers\GroupParserTests.cs" />
-    <Compile Include="TypeParsers\MaterialLibraryParserTests.cs" />
-    <Compile Include="TypeParsers\NormalParserTests.cs" />
-    <Compile Include="TypeParsers\TextureParserTests.cs" />
-    <Compile Include="TypeParsers\UseMaterialParserTests.cs" />
-    <Compile Include="TypeParsers\VertexParserTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -107,10 +97,6 @@
     <ProjectReference Include="..\CjClutter.Commons\CjClutter.Commons.csproj">
       <Project>{ff713732-f7a4-40c8-b136-8eaa52a443fd}</Project>
       <Name>CjClutter.Commons</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CjClutter.ObjLoader.Loader\CjClutter.ObjLoader.Loader.csproj">
-      <Project>{1FD37682-98D6-442F-8E15-646247C690DC}</Project>
-      <Name>CjClutter.ObjLoader.Loader</Name>
     </ProjectReference>
     <ProjectReference Include="..\CjClutter.OpenGl\CjClutter.OpenGl.csproj">
       <Project>{F8718FBF-110A-42A2-9CA0-E35AE8222C08}</Project>
