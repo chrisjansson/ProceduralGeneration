@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 using System.Threading;
 using Awesomium.Core;
 using CjClutter.OpenGl.Camera;
@@ -43,7 +42,7 @@ namespace CjClutter.OpenGl.Gui
             openGlVersion.Minor,
             GraphicsContextFlags.Default)
         {
-            VSync = VSyncMode.On;
+            //VSync = VSyncMode.On;
 
             _mouseInputProcessor = new MouseInputProcessor(this, new GuiToRelativeCoordinateTransformer());
 
@@ -57,44 +56,11 @@ namespace CjClutter.OpenGl.Gui
             _openTkCamera = new OpenTkCamera(_mouseInputProcessor, trackballCamera);
 
             _scene = new Scene();
-
+         
+            WebCore.Initialize(WebConfig.Default);
             _hud = new Hud();
-
-            var thread = new Thread(UploadHud);
-            thread.Start();
-
-            thread.Join();
         }
 
-        private void UploadHud()
-        {
-            Context.MakeCurrent(WindowInfo);
-
-            using (var webView = WebCore.CreateWebView(1024, 768))
-            {
-                var stopwatch = new Stopwatch();
-                stopwatch.Start();
-
-                webView.LoadHTML("<html>Hello World!</html>");
-
-                while (webView.IsLoading)
-                {
-                    WebCore.Update();
-                }
-
-                var surface = (BitmapSurface)webView.Surface;
-                var bytes = new byte[surface.Width * surface.Height * 4];
-
-                var handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
-                var addrOfPinnedObject = handle.AddrOfPinnedObject();
-                surface.CopyTo(addrOfPinnedObject, surface.Width * 4, 4, true, false);
-                handle.Free();
-                _hud.SetTexture(bytes);
-
-                stopwatch.Stop();
-                TimeSpan timeSpan = stopwatch.Elapsed;
-            }
-        }
         protected override void OnLoad(EventArgs e)
         {
             _stopwatch = new Stopwatch();
@@ -116,6 +82,7 @@ namespace CjClutter.OpenGl.Gui
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
             _scene.Unload();
+            _hud.Close();
         }
 
         private void ToggleFullScren()
@@ -150,23 +117,25 @@ namespace CjClutter.OpenGl.Gui
         {
             GL.Viewport(0, 0, Width, Height);
             SetProjectionMatrix();
+            _hud.Resize(Width, Height);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            //ProcessMouseInput();
-            //ProcessKeyboardInput();
+            ProcessMouseInput();
+            ProcessKeyboardInput();
 
-            //_frameTimeCounter.UpdateFrameTime(e.Time);
+            _frameTimeCounter.UpdateFrameTime(e.Time);
 
-            //GL.ClearColor(Color4.White);
-            //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.ClearColor(Color4.White);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            //_scene.ViewMatrix = _openTkCamera.GetCameraMatrix();
-            
-            //_scene.Update(ElapsedTime.TotalSeconds);
-            //_scene.Draw();
+            _scene.ViewMatrix = _openTkCamera.GetCameraMatrix();
 
+            _scene.Update(ElapsedTime.TotalSeconds);
+            _scene.Draw();
+
+            _hud.Update(ElapsedTime.TotalSeconds, _frameTimeCounter.FrameTime);
             _hud.Draw();
             SwapBuffers();
         }
