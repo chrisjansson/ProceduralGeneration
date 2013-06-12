@@ -1,209 +1,89 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.Threading;
-using Awesomium.Core;
-using CjClutter.OpenGl.OpenGl;
+﻿using Gwen;
+using Gwen.Control;
+using Gwen.Skin;
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 namespace CjClutter.OpenGl.SceneGraph
 {
     public class Hud
     {
-        private readonly OpenGlResourceFactory _openGlResourceFactory;
-        private Program _program;
-        private VertexArrayObject _vertexArrayObject;
-        private WebView _webView;
-        private int _texture;
+        private readonly Label _frameTimeLabel;
+        private readonly Label _fpsLabel;
+        private readonly Canvas _canvas;
+        private readonly Gwen.Renderer.OpenTK _renderer;
+        private readonly TexturedBase _texturedBase;
+        private Matrix4 _projectionMatrix;
 
-        public Hud()
+        public Hud(GameWindow gameWindow)
         {
-            _openGlResourceFactory = new OpenGlResourceFactory();
+            _renderer = new Gwen.Renderer.OpenTK();
+            _texturedBase = new TexturedBase(_renderer, "DefaultSkin.png");
+            _canvas = new Canvas(_texturedBase);
 
-            UploadGeometry();
-            CreateShaders();
-            CreateWebView();
-        }
+            //var input = new Gwen.Input.OpenTK(gameWindow);
+            //input.Initialize(_canvas);
 
-        private void CreateWebView()
-        {
-            _webView = WebCore.CreateWebView(1024, 768);
-            _webView.LoadingFrameComplete += FrameCompleted;
+            //_canvas.ShouldDrawBackground = true;
+            //_canvas.BackgroundColor = Color.FromArgb(255, 150, 170, 170);
 
-            _webView.IsTransparent = true;
-            _texture = GL.GenTexture();
-        }
+            _fpsLabel = new Label(_canvas)
+                {
+                    AutoSizeToContents = true, 
+                    Dock = Pos.Top
+                };
 
-
-        public void Close()
-        {
-            _webView.Dispose();
+            _frameTimeLabel = new Label(_canvas)
+                {
+                    AutoSizeToContents = true, 
+                    Dock = Pos.Top
+                };
         }
 
         public void Resize(int width, int height)
         {
-            _webView.Resize(width, height);
+            _projectionMatrix = Matrix4.CreateOrthographicOffCenter(0, width, height, 0, -1, 1);
         }
 
-        private bool _isLoading = false;
-        private void FrameCompleted(object sender, FrameEventArgs e)
+        public void Update(double elapsed, double frameTime)
         {
-            var surface = (BitmapSurface)_webView.Surface;
-            const int pixelDepth = 4;
-            _width = surface.Width;
-            _height = surface.Height;
-            _bytes = new byte[surface.Width * surface.Height * pixelDepth];
+            MaintainTextCache();
 
-            var handle = GCHandle.Alloc(_bytes, GCHandleType.Pinned);
-            var addrOfPinnedObject = handle.AddrOfPinnedObject();
-            surface.CopyTo(addrOfPinnedObject, surface.Width * pixelDepth, pixelDepth, true, false);
-            handle.Free();
-            _isLoading = false;
-            _bufferDone = true;
+            UpdateControls(elapsed, frameTime);
         }
 
-        private double _deadLine;
-        private bool _bufferDone;
-        private byte[] _bytes;
-        private int _width;
-        private int _height;
-
-        public void Update(double elapsedTime, double frameTime)
+        private void MaintainTextCache()
         {
-            WebCore.Update();
-            
-            if (_isLoading)
+            if (_renderer.TextCacheSize > 1000)
             {
-                return;
+                _renderer.FlushTextCache();
             }
-
-            if (!_bufferDone)
-            {
-                var html = string.Format("<html><body style='margin: 0px;margin:0px;float: left'><div style='background-color:#FF0000;width: 100px;padding: 5px'>{0}ms<br />{1}fps</div></body></html>", frameTime * 1000, 1 / frameTime);
-                _webView.LoadHTML(html);
-                _isLoading = true;    
-
-                return;
-            }
-
-
-            SetTexture(_width, _height, _bytes);
-            _bufferDone = false;
         }
 
-        public void SetTexture(int width, int height, byte[] pixels)
+        private double _deadLine = 0;
+        private void UpdateControls(double elapsed, double frameTime)
         {
-            GL.BindTexture(TextureTarget.Texture2D, _texture);
+            if (_deadLine > elapsed)
+                return;
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
+            _fpsLabel.Text = string.Format("{0:0}fps", 1 / frameTime);
+            _frameTimeLabel.Text = string.Format("{0:0}ms", frameTime * 1000);
+            _deadLine = elapsed + 1;
         }
 
         public void Draw()
         {
-            GL.Clear(ClearBufferMask.DepthBufferBit);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadMatrix(ref _projectionMatrix);
 
-            _program.Use();
-            _vertexArrayObject.Bind();
-
-            GL.DrawElements(BeginMode.Triangles, 6, DrawElementsType.UnsignedShort, 0);
-
-            _vertexArrayObject.Unbind();
-            _program.Unbind();
-
-            GL.Disable(EnableCap.Blend);
+            _canvas.RenderCanvas();
         }
 
-        private void UploadGeometry()
+        public void Close()
         {
-            var vertices = new[]
-                {
-                    -0.5f, 0.5f, 0.0f, 0.0f, //v0
-                    0.5f, 0.5f, 1.0f, 0.0f, //v1
-                    0.5f, -0.5f, 1.0f, 1.0f, //v2
-                    -0.5f, -0.5f, 0.0f, 1.0f, //v3
-                };
-
-            var indices = new ushort[]
-                {
-                    0, 1, 2,
-                    0, 2, 3
-                };
-
-            var vertexBuffer = _openGlResourceFactory.CreateVertexBufferObject<float>(BufferTarget.ArrayBuffer, sizeof(float));
-            vertexBuffer.Bind();
-            vertexBuffer.Data(vertices);
-            vertexBuffer.Unbind();
-
-            var elementBuffer = _openGlResourceFactory.CreateVertexBufferObject<ushort>(BufferTarget.ElementArrayBuffer,
-                                                                                        sizeof(ushort));
-            elementBuffer.Bind();
-            elementBuffer.Data(indices);
-            elementBuffer.Unbind();
-
-            _vertexArrayObject = _openGlResourceFactory.CreateVertexArrayObject();
-            _vertexArrayObject.Bind();
-
-            vertexBuffer.Bind();
-            elementBuffer.Bind();
-
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
-
-            GL.EnableVertexAttribArray(1);
-            GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 2 * sizeof(float));
-
-            _vertexArrayObject.Unbind();
-
-            elementBuffer.Unbind();
-            vertexBuffer.Unbind();
+            _renderer.Dispose();
+            _texturedBase.Dispose();
+            _canvas.Dispose();
         }
-
-        private void CreateShaders()
-        {
-            var vertexShader = _openGlResourceFactory.CreateShader(ShaderType.VertexShader);
-            vertexShader.SetSource(VertexShaderSource);
-            vertexShader.Compile();
-
-            var fragmentShader = _openGlResourceFactory.CreateShader(ShaderType.FragmentShader);
-            fragmentShader.SetSource(FragmentShaderSource);
-            fragmentShader.Compile();
-
-            _program = _openGlResourceFactory.CreateProgram();
-            _program.Create();
-            _program.AttachShader(vertexShader);
-            _program.AttachShader(fragmentShader);
-            _program.Link();
-        }
-
-        private const string VertexShaderSource =
-@"#version 330
-layout(location = 0)in vec2 position;
-layout(location = 1)in vec2 textureCoordinate;
-out vec2 TextureCoordinate;
-
-void main()
-{
-    gl_Position = vec4(position.x*2, position.y*2, 0, 1);
-    TextureCoordinate = textureCoordinate;
-}";
-
-        private const string FragmentShaderSource =
-    @"#version 330
-
-in vec2 TextureCoordinate;
-out vec4 fragColor;
-
-uniform sampler2D textureSampler;
-
-void main()
-{
-    fragColor = texture(textureSampler, TextureCoordinate);
-}";
-
-
     }
 }

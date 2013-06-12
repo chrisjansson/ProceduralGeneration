@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Threading;
-using Awesomium.Core;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.CoordinateSystems;
 using CjClutter.OpenGl.Input;
@@ -28,7 +27,7 @@ namespace CjClutter.OpenGl.Gui
         private readonly OpenTkCamera _openTkCamera;
         private readonly Scene _scene;
         private Func<Matrix4d> _createaProjectionMatrix;
-        private Hud _hud;
+        private readonly Hud _hud;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -42,7 +41,7 @@ namespace CjClutter.OpenGl.Gui
             openGlVersion.Minor,
             GraphicsContextFlags.Default)
         {
-            //VSync = VSyncMode.On;
+            //VSync = VSyncMode.Off;
 
             _mouseInputProcessor = new MouseInputProcessor(this, new GuiToRelativeCoordinateTransformer());
 
@@ -56,9 +55,7 @@ namespace CjClutter.OpenGl.Gui
             _openTkCamera = new OpenTkCamera(_mouseInputProcessor, trackballCamera);
 
             _scene = new Scene();
-         
-            WebCore.Initialize(WebConfig.Default);
-            _hud = new Hud();
+            _hud = new Hud(this);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -135,8 +132,10 @@ namespace CjClutter.OpenGl.Gui
             _scene.Update(ElapsedTime.TotalSeconds);
             _scene.Draw();
 
+            GL.Clear(ClearBufferMask.DepthBufferBit);
             _hud.Update(ElapsedTime.TotalSeconds, _frameTimeCounter.FrameTime);
             _hud.Draw();
+
             SwapBuffers();
         }
 
