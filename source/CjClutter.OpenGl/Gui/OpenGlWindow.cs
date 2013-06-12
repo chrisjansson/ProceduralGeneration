@@ -23,8 +23,9 @@ namespace CjClutter.OpenGl.Gui
         private readonly KeyboardInputObservable _keyboardInputObservable;
         private readonly OpenTkCamera _openTkCamera;
         private readonly Scene _scene;
-        private Func<Matrix4d> _createaProjectionMatrix;
         private readonly Hud _hud;
+        private readonly Renderer _renderer;
+        private readonly TrackballCamera _trackballCamera;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -48,9 +49,10 @@ namespace CjClutter.OpenGl.Gui
             _keyboardInputObservable = new KeyboardInputObservable(_keyboardInputProcessor);
 
             var trackballCameraRotationCalculator = new TrackballCameraRotationCalculator();
-            var trackballCamera = new TrackballCamera(trackballCameraRotationCalculator);
-            _openTkCamera = new OpenTkCamera(_mouseInputProcessor, trackballCamera);
+            _trackballCamera = new TrackballCamera(trackballCameraRotationCalculator);
+            _openTkCamera = new OpenTkCamera(_mouseInputProcessor, _trackballCamera);
 
+            _renderer = new Renderer();
             _scene = new Scene();
             _hud = new Hud(this);
         }
@@ -60,15 +62,10 @@ namespace CjClutter.OpenGl.Gui
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
 
-            Func<Matrix4d> perspectiveMatrixFactory = () => Matrix4d.CreatePerspectiveFieldOfView(Math.PI/4, (double)Width/Height, 1, 100);
-            Func<Matrix4d> orthoGraphicMatrixFactory = () => Matrix4d.CreateOrthographic(2, 2, 1, 100);
-
-            _createaProjectionMatrix = perspectiveMatrixFactory;
-
             _keyboardInputObservable.SubscribeKey(KeyCombination.Esc, CombinationDirection.Down, Exit);
             _keyboardInputObservable.SubscribeKey(KeyCombination.LeftAlt && KeyCombination.Enter, CombinationDirection.Down, ToggleFullScren);
-            _keyboardInputObservable.SubscribeKey(KeyCombination.P, CombinationDirection.Down, () => SwitchProjectionMatrix(perspectiveMatrixFactory));
-            _keyboardInputObservable.SubscribeKey(KeyCombination.O, CombinationDirection.Down, () => SwitchProjectionMatrix(orthoGraphicMatrixFactory));
+            _keyboardInputObservable.SubscribeKey(KeyCombination.P, CombinationDirection.Down, () => _renderer.SetProjectionMode(ProjectionMode.Perspective));
+            _keyboardInputObservable.SubscribeKey(KeyCombination.O, CombinationDirection.Down, () => _renderer.SetProjectionMode(ProjectionMode.Orthographic));
 
             _scene.Load();
         }
@@ -96,21 +93,10 @@ namespace CjClutter.OpenGl.Gui
             _scene.Unload();
         }
 
-        private void SwitchProjectionMatrix(Func<Matrix4d> factory)
-        {
-            _createaProjectionMatrix = factory;
-            SetProjectionMatrix();
-        }
-
-        private void SetProjectionMatrix()
-        {
-            _scene.ProjectionMatrix = _createaProjectionMatrix();
-        }
-
         protected override void OnResize(EventArgs e)
         {
             GL.Viewport(0, 0, Width, Height);
-            SetProjectionMatrix();
+            _renderer.Resize(Width, Height);
             _hud.Resize(Width, Height);
         }
 
@@ -124,13 +110,8 @@ namespace CjClutter.OpenGl.Gui
         {
             _frameTimeCounter.UpdateFrameTime(e.Time);
 
-            GL.ClearColor(Color4.White);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            _scene.ViewMatrix = _openTkCamera.GetCameraMatrix();
-
             _scene.Update(ElapsedTime.TotalSeconds);
-            _scene.Draw();
+            _renderer.Render(_scene, _trackballCamera);
 
             GL.Clear(ClearBufferMask.DepthBufferBit);
             _hud.Update(ElapsedTime.TotalSeconds, _frameTimeCounter.FrameTime);
@@ -173,3 +154,9 @@ namespace CjClutter.OpenGl.Gui
         }
     }
 }
+
+public enum ProjectionMode
+{
+    Orthographic,
+    Perspective
+};
