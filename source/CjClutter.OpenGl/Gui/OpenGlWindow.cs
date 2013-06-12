@@ -1,8 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Threading;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.CoordinateSystems;
 using CjClutter.OpenGl.Input;
@@ -121,7 +118,7 @@ namespace CjClutter.OpenGl.Gui
         {
             ProcessMouseInput();
             ProcessKeyboardInput();
-
+            
             _frameTimeCounter.UpdateFrameTime(e.Time);
 
             GL.ClearColor(Color4.White);
