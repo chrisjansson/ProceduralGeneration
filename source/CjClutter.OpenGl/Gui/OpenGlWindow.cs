@@ -67,8 +67,8 @@ namespace CjClutter.OpenGl.Gui
 
             _keyboardInputObservable.SubscribeKey(KeyCombination.Esc, CombinationDirection.Down, Exit);
             _keyboardInputObservable.SubscribeKey(KeyCombination.LeftAlt && KeyCombination.Enter, CombinationDirection.Down, ToggleFullScren);
-            _keyboardInputObservable.SubscribeKey(KeyCombination.O, CombinationDirection.Down, () => SwitchProjectionMatrix(perspectiveMatrixFactory));
-            _keyboardInputObservable.SubscribeKey(KeyCombination.P, CombinationDirection.Down, () => SwitchProjectionMatrix(orthoGraphicMatrixFactory));
+            _keyboardInputObservable.SubscribeKey(KeyCombination.P, CombinationDirection.Down, () => SwitchProjectionMatrix(perspectiveMatrixFactory));
+            _keyboardInputObservable.SubscribeKey(KeyCombination.O, CombinationDirection.Down, () => SwitchProjectionMatrix(orthoGraphicMatrixFactory));
 
             _scene.Load();
         }
@@ -114,11 +114,14 @@ namespace CjClutter.OpenGl.Gui
             _hud.Resize(Width, Height);
         }
 
-        protected override void OnRenderFrame(FrameEventArgs e)
+        protected override void OnUpdateFrame(FrameEventArgs e)
         {
             ProcessMouseInput();
             ProcessKeyboardInput();
-            
+        }
+
+        protected override void OnRenderFrame(FrameEventArgs e)
+        {
             _frameTimeCounter.UpdateFrameTime(e.Time);
 
             GL.ClearColor(Color4.White);
@@ -166,10 +169,7 @@ namespace CjClutter.OpenGl.Gui
 
         public TimeSpan ElapsedTime
         {
-            get
-            {
-                return _stopwatch.Elapsed;
-            }
+            get { return _stopwatch.Elapsed; }
         }
     }
 }
