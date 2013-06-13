@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.OpenGl;
@@ -16,7 +17,6 @@ namespace CjClutter.OpenGl.Gui
     {
         private ProjectionMode _projectionMode = ProjectionMode.Perspective;
         private Matrix4d _projectionMatrix;
-        private MeshResources _resourcesForMesh;
 
         public void Render(Scene scene, ICamera camera)
         {
@@ -29,15 +29,16 @@ namespace CjClutter.OpenGl.Gui
 
             foreach (var mesh in scene.Meshes)
             {
-                var resources = CreateResourcesForMesh(mesh);
+                var resources = GetOrCreateResources(mesh);
+                var meshLocalClosure = mesh;
                 RunWithResourcesBound(
-                    () => DrawMesh(scene, resources), 
+                    () => DrawMesh(scene, meshLocalClosure, resources), 
                     resources.VertexArrayObject, 
                     resources.RenderProgram);
             }
         }
 
-        private void DrawMesh(Scene scene, MeshResources meshResources)
+        private void DrawMesh(Scene scene, Mesh mesh, MeshResources meshResources)
         {
             GL.Enable(EnableCap.DepthTest);
             GL.CullFace(CullFaceMode.Back);
@@ -50,9 +51,9 @@ namespace CjClutter.OpenGl.Gui
             var viewMatrix = scene.ViewMatrix.ToMatrix4();
             meshResources.RenderProgram.ViewMatrix.Set(viewMatrix);
 
-            meshResources.RenderProgram.Color.Set(meshResources.Mesh.Color);
+            meshResources.RenderProgram.Color.Set(mesh.Color);
 
-            GL.DrawElements(BeginMode.Triangles, meshResources.Mesh.Faces.Count * 3, DrawElementsType.UnsignedShort, 0);
+            GL.DrawElements(BeginMode.Triangles, mesh.Faces.Count * 3, DrawElementsType.UnsignedShort, 0);
         }
 
         private void RunWithResourcesBound(Action action, params IBindable[] bindables)
@@ -70,18 +71,22 @@ namespace CjClutter.OpenGl.Gui
             }
         }
 
-        private MeshResources CreateResourcesForMesh(Mesh mesh)
+        private readonly Dictionary<Mesh, MeshResources> _resources = new Dictionary<Mesh, MeshResources>(); 
+        private MeshResources GetOrCreateResources(Mesh mesh)
         {
-            if (_resourcesForMesh != null) return _resourcesForMesh;
-
+            if (_resources.ContainsKey(mesh))
+            {
+                return _resources[mesh];
+            }
+            
             var openGlResourceFactory = new OpenGlResourceFactory();
-            _resourcesForMesh = new MeshResources();
-            _resourcesForMesh.Mesh = mesh;
+            var resourcesForMesh = new MeshResources();
+            _resources.Add(mesh, resourcesForMesh);
 
-            _resourcesForMesh.VerticesVbo = openGlResourceFactory.CreateVertexBufferObject<Vertex3V>(BufferTarget.ArrayBuffer);
-            _resourcesForMesh.VerticesVbo.Bind();
-            _resourcesForMesh.VerticesVbo.Data(mesh.Vertices.ToArray());
-            _resourcesForMesh.VerticesVbo.Unbind();
+            resourcesForMesh.VerticesVbo = openGlResourceFactory.CreateVertexBufferObject<Vertex3V>(BufferTarget.ArrayBuffer);
+            resourcesForMesh.VerticesVbo.Bind();
+            resourcesForMesh.VerticesVbo.Data(mesh.Vertices.ToArray());
+            resourcesForMesh.VerticesVbo.Unbind();
 
             var faceIndices = mesh.Faces
                 .SelectMany(x => new[] { x.V0, x.V1, x.V2 })
@@ -89,28 +94,28 @@ namespace CjClutter.OpenGl.Gui
 
             if (faceIndices.Length > ushort.MaxValue) throw new NotSupportedException("Implement selection of index data type to allow for bigger ranges");
 
-            _resourcesForMesh.IndexVbo = openGlResourceFactory.CreateVertexBufferObject<ushort>(BufferTarget.ElementArrayBuffer, sizeof(ushort));
-            _resourcesForMesh.IndexVbo.Bind();
-            _resourcesForMesh.IndexVbo.Data(faceIndices);
-            _resourcesForMesh.IndexVbo.Unbind();
+            resourcesForMesh.IndexVbo = openGlResourceFactory.CreateVertexBufferObject<ushort>(BufferTarget.ElementArrayBuffer, sizeof(ushort));
+            resourcesForMesh.IndexVbo.Bind();
+            resourcesForMesh.IndexVbo.Data(faceIndices);
+            resourcesForMesh.IndexVbo.Unbind();
 
-            _resourcesForMesh.RenderProgram = new SimpleRenderProgram();
-            _resourcesForMesh.RenderProgram.Create();
+            resourcesForMesh.RenderProgram = new SimpleRenderProgram();
+            resourcesForMesh.RenderProgram.Create();
 
-            _resourcesForMesh.VertexArrayObject = openGlResourceFactory.CreateVertexArrayObject();
-            _resourcesForMesh.VertexArrayObject.Bind();
+            resourcesForMesh.VertexArrayObject = openGlResourceFactory.CreateVertexArrayObject();
+            resourcesForMesh.VertexArrayObject.Bind();
 
-            _resourcesForMesh.VerticesVbo.Bind();
-            _resourcesForMesh.IndexVbo.Bind();
+            resourcesForMesh.VerticesVbo.Bind();
+            resourcesForMesh.IndexVbo.Bind();
 
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0);
             GL.EnableVertexAttribArray(0);
 
-            _resourcesForMesh.VertexArrayObject.Unbind();
-            _resourcesForMesh.VerticesVbo.Unbind();
-            _resourcesForMesh.IndexVbo.Unbind();
+            resourcesForMesh.VertexArrayObject.Unbind();
+            resourcesForMesh.VerticesVbo.Unbind();
+            resourcesForMesh.IndexVbo.Unbind();
 
-            return _resourcesForMesh;
+            return resourcesForMesh;
         }
 
         public void Resize(int width, int height)
