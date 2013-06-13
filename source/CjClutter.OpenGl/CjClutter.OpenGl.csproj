@@ -161,6 +161,7 @@
     <Compile Include="SceneGraph\Face3.cs" />
     <Compile Include="SceneGraph\Hud.cs" />
     <Compile Include="SceneGraph\Mesh.cs" />
+    <Compile Include="SceneGraph\MeshResources.cs" />
     <Compile Include="SceneGraph\Scene.cs" />
     <Compile Include="SceneGraph\TerrainGenerator.cs" />
   </ItemGroup>

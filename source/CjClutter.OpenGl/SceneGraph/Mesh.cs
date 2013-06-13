@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CjClutter.OpenGl.OpenGl.VertexTypes;
+using OpenTK;
 
 namespace CjClutter.OpenGl.SceneGraph
 {
@@ -13,5 +14,6 @@ namespace CjClutter.OpenGl.SceneGraph
 
         public IList<Vertex3V> Vertices { get; private set; }
         public IList<Face3> Faces { get; private set; }
+        public Vector4 Color { get; set; }
     }
 }
