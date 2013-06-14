@@ -2,7 +2,15 @@
 
 namespace CjClutter.OpenGl.OpenGl
 {
-    public class Shader
+    public interface IShader
+    {
+        void SetSource(string source);
+        void Compile();
+        void Delete();
+        int ShaderId { get; }
+    }
+
+    public class Shader : IShader
     {
         private readonly IGl _gl;
 

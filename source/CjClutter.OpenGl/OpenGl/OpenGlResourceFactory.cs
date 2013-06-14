@@ -16,7 +16,7 @@ namespace CjClutter.OpenGl.OpenGl
             return new Program(_openGl);
         }
 
-        public Shader CreateShader(ShaderType shaderType)
+        public IShader CreateShader(ShaderType shaderType)
         {
             var shader = new Shader(_openGl);
             shader.Create(shaderType);

@@ -1,14 +1,13 @@
-﻿using CjClutter.OpenGl.OpenGl.Diagnostics;
-using OpenTK;
+﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 namespace CjClutter.OpenGl.OpenGl.Shaders
 {
     public class SimpleRenderProgram : RenderProgramBase, IBindable
     {
-        private Shader _vertexShader;
-        private Shader _fragmentShader;
-        private Shader _geometryShader;
+        private IShader _vertexShader;
+        private IShader _fragmentShader;
+        private IShader _geometryShader;
         private readonly OpenGlResourceFactory _openGlResourceFactory;
 
         public GenericUniform<Matrix4> ProjectionMatrix { get; private set; }

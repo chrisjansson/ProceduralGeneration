@@ -1,8 +1,17 @@
-﻿using OpenTK.Graphics.OpenGL;
-
-namespace CjClutter.OpenGl.OpenGl
+﻿namespace CjClutter.OpenGl.OpenGl
 {
-    public class Program
+    public interface IProgram
+    {
+        void AttachShader(IShader shader);
+        void DetachShader(IShader shader);
+        void Link();
+        void Unbind();
+        void Delete();
+        int GetUniformLocation(string uniformName);
+        int GetAttributeLocation(string attributeName);
+    }
+
+    public class Program : IProgram
     {
         private readonly IGl _gl;
 
@@ -18,12 +27,12 @@ namespace CjClutter.OpenGl.OpenGl
             ProgramId = _gl.CreateProgram();
         }
 
-        public void AttachShader(Shader shader)
+        public void AttachShader(IShader shader)
         {
             _gl.AttachShader(ProgramId, shader.ShaderId);
         }
 
-        public void DetachShader(Shader shader)
+        public void DetachShader(IShader shader)
         {
             _gl.DetachShader(ProgramId, shader.ShaderId);
         }
