@@ -147,7 +147,6 @@
     <Compile Include="OpenGl\Program.cs" />
     <Compile Include="OpenGl\Shader.cs" />
     <Compile Include="OpenGl\Diagnostics\ShaderInfo.cs" />
-    <Compile Include="OpenGl\Shaders\RenderProgramBase.cs" />
     <Compile Include="OpenGl\Shaders\SimpleRenderProgram.cs" />
     <Compile Include="OpenGl\VertexArrayObject.cs" />
     <Compile Include="OpenGl\VertexBufferObject.cs" />

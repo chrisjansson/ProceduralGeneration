@@ -3,17 +3,18 @@ using OpenTK.Graphics.OpenGL;
 
 namespace CjClutter.OpenGl.OpenGl.Shaders
 {
-    public class SimpleRenderProgram : RenderProgramBase, IBindable
+    public class SimpleRenderProgram : IBindable
     {
         private IShader _vertexShader;
         private IShader _fragmentShader;
         private IShader _geometryShader;
+        private Program Program { get; set; }
         private readonly OpenGlResourceFactory _openGlResourceFactory;
 
         public GenericUniform<Matrix4> ProjectionMatrix { get; private set; }
         public GenericUniform<Matrix4> ViewMatrix { get; private set; }
         public GenericUniform<Matrix4> ModelMatrix { get; private set; }
-        public GenericUniform<Vector4> Color { get; set; }
+        public GenericUniform<Vector4> Color { get; private set; }
 
         public SimpleRenderProgram()
         {
@@ -41,10 +42,10 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
             Program.AttachShader(_fragmentShader);
             Program.Link();
 
-            RegisterUniform(() => ProjectionMatrix, x => ProjectionMatrix = x);
-            RegisterUniform(() => ViewMatrix, x => ViewMatrix = x);
-            RegisterUniform(() => ModelMatrix, x => ModelMatrix = x);
-            RegisterUniform(() => Color, x => Color = x);
+            ProjectionMatrix = Program.GetUniform<Matrix4>("ProjectionMatrix");
+            ViewMatrix = Program.GetUniform<Matrix4>("ViewMatrix");
+            ModelMatrix = Program.GetUniform<Matrix4>("ModelMatrix");
+            Color = Program.GetUniform<Vector4>("Color");
         }
 
         public void Delete()
@@ -124,5 +125,15 @@ void main()
     fragColor = (edgeIntensity * vec4(0.1,0.1,0.1,1.0)) + ((1.0-edgeIntensity) * Color);
 }
 ";
+
+        public void Bind()
+        {
+            Program.Use();
+        }
+
+        public void Unbind()
+        {
+            Program.Unbind();
+        }
     }
 }
