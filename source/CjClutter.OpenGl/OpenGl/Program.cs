@@ -1,4 +1,6 @@
-﻿namespace CjClutter.OpenGl.OpenGl
+﻿using OpenTK.Graphics.OpenGL;
+
+namespace CjClutter.OpenGl.OpenGl
 {
     public interface IProgram
     {
@@ -65,6 +67,14 @@
         public int GetAttributeLocation(string attributeName)
         {
             return _gl.GetAttribLocation(ProgramId, attributeName);
+        }
+
+        public int GetNumberOfActiveUniforms()
+        {
+            int numberOfActiveUniforms;
+            GL.GetProgram(ProgramId, ProgramParameter.ActiveUniforms, out numberOfActiveUniforms);
+
+            return numberOfActiveUniforms;
         }
     }
 }
