@@ -9,10 +9,12 @@ namespace CjClutter.OpenGl.OpenGl
         void Link();
         void Unbind();
         void Delete();
-        int GetUniformLocation(string uniformName);
         int GetAttributeLocation(string attributeName);
         int GetNumberOfActiveUniforms();
         int ProgramId { get; }
+        GenericUniform<T> GetUniform<T>(string uniformName);
+        void Create();
+        void Use();
     }
 
     public class Program : IProgram
@@ -68,7 +70,7 @@ namespace CjClutter.OpenGl.OpenGl
             return new GenericUniform<T>(location);
         } 
 
-        public int GetUniformLocation(string uniformName)
+        private int GetUniformLocation(string uniformName)
         {
             return _gl.GetUniformLocation(ProgramId, uniformName);
         }

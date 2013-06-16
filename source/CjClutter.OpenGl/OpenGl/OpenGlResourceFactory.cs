@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using CjClutter.OpenGl.OpenGl.Diagnostics;
+using OpenTK.Graphics.OpenGL;
 
 namespace CjClutter.OpenGl.OpenGl
 {
@@ -11,9 +12,10 @@ namespace CjClutter.OpenGl.OpenGl
             _openGl = new OpenGl();
         }
 
-        public Program CreateProgram()
+        public IProgram CreateProgram()
         {
-            return new Program(_openGl);
+            var program = new Program(_openGl);
+            return new DebugProgram(program, new ConsoleLogger());
         }
 
         public IShader CreateShader(ShaderType shaderType)
@@ -36,6 +38,7 @@ namespace CjClutter.OpenGl.OpenGl
         {
             var sizeInBytes = new T().SizeInBytes;
             var vertexBufferObject = new VertexBufferObject<T>(bufferTarget, sizeInBytes);
+
             vertexBufferObject.Generate();
 
             return vertexBufferObject;

@@ -8,7 +8,7 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
         private IShader _vertexShader;
         private IShader _fragmentShader;
         private IShader _geometryShader;
-        private Program Program { get; set; }
+        private IProgram Program { get; set; }
         private readonly OpenGlResourceFactory _openGlResourceFactory;
 
         public GenericUniform<Matrix4> ProjectionMatrix { get; private set; }
@@ -52,10 +52,12 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
         {
             Program.DetachShader(_vertexShader);
             Program.DetachShader(_fragmentShader);
+            Program.DetachShader(_geometryShader);
             Program.Delete();
 
             _vertexShader.Delete();
             _fragmentShader.Delete();
+            _geometryShader.Delete();
         }
 
         private const string VertexShaderSource = @"
@@ -65,7 +67,7 @@ layout(location = 0)in vec4 position;
 
 uniform mat4 ProjectionMatrix;
 uniform mat4 ViewMatrix;
-uniform mat4 ModelMatrix;
+//uniform mat4 ModelMatrix;
 
 void main()
 {
@@ -112,6 +114,7 @@ void main()
         private const string FragmentShaderSource = @"
 #version 330
 
+uniform vec4 WireframeColor = vec4(0.1, 0.1, 0.1, 1.0);
 uniform vec4 Color;
 out vec4 fragColor;
 
@@ -122,7 +125,7 @@ void main()
     float nearD = min(min(dist[0],dist[1]),dist[2]);
     float edgeIntensity = exp2(-1.0*nearD*nearD);
 
-    fragColor = (edgeIntensity * vec4(0.1,0.1,0.1,1.0)) + ((1.0-edgeIntensity) * Color);
+    fragColor = (edgeIntensity * WireframeColor) + ((1.0-edgeIntensity) * Color);
 }
 ";
 
