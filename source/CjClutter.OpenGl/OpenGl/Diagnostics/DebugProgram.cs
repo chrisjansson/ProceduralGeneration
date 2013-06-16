@@ -64,7 +64,7 @@ namespace CjClutter.OpenGl.OpenGl.Diagnostics
             get { return _program.ProgramId; }
         }
 
-        public GenericUniform<T> GetUniform<T>(string uniformName)
+        public Uniform<T> GetUniform<T>(string uniformName)
         {
             var hasUniform = _activeUniforms.ContainsKey(uniformName);
             if (!hasUniform)

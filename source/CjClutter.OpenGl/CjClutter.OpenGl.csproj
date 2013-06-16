@@ -117,7 +117,7 @@
     <Compile Include="OpenGl\Diagnostics\ConsoleLogger.cs" />
     <Compile Include="OpenGl\Diagnostics\ProgramDiagnostics.cs" />
     <Compile Include="OpenGl\Diagnostics\ShaderDiagnostics.cs" />
-    <Compile Include="OpenGl\GenericUniform.cs" />
+    <Compile Include="OpenGl\Uniform.cs" />
     <Compile Include="OpenGl\IBindable.cs" />
     <Compile Include="OpenGl\IBufferDataType.cs" />
     <Compile Include="Gui\FrameTimeCounter.cs" />

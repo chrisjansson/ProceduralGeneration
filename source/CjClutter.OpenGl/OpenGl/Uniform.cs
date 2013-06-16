@@ -5,14 +5,14 @@ using OpenTK.Graphics.OpenGL;
 
 namespace CjClutter.OpenGl.OpenGl
 {
-    public class GenericUniform<T>
+    public class Uniform<T>
     {
         private readonly Dictionary<Type, Action<object>> _setterDictionary;
         private readonly int _location;
 
         private readonly Action<object> _uniformSetter;
 
-        public GenericUniform(int location)
+        public Uniform(int location)
         {
             _location = location;
 

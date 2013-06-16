@@ -11,10 +11,10 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
         private IProgram Program { get; set; }
         private readonly OpenGlResourceFactory _openGlResourceFactory;
 
-        public GenericUniform<Matrix4> ProjectionMatrix { get; private set; }
-        public GenericUniform<Matrix4> ViewMatrix { get; private set; }
-        public GenericUniform<Matrix4> ModelMatrix { get; private set; }
-        public GenericUniform<Vector4> Color { get; private set; }
+        public Uniform<Matrix4> ProjectionMatrix { get; private set; }
+        public Uniform<Matrix4> ViewMatrix { get; private set; }
+        public Uniform<Matrix4> ModelMatrix { get; private set; }
+        public Uniform<Vector4> Color { get; private set; }
 
         public SimpleRenderProgram()
         {
