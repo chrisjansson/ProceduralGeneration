@@ -113,6 +113,7 @@
     <Compile Include="Input\Keboard\CombinationDirection.cs" />
     <Compile Include="KeyCombination.cs" />
     <Compile Include="KeyDictionary.cs" />
+    <Compile Include="OpenGl\Diagnostics\DebugProgram.cs" />
     <Compile Include="OpenGl\Diagnostics\ProgramDiagnostics.cs" />
     <Compile Include="OpenGl\Diagnostics\ShaderDiagnostics.cs" />
     <Compile Include="OpenGl\GenericUniform.cs" />

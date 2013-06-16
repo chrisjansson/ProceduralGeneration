@@ -11,6 +11,8 @@ namespace CjClutter.OpenGl.OpenGl
         void Delete();
         int GetUniformLocation(string uniformName);
         int GetAttributeLocation(string attributeName);
+        int GetNumberOfActiveUniforms();
+        int ProgramId { get; }
     }
 
     public class Program : IProgram

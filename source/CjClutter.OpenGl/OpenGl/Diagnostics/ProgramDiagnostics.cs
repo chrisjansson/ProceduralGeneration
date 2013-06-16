@@ -13,7 +13,7 @@ namespace CjClutter.OpenGl.OpenGl.Diagnostics
             return (Boolean)linkStatus;
         }
 
-        public IList<UniformInfo> GetActiveUniforms(Program program)
+        public IEnumerable<UniformInfo> GetActiveUniforms(IProgram program)
         {
             var uniforms = new List<UniformInfo>();
 
