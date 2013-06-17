@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using CjClutter.OpenGl.Noise;
 using OpenTK;
 
 namespace CjClutter.OpenGl.SceneGraph
@@ -20,7 +21,7 @@ namespace CjClutter.OpenGl.SceneGraph
 
         public void Load()
         {
-            _mesh = new TerrainGenerator().GenerateMesh();
+            _mesh = new HeightMapGenerator(new ImprovedPerlinNoise(4711)).GenerateMesh();
             Meshes.Add(_mesh);
         }
 

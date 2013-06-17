@@ -4,15 +4,15 @@ using OpenTK;
 
 namespace CjClutter.OpenGl.SceneGraph
 {
-    public class TerrainGenerator
+    public class HeightMapGenerator
     {
         private readonly INoiseGenerator _noiseGenerator;
         private const int TerrainWidth = 32;
         private const int TerrainHeight = 32;
 
-        public TerrainGenerator()
+        public HeightMapGenerator(INoiseGenerator noiseGenerator)
         {
-            _noiseGenerator = new SimplexNoise();
+            _noiseGenerator = noiseGenerator;
         }
 
         public Mesh GenerateMesh()
