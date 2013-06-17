@@ -53,6 +53,8 @@ namespace CjClutter.OpenGl.Gui
 
             meshResources.RenderProgram.Color.Set(mesh.Color);
 
+            meshResources.RenderProgram.WindowScale.Set(_windowScale);
+
             GL.DrawElements(BeginMode.Triangles, mesh.Faces.Count * 3, DrawElementsType.UnsignedShort, 0);
         }
 
@@ -71,7 +73,9 @@ namespace CjClutter.OpenGl.Gui
             }
         }
 
-        private readonly Dictionary<Mesh, MeshResources> _resources = new Dictionary<Mesh, MeshResources>(); 
+        private readonly Dictionary<Mesh, MeshResources> _resources = new Dictionary<Mesh, MeshResources>();
+        private Vector2 _windowScale;
+
         private MeshResources GetOrCreateResources(Mesh mesh)
         {
             if (_resources.ContainsKey(mesh))
@@ -121,6 +125,7 @@ namespace CjClutter.OpenGl.Gui
         public void Resize(int width, int height)
         {
             _projectionMatrix = CreateProjectionMatrix(width, height);
+            _windowScale = new Vector2(width, height);
         }
 
         private Matrix4d CreateProjectionMatrix(int width, int height)

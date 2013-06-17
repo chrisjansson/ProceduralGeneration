@@ -20,7 +20,8 @@ namespace CjClutter.OpenGl.OpenGl
                                     {
                                         {typeof(Matrix4), SetMatrix4},
                                         {typeof(Vector3), SetVector3},
-                                        {typeof(Vector4), SetVector4}
+                                        {typeof(Vector4), SetVector4},
+                                        {typeof(Vector2), SetVector2}
                                     };
 
             var type = typeof (T);
@@ -49,6 +50,12 @@ namespace CjClutter.OpenGl.OpenGl
         {
             var vector3 = (Vector3) obj;
             GL.Uniform3(_location, ref vector3);
+        }
+
+        private void SetVector2(object obj)
+        {
+            var vector2 = (Vector2) obj;
+            GL.Uniform2(_location, vector2);
         }
 
         private void SetMatrix4(object value)

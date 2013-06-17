@@ -15,6 +15,7 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
         public Uniform<Matrix4> ViewMatrix { get; private set; }
         public Uniform<Matrix4> ModelMatrix { get; private set; }
         public Uniform<Vector4> Color { get; private set; }
+        public Uniform<Vector2> WindowScale { get; private set; } 
 
         public SimpleRenderProgram()
         {
@@ -46,6 +47,7 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
             ViewMatrix = Program.GetUniform<Matrix4>("ViewMatrix");
             ModelMatrix = Program.GetUniform<Matrix4>("ModelMatrix");
             Color = Program.GetUniform<Vector4>("Color");
+            WindowScale = Program.GetUniform<Vector2>("WindowScale");
         }
 
         public void Delete()
@@ -58,6 +60,16 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
             _vertexShader.Delete();
             _fragmentShader.Delete();
             _geometryShader.Delete();
+        }
+
+        public void Bind()
+        {
+            Program.Use();
+        }
+
+        public void Unbind()
+        {
+            Program.Unbind();
         }
 
         private const string VertexShaderSource = @"
@@ -78,7 +90,7 @@ void main()
         private const string GeometryShaderSource = @"
 #version 330
 
-vec2 WIN_SCALE = vec2(800, 600);
+uniform vec2 WindowScale = vec2(800, 600);
 noperspective out vec3 dist;
 
 layout(triangles) in;
@@ -86,9 +98,9 @@ layout (triangle_strip, max_vertices=3) out;
 
 void main() 
 {
-    vec2 p0 = WIN_SCALE * gl_in[0].gl_Position.xy/gl_in[0].gl_Position.w;
-    vec2 p1 = WIN_SCALE * gl_in[1].gl_Position.xy/gl_in[1].gl_Position.w;
-    vec2 p2 = WIN_SCALE * gl_in[2].gl_Position.xy/gl_in[2].gl_Position.w;
+    vec2 p0 = WindowScale * gl_in[0].gl_Position.xy/gl_in[0].gl_Position.w;
+    vec2 p1 = WindowScale * gl_in[1].gl_Position.xy/gl_in[1].gl_Position.w;
+    vec2 p2 = WindowScale * gl_in[2].gl_Position.xy/gl_in[2].gl_Position.w;
 
     vec2 v0 = p2-p1;
     vec2 v1 = p2-p0;
@@ -129,14 +141,5 @@ void main()
 }
 ";
 
-        public void Bind()
-        {
-            Program.Use();
-        }
-
-        public void Unbind()
-        {
-            Program.Unbind();
-        }
     }
 }
