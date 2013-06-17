@@ -7,8 +7,6 @@ namespace CjClutter.OpenGl.SceneGraph
 {
     public class Scene
     {
-        private Mesh _mesh;
-
         public Scene()
         {
             Meshes = new List<Mesh>();
@@ -21,15 +19,20 @@ namespace CjClutter.OpenGl.SceneGraph
 
         public void Load()
         {
-            _mesh = new HeightMapGenerator(new ImprovedPerlinNoise(4711)).GenerateMesh();
-            Meshes.Add(_mesh);
+            var terrainGenerator = new TerrainGenerator();
+            var generate = terrainGenerator.Generate();
+
+            Meshes.AddRange(generate);
         }
 
         public void Update(double elapsedTime)
         {
-            var blue = (Math.Sin(elapsedTime) + 1) / 4;
-            var color = new Vector4(0.5f, 0.5f, (float)blue + 0.5f, 0.0f);
-            _mesh.Color = color;
+            //var blue = (Math.Sin(elapsedTime) + 1) / 4;
+            //var color = new Vector4(0.5f, 0.5f, (float)blue + 0.5f, 0.0f);
+            //foreach (var mesh in Meshes)
+            //{
+            //    mesh.Color = color;    
+            //}
         }
 
         public void Unload()

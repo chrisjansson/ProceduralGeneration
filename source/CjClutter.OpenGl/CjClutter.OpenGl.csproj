@@ -160,12 +160,14 @@
     <Compile Include="OpenTk\PointExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SceneGraph\ChunkNoiseGenerator.cs" />
+    <Compile Include="SceneGraph\ColorCycle.cs" />
     <Compile Include="SceneGraph\Face3.cs" />
     <Compile Include="SceneGraph\Hud.cs" />
     <Compile Include="SceneGraph\Mesh.cs" />
     <Compile Include="SceneGraph\MeshResources.cs" />
     <Compile Include="SceneGraph\Scene.cs" />
     <Compile Include="SceneGraph\HeightMapGenerator.cs" />
+    <Compile Include="SceneGraph\TerrainGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

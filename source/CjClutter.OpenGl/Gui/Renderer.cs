@@ -54,6 +54,7 @@ namespace CjClutter.OpenGl.Gui
             meshResources.RenderProgram.Color.Set(mesh.Color);
 
             meshResources.RenderProgram.WindowScale.Set(_windowScale);
+            meshResources.RenderProgram.ModelMatrix.Set(mesh.ModelMatrix);
 
             GL.DrawElements(BeginMode.Triangles, mesh.Faces.Count * 3, DrawElementsType.UnsignedShort, 0);
         }
