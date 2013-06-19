@@ -12,49 +12,49 @@ namespace CjClutter.OpenGl.SceneGraph
 {
     public class GeneratoionSettingsControl
     {
-        private readonly Base _parent;
-
         private int _octaves;
         private double _amplitude;
         private double _frequency;
-        private TextBox _octavesTextBox;
-        private TextBox _amplitudeTextBox;
-        private TextBox _frequenceyTextBox;
+        private readonly Properties _properties;
 
 
         public GeneratoionSettingsControl(Base parent)
         {
-            _parent = parent;
-            _octavesTextBox = CreateTextBoxForPropety(() => _octaves, x => _octaves = x);
-            _amplitudeTextBox = CreateTextBoxForPropety(() => _amplitude, x => _amplitude = x);
-            _frequenceyTextBox = CreateTextBoxForPropety(() => _frequency, x => _frequency = x);
-        }
-
-        private TextBox CreateTextBoxForPropety<T>(Func<T> getter, Action<T> setter)
-        {
-            var textBox = new TextBox(_parent)
+            _properties = new Properties(parent)
                 {
-                    Text = getter().ToString(),
-                    Dock = Pos.Top,
+                    //Dock = Pos.Top
                 };
 
-            textBox.TextChanged += x =>
+            _properties.ShouldDrawBackground = true;
+
+            CreateFieldFor("Octaves", () => _octaves, x => _octaves = x);
+            CreateFieldFor("Amplitude", () => _amplitude, x => _amplitude = x);
+            CreateFieldFor("Frequency", () => _frequency, x => _frequency = x);
+
+            _properties.SetBounds(10, 10, 150, 300);
+        }
+
+        private void CreateFieldFor<T>(string label, Func<T> getter, Action<T> setter)
+        {
+            var propertyRow = _properties.Add(label);
+
+            propertyRow.Value = getter().ToString();
+            propertyRow.ValueChanged += x =>
                 {
-                    var text = textBox.Text;
+                    var text = propertyRow.Value;
                     var converter = TypeDescriptor.GetConverter(typeof (T));
 
                     try
                     {
-                        var newValue = (T)converter.ConvertFromInvariantString(text);
+                        var newValue = (T) converter.ConvertFromInvariantString(text);
                         setter(newValue);
                     }
                     catch (Exception e)
                     {
-                        
+
                     }
-                    
+
                 };
-            return textBox;
         }
 
         public FractalBrownianMotionSettings GetSettings()
@@ -86,14 +86,16 @@ namespace CjClutter.OpenGl.SceneGraph
 
             _fpsLabel = new Label(_canvas)
                 {
-                    AutoSizeToContents = true, 
-                    Dock = Pos.Top
+                    AutoSizeToContents = true,
+                    Dock = Pos.Top,
+                    IsHidden = true,
                 };
 
             _frameTimeLabel = new Label(_canvas)
                 {
-                    AutoSizeToContents = true, 
-                    Dock = Pos.Top
+                    AutoSizeToContents = true,
+                    Dock = Pos.Top,
+                    IsHidden = true
                 };
 
             var generatoionSettingsControl = new GeneratoionSettingsControl(_canvas);
@@ -105,7 +107,7 @@ namespace CjClutter.OpenGl.SceneGraph
 
             gameWindow.Keyboard.KeyDown += (sender, args) => input.ProcessKeyDown(args);
             gameWindow.Keyboard.KeyUp += (sender, args) => input.ProcessKeyUp(args);
-            gameWindow.KeyPress += (sender, args) => input.KeyPress(sender, args);
+            //gameWindow.KeyPress += (sender, args) => input.KeyPress(sender, args);
         }
 
         public void Resize(int width, int height)
