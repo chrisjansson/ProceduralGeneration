@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Drawing;
 using CjClutter.OpenGl.Noise;
 using Gwen;
 using Gwen.Control;
@@ -10,33 +11,80 @@ using Base = Gwen.Control.Base;
 
 namespace CjClutter.OpenGl.SceneGraph
 {
+    public class SpecialProperties : Properties
+    {
+        public SpecialProperties(Base parent) : base(parent) {}
+
+        protected override void Render(Gwen.Skin.Base skin)
+        {
+            base.Render(skin);
+
+            var renderBounds = RenderBounds;
+
+            skin.Renderer.DrawColor = Color.Brown;
+            skin.Renderer.DrawFilledRect(renderBounds);
+        }
+    }
+
+    public class DockWithBackground : DockBase
+    {
+        public DockWithBackground(Base parent) : base(parent) {}
+
+        protected override void Render(Gwen.Skin.Base skin)
+        {
+            bool wasResized = SizeToChildren(false, true);
+            while (wasResized)
+            {
+                wasResized = SizeToChildren(false, true);
+            }
+
+            base.Render(skin);
+
+            var renderer = skin.Renderer;
+
+            renderer.DrawColor = Color.LightBlue;
+            renderer.DrawFilledRect(RenderBounds);
+        }
+    }
+
     public class GeneratoionSettingsControl
     {
         private int _octaves;
         private double _amplitude;
         private double _frequency;
         private readonly Properties _properties;
-
+        private readonly DockWithBackground _dockWithBackground;
 
         public GeneratoionSettingsControl(Base parent)
         {
-            _properties = new Properties(parent)
+            _dockWithBackground = new DockWithBackground(parent)
                 {
-                    //Dock = Pos.Top
+                    Dock = Pos.Top,
+                    Padding = new Padding(5, 5, 5, 5),
                 };
 
-            _properties.ShouldDrawBackground = true;
+            _properties = new Properties(_dockWithBackground)
+                {
+                    Dock = Pos.Top,
+                };
 
             CreateFieldFor("Octaves", () => _octaves, x => _octaves = x);
             CreateFieldFor("Amplitude", () => _amplitude, x => _amplitude = x);
             CreateFieldFor("Frequency", () => _frequency, x => _frequency = x);
 
-            _properties.SetBounds(10, 10, 150, 300);
+            var button = new Button(_dockWithBackground)
+                {
+                    Dock = Pos.Top,
+                    Margin = new Margin(0, 5, 0, 0),
+                    Text = "Apply",
+                    AutoSizeToContents = true,
+                };
         }
 
         private void CreateFieldFor<T>(string label, Func<T> getter, Action<T> setter)
         {
             var propertyRow = _properties.Add(label);
+            propertyRow.SizeToChildren();
 
             propertyRow.Value = getter().ToString();
             propertyRow.ValueChanged += x =>
@@ -61,6 +109,14 @@ namespace CjClutter.OpenGl.SceneGraph
         {
             return new FractalBrownianMotionSettings(_octaves, _amplitude, _frequency);
         }
+
+        public void Update()
+        {
+
+            //todo: update here or in render or instantiation only?
+            //bool sizeToChildren = _properties.SizeToChildren();
+
+        }
     }
 
     public class Hud
@@ -76,7 +132,9 @@ namespace CjClutter.OpenGl.SceneGraph
         {
             _renderer = new Gwen.Renderer.OpenTK();
             _texturedBase = new TexturedBase(_renderer, "DefaultSkin.png");
+
             _canvas = new Canvas(_texturedBase);
+            _canvas.SetBounds(0, 0, gameWindow.Width, gameWindow.Height);
 
             var input = new Gwen.Input.OpenTK(gameWindow);
             input.Initialize(_canvas);
@@ -98,7 +156,7 @@ namespace CjClutter.OpenGl.SceneGraph
                     IsHidden = true
                 };
 
-            var generatoionSettingsControl = new GeneratoionSettingsControl(_canvas);
+            _generatoionSettingsControl = new GeneratoionSettingsControl(_canvas);
 
             gameWindow.Mouse.Move += (sender, args) => input.ProcessMouseMessage(args);
             gameWindow.Mouse.ButtonDown += (sender, args) => input.ProcessMouseMessage(args);
@@ -117,6 +175,8 @@ namespace CjClutter.OpenGl.SceneGraph
 
         public void Update(double elapsed, double frameTime)
         {
+            _generatoionSettingsControl.Update();
+
             MaintainTextCache();
 
             UpdateControls(elapsed, frameTime);
@@ -131,6 +191,8 @@ namespace CjClutter.OpenGl.SceneGraph
         }
 
         private double _deadLine = 0;
+        private GeneratoionSettingsControl _generatoionSettingsControl;
+
         private void UpdateControls(double elapsed, double frameTime)
         {
             if (_deadLine > elapsed)
