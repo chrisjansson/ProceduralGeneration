@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using CjClutter.OpenGl.Noise;
@@ -8,6 +9,7 @@ using Gwen.Skin;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Base = Gwen.Control.Base;
+using System.Linq;
 
 namespace CjClutter.OpenGl.SceneGraph
 {
@@ -54,6 +56,9 @@ namespace CjClutter.OpenGl.SceneGraph
         private double _frequency;
         private readonly Properties _properties;
         private readonly DockWithBackground _dockWithBackground;
+        private readonly Button _button;
+
+        private readonly IList<Base> _invalidControls = new List<Base>();  
 
         public GeneratoionSettingsControl(Base parent)
         {
@@ -72,7 +77,7 @@ namespace CjClutter.OpenGl.SceneGraph
             CreateFieldFor("Amplitude", () => _amplitude, x => _amplitude = x);
             CreateFieldFor("Frequency", () => _frequency, x => _frequency = x);
 
-            var button = new Button(_dockWithBackground)
+            _button = new Button(_dockWithBackground)
                 {
                     Dock = Pos.Top,
                     Margin = new Margin(0, 5, 0, 0),
@@ -96,13 +101,28 @@ namespace CjClutter.OpenGl.SceneGraph
                     {
                         var newValue = (T) converter.ConvertFromInvariantString(text);
                         setter(newValue);
+
+                        RemoveValidControl(propertyRow);
                     }
                     catch (Exception e)
                     {
-
+                        AddInvalidControl(propertyRow);
                     }
-
                 };
+        }
+
+        private void AddInvalidControl(Base control)
+        {
+            if (!_invalidControls.Contains(control))
+                _invalidControls.Add(control);
+
+            _button.IsDisabled = _invalidControls.Any();
+        }
+
+        private void RemoveValidControl(Base control)
+        {
+            _invalidControls.Remove(control);
+            _button.IsDisabled = _invalidControls.Any();
         }
 
         public FractalBrownianMotionSettings GetSettings()
