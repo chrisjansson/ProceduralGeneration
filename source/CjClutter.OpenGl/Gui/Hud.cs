@@ -55,6 +55,7 @@ namespace CjClutter.OpenGl.Gui
         public void Resize(int width, int height)
         {
             _projectionMatrix = Matrix4.CreateOrthographicOffCenter(0, width, height, 0, -1, 1);
+            _canvas.SetBounds(0, 0, width, height);
         }
 
         public void Update(double elapsed, double frameTime)
