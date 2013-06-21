@@ -31,11 +31,6 @@ namespace CjClutter.OpenGl.Input
             ProcessRotate();
         }
 
-        public Matrix4d GetCameraMatrix()
-        {
-            return _trackballCamera.GetCameraMatrix();
-        }
-
         private void ProcessMouseDown()
         {
             if (!_mouseDown && _mouseInputProcessor.WasButtonPressed(MouseButton.Left))

@@ -3,44 +3,64 @@ using OpenTK;
 
 namespace CjClutter.OpenGl.Camera
 {
-    public class TrackballCamera : PerspectiveCamera, ITrackballCamera
+    public class TrackballCamera : ITrackballCamera
     {
+        private readonly ICamera _camera;
         private readonly ITrackballCameraRotationCalculator _cameraRotationCalculator;
-        
+
         private Matrix4d _cameraOrientation = Matrix4d.Identity;
         private Matrix4d _tempCameraOrientation = Matrix4d.Identity;
 
-        public TrackballCamera(ITrackballCameraRotationCalculator cameraRotationCalculator)
+        public TrackballCamera(ICamera camera, ITrackballCameraRotationCalculator cameraRotationCalculator)
         {
+            _camera = camera;
             _cameraRotationCalculator = cameraRotationCalculator;
         }
 
-        public override Matrix4d GetCameraMatrix()
+        public Vector3d Position
         {
-            var baseMatrix = base.GetCameraMatrix();
-            var orientationMatrix = GetOrientationMatrix();
-
-            return orientationMatrix.Multiply(baseMatrix);
+            get { return _camera.Up; }
+            set { _camera.Up = value; }
         }
 
-        private Matrix4d GetOrientationMatrix()
+        public Vector3d Target
         {
-            return _cameraOrientation.Multiply(_tempCameraOrientation);
+            get { return _camera.Target; }
+            set { _camera.Target = value; }
+        }
+
+        public Vector3d Up
+        {
+            get { return _camera.Up; }
+            set { _camera.Up = value; }
+        }
+
+        public Matrix4d GetCameraMatrix()
+        {
+            var cameraMatrix = _camera.GetCameraMatrix();
+            var orientationMatrix = GetOrientationMatrix();
+
+            return orientationMatrix.Multiply(cameraMatrix);
         }
 
         public void Rotate(Vector2d startPoint, Vector2d endPoint)
         {
-            var rotation = CalculateRotation(startPoint, endPoint);
+            Quaterniond rotation = CalculateRotation(startPoint, endPoint);
             _tempCameraOrientation = rotation.GetRotationMatrix();
         }
 
         public void CommitRotation(Vector2d startPoint, Vector2d endPoint)
         {
-            var rotation = CalculateRotation(startPoint, endPoint);
-            var rotationMatrix = rotation.GetRotationMatrix();
+            Quaterniond rotation = CalculateRotation(startPoint, endPoint);
+            Matrix4d rotationMatrix = rotation.GetRotationMatrix();
 
             _cameraOrientation = _cameraOrientation.Multiply(rotationMatrix);
             _tempCameraOrientation = Matrix4d.Identity;
+        }
+
+        private Matrix4d GetOrientationMatrix()
+        {
+            return _cameraOrientation.Multiply(_tempCameraOrientation);
         }
 
         private Quaterniond CalculateRotation(Vector2d startPoint, Vector2d endPoint)
