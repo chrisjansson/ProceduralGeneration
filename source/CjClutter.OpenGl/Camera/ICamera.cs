@@ -9,6 +9,5 @@ namespace CjClutter.OpenGl.Camera
         Vector3d Target { get; set; }
         Vector3d Up { get; set; }
         Matrix4d GetCameraMatrix();
-        event Action CameraChanged;
     }
 }

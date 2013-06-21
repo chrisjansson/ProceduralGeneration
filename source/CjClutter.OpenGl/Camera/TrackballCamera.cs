@@ -32,8 +32,6 @@ namespace CjClutter.OpenGl.Camera
         {
             var rotation = CalculateRotation(startPoint, endPoint);
             _tempCameraOrientation = rotation.GetRotationMatrix();
-
-            FireCameraChanged();
         }
 
         public void CommitRotation(Vector2d startPoint, Vector2d endPoint)
@@ -43,8 +41,6 @@ namespace CjClutter.OpenGl.Camera
 
             _cameraOrientation = _cameraOrientation.Multiply(rotationMatrix);
             _tempCameraOrientation = Matrix4d.Identity;
-
-            FireCameraChanged();
         }
 
         private Quaterniond CalculateRotation(Vector2d startPoint, Vector2d endPoint)
