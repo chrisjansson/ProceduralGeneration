@@ -108,7 +108,10 @@
     <Compile Include="CoordinateSystems\GuiToRelativeCoordinateTransformer.cs" />
     <Compile Include="CoordinateSystems\IGuiToRelativeCoordinateTransformer.cs" />
     <Compile Include="CoordinateSystems\IInterfaceSize.cs" />
+    <Compile Include="Gui\DockWithBackground.cs" />
+    <Compile Include="Gui\GeneratoionSettingsControl.cs" />
     <Compile Include="Gui\Renderer.cs" />
+    <Compile Include="Gui\SpecialProperties.cs" />
     <Compile Include="Input\Keboard\KeyArgActionPair.cs" />
     <Compile Include="Input\Keboard\CombinationDirection.cs" />
     <Compile Include="KeyCombination.cs" />
@@ -162,7 +165,7 @@
     <Compile Include="SceneGraph\ChunkNoiseGenerator.cs" />
     <Compile Include="SceneGraph\ColorCycle.cs" />
     <Compile Include="SceneGraph\Face3.cs" />
-    <Compile Include="SceneGraph\Hud.cs" />
+    <Compile Include="Gui\Hud.cs" />
     <Compile Include="SceneGraph\Mesh.cs" />
     <Compile Include="SceneGraph\MeshResources.cs" />
     <Compile Include="SceneGraph\Scene.cs" />
