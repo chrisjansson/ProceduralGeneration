@@ -9,7 +9,7 @@ using Gwen.Control;
 
 namespace CjClutter.OpenGl.Gui
 {
-    public class GeneratoionSettingsControl
+    public class GenerationSettingsControl
     {
         private int _octaves;
         private double _amplitude;
@@ -20,7 +20,7 @@ namespace CjClutter.OpenGl.Gui
 
         private readonly IList<Base> _invalidControls = new List<Base>();  
 
-        public GeneratoionSettingsControl(Base parent)
+        public GenerationSettingsControl(Base parent)
         {
             _dockWithBackground = new DockWithBackground(parent)
                 {
