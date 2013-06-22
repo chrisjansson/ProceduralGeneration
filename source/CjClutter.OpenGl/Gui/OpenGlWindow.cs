@@ -62,10 +62,18 @@ namespace CjClutter.OpenGl.Gui
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
 
-            _keyboardInputObservable.SubscribeKey(KeyCombination.Esc, CombinationDirection.Down, Exit);
+            //update mouse and keyboard processors always, then run update depending on wether the menu or renderer is active
+
+            //Input for both
             _keyboardInputObservable.SubscribeKey(KeyCombination.LeftAlt && KeyCombination.Enter, CombinationDirection.Down, ToggleFullScren);
+
+            //Inputs for "game"
+            _keyboardInputObservable.SubscribeKey(KeyCombination.Esc, CombinationDirection.Down, Exit);
             _keyboardInputObservable.SubscribeKey(KeyCombination.P, CombinationDirection.Down, () => _renderer.SetProjectionMode(ProjectionMode.Perspective));
             _keyboardInputObservable.SubscribeKey(KeyCombination.O, CombinationDirection.Down, () => _renderer.SetProjectionMode(ProjectionMode.Orthographic));
+
+            //Inputs for "menu"
+
 
             _scene.Load();
         }

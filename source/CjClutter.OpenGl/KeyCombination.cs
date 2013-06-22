@@ -92,5 +92,6 @@ namespace CjClutter.OpenGl
         public static KeyCombination Enter = new KeyCombination(Key.Enter);
         public static KeyCombination O = new KeyCombination(Key.O);
         public static KeyCombination P = new KeyCombination(Key.P);
+        public static KeyCombination Tilde = new KeyCombination(Key.Tilde);
     }
 }
