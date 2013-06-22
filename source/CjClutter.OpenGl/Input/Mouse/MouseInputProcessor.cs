@@ -81,9 +81,9 @@ namespace CjClutter.OpenGl.Input.Mouse
             return _guiToRelativeCoordinateTransformer.TransformToRelative(absoluteMouseCoordinates);
         }
 
-        public double GetMouseWheelDelta()
+        public float GetMouseWheelDelta()
         {
-            return _currentFrameMouseState.ScrollWheelValue - _previousFrameMouseState.ScrollWheelValue;
+            return _currentFrameMouseState.WheelPrecise - _previousFrameMouseState.WheelPrecise;
         }
     }
 }

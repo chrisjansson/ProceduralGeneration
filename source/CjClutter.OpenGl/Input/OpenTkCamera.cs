@@ -29,6 +29,12 @@ namespace CjClutter.OpenGl.Input
             ProcessMouseUp();
             
             ProcessRotate();
+            
+            var mouseWheelDelta = _mouseInputProcessor.GetMouseWheelDelta();
+            if (mouseWheelDelta != 0)
+            {
+                _trackballCamera.Zoom(mouseWheelDelta);    
+            }
         }
 
         private void ProcessMouseDown()

@@ -6,5 +6,6 @@ namespace CjClutter.OpenGl.Camera
     {
         void Rotate(Vector2d startPoint, Vector2d endPoint);
         void CommitRotation(Vector2d startPoint, Vector2d endPoint);
+        void Zoom(double delta);
     }
 }

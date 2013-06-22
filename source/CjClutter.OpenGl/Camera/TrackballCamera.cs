@@ -5,6 +5,8 @@ namespace CjClutter.OpenGl.Camera
 {
     public class TrackballCamera : ITrackballCamera
     {
+        const double MinimumDistanceToTarget = 0.2;
+
         private readonly ICamera _camera;
         private readonly ITrackballCameraRotationCalculator _cameraRotationCalculator;
 
@@ -19,8 +21,8 @@ namespace CjClutter.OpenGl.Camera
 
         public Vector3d Position
         {
-            get { return _camera.Up; }
-            set { _camera.Up = value; }
+            get { return _camera.Position; }
+            set { _camera.Position = value; }
         }
 
         public Vector3d Target
@@ -56,6 +58,18 @@ namespace CjClutter.OpenGl.Camera
 
             _cameraOrientation = _cameraOrientation.Multiply(rotationMatrix);
             _tempCameraOrientation = Matrix4d.Identity;
+        }
+
+        public void Zoom(double delta)
+        {
+            var toTarget = Target - Position;
+            toTarget.Normalize();
+
+            var newPosition = Position - (toTarget * -delta * 0.5);
+            if (newPosition.Length >= MinimumDistanceToTarget)
+            {
+                Position = newPosition;
+            }
         }
 
         private Matrix4d GetOrientationMatrix()
