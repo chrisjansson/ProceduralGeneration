@@ -26,6 +26,7 @@ namespace CjClutter.OpenGl.Gui
         private readonly Hud _hud;
         private readonly Renderer _renderer;
         private readonly TrackballCamera _trackballCamera;
+        private Menu _menu;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -55,6 +56,7 @@ namespace CjClutter.OpenGl.Gui
             _renderer = new Renderer();
             _scene = new Scene();
             _hud = new Hud(this);
+            _menu = new Menu(this);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -82,6 +84,7 @@ namespace CjClutter.OpenGl.Gui
         {
             _scene.Unload();
             _hud.Close();
+            _menu.Close();
         }
 
         private void ToggleFullScren()
@@ -106,6 +109,7 @@ namespace CjClutter.OpenGl.Gui
             GL.Viewport(0, 0, Width, Height);
             _renderer.Resize(Width, Height);
             _hud.Resize(Width, Height);
+            _menu.Resize(Width, Height);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -122,8 +126,10 @@ namespace CjClutter.OpenGl.Gui
             _renderer.Render(_scene, _trackballCamera);
 
             GL.Clear(ClearBufferMask.DepthBufferBit);
-            _hud.Update(ElapsedTime.TotalSeconds, _frameTimeCounter.FrameTime);
-            _hud.Draw();
+            //_hud.Update(ElapsedTime.TotalSeconds, _frameTimeCounter.FrameTime);
+            //_hud.Draw();
+            _menu.Update();
+            _menu.Draw();
 
             SwapBuffers();
         }
