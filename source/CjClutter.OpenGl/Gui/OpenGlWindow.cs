@@ -9,6 +9,7 @@ using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
 using FrameEventArgs = OpenTK.FrameEventArgs;
 
 namespace CjClutter.OpenGl.Gui
@@ -73,8 +74,7 @@ namespace CjClutter.OpenGl.Gui
             _keyboardInputObservable.SubscribeKey(KeyCombination.Esc, CombinationDirection.Down, Exit);
             _keyboardInputObservable.SubscribeKey(KeyCombination.P, CombinationDirection.Down, () => _renderer.SetProjectionMode(ProjectionMode.Perspective));
             _keyboardInputObservable.SubscribeKey(KeyCombination.O, CombinationDirection.Down, () => _renderer.SetProjectionMode(ProjectionMode.Orthographic));
-            _keyboardInputObservable.SubscribeKey(KeyCombination.Enter, CombinationDirection.Down, () => _menu.Enable());
-            _keyboardInputObservable.SubscribeKey(KeyCombination.LeftAlt, CombinationDirection.Down, () => _menu.Disable());
+            _keyboardInputObservable.SubscribeKey(KeyCombination.Tilde, CombinationDirection.Down, () => _menu.IsEnabled = !_menu.IsEnabled);
 
             //Inputs for "menu"
 

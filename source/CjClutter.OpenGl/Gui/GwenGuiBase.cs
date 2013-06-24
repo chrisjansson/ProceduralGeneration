@@ -11,6 +11,7 @@ namespace CjClutter.OpenGl.Gui
         private Matrix4 _projectionMatrix;
         private readonly TexturedBase _skin;
         protected Canvas Root;
+        private bool _isEnabled;
 
         public GwenGuiBase()
         {
@@ -18,6 +19,19 @@ namespace CjClutter.OpenGl.Gui
             _skin = new TexturedBase(_renderer, "DefaultSkin.png");
 
             Root = new Canvas(_skin);
+        }
+
+        public bool IsEnabled
+        {
+            get { return _isEnabled; }
+            set
+            {
+                var changed = _isEnabled != value;
+                _isEnabled = value;
+
+                if(changed)
+                    OnEnabledChanged();
+            }
         }
 
         public void Resize(int width, int height)
@@ -28,6 +42,8 @@ namespace CjClutter.OpenGl.Gui
 
         public void Draw()
         {
+            if(!IsEnabled) return;
+
             MaintainTextCache();
 
             GL.MatrixMode(MatrixMode.Projection);
@@ -50,5 +66,7 @@ namespace CjClutter.OpenGl.Gui
             _skin.Dispose();
             Root.Dispose();
         }
+
+        protected virtual void OnEnabledChanged() {}
     }
 }

@@ -15,10 +15,21 @@ namespace CjClutter.OpenGl.Gui
             _inputTranslator = new GwenInputTranslator(Root);
 
             _generationSettingsControl = new GenerationSettingsControl(Root);
-            Enable();
         }
 
-        public void Enable()
+        protected override void OnEnabledChanged()
+        {
+            if (IsEnabled)
+            {
+                Enable();
+            }
+            else
+            {
+                Disable();
+            }
+        }
+
+        private void Enable()
         {
             _gameWindow.Mouse.Move += OnMouseOnMove;
             _gameWindow.Mouse.ButtonDown += OnMouseOnButtonDown;
@@ -30,7 +41,7 @@ namespace CjClutter.OpenGl.Gui
             _gameWindow.KeyPress += OnGameWindowOnKeyPress;
         }
 
-        public void Disable()
+        private void Disable()
         {
             _gameWindow.Mouse.Move -= OnMouseOnMove;
             _gameWindow.Mouse.ButtonDown -= OnMouseOnButtonDown;
