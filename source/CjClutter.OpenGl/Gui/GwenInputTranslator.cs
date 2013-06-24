@@ -10,18 +10,13 @@ namespace CjClutter.OpenGl.Gui
     public class GwenInputTranslator
     {
         private bool _altGr;
-        private Canvas _canvas;
+        private Canvas _target;
         private int _mouseX;
         private int _mouseY;
 
-        public GwenInputTranslator(GameWindow window)
+        public GwenInputTranslator(Canvas target)
         {
-            window.KeyPress += KeyPress;
-        }
-
-        public void Initialize(Canvas c)
-        {
-            _canvas = c;
+            _target = target;
         }
 
         /// <summary>
@@ -69,7 +64,7 @@ namespace CjClutter.OpenGl.Gui
                 case OpenTK.Input.Key.RAlt:
                     if (_altGr)
                     {
-                        _canvas.Input_Key(Key.Control, false);
+                        _target.Input_Key(Key.Control, false);
                     }
                     return Key.Alt;
                 case OpenTK.Input.Key.RShift:
@@ -92,7 +87,7 @@ namespace CjClutter.OpenGl.Gui
 
         public bool ProcessMouseMessage(EventArgs args)
         {
-            if (null == _canvas) return false;
+            if (null == _target) return false;
 
             if (args is MouseMoveEventArgs)
             {
@@ -103,19 +98,19 @@ namespace CjClutter.OpenGl.Gui
                 _mouseX = ev.X;
                 _mouseY = ev.Y;
 
-                return _canvas.Input_MouseMoved(_mouseX, _mouseY, dx, dy);
+                return _target.Input_MouseMoved(_mouseX, _mouseY, dx, dy);
             }
 
             if (args is MouseButtonEventArgs)
             {
                 var ev = args as MouseButtonEventArgs;
-                return _canvas.Input_MouseButton((int) ev.Button, ev.IsPressed);
+                return _target.Input_MouseButton((int) ev.Button, ev.IsPressed);
             }
 
             if (args is MouseWheelEventArgs)
             {
                 var ev = args as MouseWheelEventArgs;
-                return _canvas.Input_MouseWheel(ev.Delta*60);
+                return _target.Input_MouseWheel(ev.Delta*60);
             }
 
             return false;
@@ -127,7 +122,7 @@ namespace CjClutter.OpenGl.Gui
             var ev = args as KeyboardKeyEventArgs;
             char ch = TranslateChar(ev.Key);
 
-            if (InputHandler.DoSpecialKeys(_canvas, ch))
+            if (InputHandler.DoSpecialKeys(_target, ch))
                 return false;
             /*
             if (ch != ' ')
@@ -137,7 +132,7 @@ namespace CjClutter.OpenGl.Gui
             */
             Key iKey = TranslateKeyCode(ev.Key);
 
-            return _canvas.Input_Key(iKey, true);
+            return _target.Input_Key(iKey, true);
         }
 
         public bool ProcessKeyUp(EventArgs args)
@@ -148,12 +143,12 @@ namespace CjClutter.OpenGl.Gui
 
             Key iKey = TranslateKeyCode(ev.Key);
 
-            return _canvas.Input_Key(iKey, false);
+            return _target.Input_Key(iKey, false);
         }
 
         public void KeyPress(object sender, KeyPressEventArgs e)
         {
-            _canvas.Input_Character(e.KeyChar);
+            _target.Input_Character(e.KeyChar);
         }
     }
 }

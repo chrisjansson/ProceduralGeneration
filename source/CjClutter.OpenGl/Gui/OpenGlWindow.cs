@@ -26,7 +26,7 @@ namespace CjClutter.OpenGl.Gui
         private readonly Hud _hud;
         private readonly Renderer _renderer;
         private readonly TrackballCamera _trackballCamera;
-        private Menu _menu;
+        private readonly Menu _menu;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -73,6 +73,8 @@ namespace CjClutter.OpenGl.Gui
             _keyboardInputObservable.SubscribeKey(KeyCombination.Esc, CombinationDirection.Down, Exit);
             _keyboardInputObservable.SubscribeKey(KeyCombination.P, CombinationDirection.Down, () => _renderer.SetProjectionMode(ProjectionMode.Perspective));
             _keyboardInputObservable.SubscribeKey(KeyCombination.O, CombinationDirection.Down, () => _renderer.SetProjectionMode(ProjectionMode.Orthographic));
+            _keyboardInputObservable.SubscribeKey(KeyCombination.Enter, CombinationDirection.Down, () => _menu.Enable());
+            _keyboardInputObservable.SubscribeKey(KeyCombination.LeftAlt, CombinationDirection.Down, () => _menu.Disable());
 
             //Inputs for "menu"
 
