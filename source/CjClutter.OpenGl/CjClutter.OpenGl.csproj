@@ -111,7 +111,7 @@
     <Compile Include="Gui\DockWithBackground.cs" />
     <Compile Include="Gui\GenerationSettingsControl.cs" />
     <Compile Include="Gui\GwenGuiBase.cs" />
-    <Compile Include="Gui\GwenInput.cs" />
+    <Compile Include="Gui\GwenInputTranslator.cs" />
     <Compile Include="Gui\Menu.cs" />
     <Compile Include="Gui\Renderer.cs" />
     <Compile Include="Gui\SpecialProperties.cs" />
