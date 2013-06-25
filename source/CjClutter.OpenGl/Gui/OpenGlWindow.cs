@@ -78,7 +78,6 @@ namespace CjClutter.OpenGl.Gui
 
             //Inputs for "menu"
 
-
             _scene.Load();
         }
 

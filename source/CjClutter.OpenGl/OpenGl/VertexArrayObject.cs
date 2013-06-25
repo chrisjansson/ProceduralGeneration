@@ -20,5 +20,10 @@ namespace CjClutter.OpenGl.OpenGl
         {
             GL.BindVertexArray(0);
         }
+
+        public void Delete()
+        {
+            GL.DeleteVertexArray(_array);
+        }
     }
 }

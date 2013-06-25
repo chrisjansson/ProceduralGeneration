@@ -15,8 +15,10 @@ namespace CjClutter.OpenGl.Gui
 {
     public class Renderer
     {
+        private readonly Dictionary<Mesh, MeshResources> _resources = new Dictionary<Mesh, MeshResources>();
         private ProjectionMode _projectionMode = ProjectionMode.Perspective;
         private Matrix4d _projectionMatrix;
+        private Vector2 _windowScale;
 
         public void Render(Scene scene, ICamera camera)
         {
@@ -74,10 +76,7 @@ namespace CjClutter.OpenGl.Gui
             }
         }
 
-        private readonly Dictionary<Mesh, MeshResources> _resources = new Dictionary<Mesh, MeshResources>();
-        private Vector2 _windowScale;
-        private int _width;
-        private int _height;
+        
 
         private MeshResources GetOrCreateResources(Mesh mesh)
         {
@@ -125,10 +124,18 @@ namespace CjClutter.OpenGl.Gui
             return resourcesForMesh;
         }
 
+        private void ReleaseResources(Mesh mesh)
+        {
+            var resources = _resources[mesh];
+            resources.RenderProgram.Delete();
+
+            resources.VerticesVbo.Delete();
+            resources.IndexVbo.Delete();
+            resources.VertexArrayObject.Delete();
+        }
+
         public void Resize(int width, int height)
         {
-            _height = height;
-            _width = width;
             _projectionMatrix = CreateProjectionMatrix(width, height);
             _windowScale = new Vector2(width, height);
         }
@@ -146,7 +153,7 @@ namespace CjClutter.OpenGl.Gui
         public void SetProjectionMode(ProjectionMode projectionMode)
         {
             _projectionMode = projectionMode;
-            _projectionMatrix = CreateProjectionMatrix(_width, _height);
+            _projectionMatrix = CreateProjectionMatrix((int) _windowScale.X, (int) _windowScale.Y);
         }
     }
 }
