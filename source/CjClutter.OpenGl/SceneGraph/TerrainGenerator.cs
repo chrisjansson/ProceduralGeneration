@@ -9,9 +9,9 @@ namespace CjClutter.OpenGl.SceneGraph
         private readonly INoiseGenerator _noise;
         private readonly ColorCycle _colorCycle;
 
-        public TerrainGenerator()
+        public TerrainGenerator(FractalBrownianMotionSettings settings)
         {
-            _noise = new SimplexNoise();
+            _noise = new FractalBrownianMotion(new SimplexNoise(), settings);
             _colorCycle = new ColorCycle();
         }
 

@@ -5,6 +5,7 @@ using CjClutter.OpenGl.CoordinateSystems;
 using CjClutter.OpenGl.Input;
 using CjClutter.OpenGl.Input.Keboard;
 using CjClutter.OpenGl.Input.Mouse;
+using CjClutter.OpenGl.Noise;
 using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 using OpenTK.Graphics;
@@ -57,7 +58,7 @@ namespace CjClutter.OpenGl.Gui
             _renderer = new Renderer();
             _scene = new Scene();
             _hud = new Hud(this);
-            _menu = new Menu(this);
+            _menu = new Menu(this, _scene);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -78,7 +79,7 @@ namespace CjClutter.OpenGl.Gui
 
             //Inputs for "menu"
 
-            _scene.Load();
+            _scene.Reload(new FractalBrownianMotionSettings(6, 0.5, 0.6));
         }
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)

@@ -76,8 +76,6 @@ namespace CjClutter.OpenGl.Gui
             }
         }
 
-        
-
         private MeshResources GetOrCreateResources(Mesh mesh)
         {
             if (_resources.ContainsKey(mesh))

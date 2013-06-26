@@ -45,6 +45,16 @@ namespace CjClutter.OpenGl.Gui
                     Text = "Apply",
                     AutoSizeToContents = true,
                 };
+
+            _button.Clicked += OnSettingsChange;
+        }
+
+        public event Action<FractalBrownianMotionSettings> GenerationSettingsChanged;
+
+        private void OnSettingsChange(Base control)
+        {
+            if (GenerationSettingsChanged != null)
+                GenerationSettingsChanged(GetSettings());
         }
 
         private void CreateFieldFor<T>(string label, Func<T> getter, Action<T> setter)
@@ -86,17 +96,15 @@ namespace CjClutter.OpenGl.Gui
             _button.IsDisabled = _invalidControls.Any();
         }
 
-        public FractalBrownianMotionSettings GetSettings()
+        private FractalBrownianMotionSettings GetSettings()
         {
             return new FractalBrownianMotionSettings(_octaves, _amplitude, _frequency);
         }
 
         public void Update()
         {
-
             //todo: update here or in render or instantiation only?
             //bool sizeToChildren = _properties.SizeToChildren();
-
         }
     }
 }

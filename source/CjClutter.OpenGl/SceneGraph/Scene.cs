@@ -17,9 +17,11 @@ namespace CjClutter.OpenGl.SceneGraph
 
         public List<Mesh> Meshes { get; set; }
 
-        public void Load()
+        public void Reload(FractalBrownianMotionSettings fractalBrownianMotionSettings)
         {
-            var terrainGenerator = new TerrainGenerator();
+            Meshes.Clear();
+
+            var terrainGenerator = new TerrainGenerator(fractalBrownianMotionSettings);
             var generate = terrainGenerator.Generate();
 
             Meshes.AddRange(generate);
