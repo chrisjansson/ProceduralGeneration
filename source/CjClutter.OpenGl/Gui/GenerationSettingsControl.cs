@@ -18,7 +18,8 @@ namespace CjClutter.OpenGl.Gui
         private readonly DockWithBackground _dockWithBackground;
         private readonly Button _button;
 
-        private readonly IList<Base> _invalidControls = new List<Base>();  
+        private readonly IList<Base> _invalidControls = new List<Base>();
+        private List<Base> _propertyRows = new List<Base>();
 
         public GenerationSettingsControl(Base parent)
         {
@@ -33,11 +34,7 @@ namespace CjClutter.OpenGl.Gui
                 {
                     Dock = Pos.Top,
                 };
-
-            CreateFieldFor("Octaves", () => _octaves, x => _octaves = x);
-            CreateFieldFor("Amplitude", () => _amplitude, x => _amplitude = x);
-            CreateFieldFor("Frequency", () => _frequency, x => _frequency = x);
-
+            
             _button = new Button(_dockWithBackground)
                 {
                     Dock = Pos.Top,
@@ -47,7 +44,24 @@ namespace CjClutter.OpenGl.Gui
                 };
 
             _button.Clicked += OnSettingsChange;
+
+            Refresh();
         }
+
+        
+
+        private void Refresh()
+        {
+            foreach (var propertyRow in _propertyRows)
+            {
+                _properties.RemoveChild(propertyRow, true);
+            }
+
+            AddField("Octaves", () => _octaves, x => _octaves = x);
+            AddField("Amplitude", () => _amplitude, x => _amplitude = x);
+            AddField("Frequency", () => _frequency, x => _frequency = x);
+        }
+
 
         public event Action<FractalBrownianMotionSettings> GenerationSettingsChanged;
 
@@ -57,7 +71,7 @@ namespace CjClutter.OpenGl.Gui
                 GenerationSettingsChanged(GetSettings());
         }
 
-        private void CreateFieldFor<T>(string label, Func<T> getter, Action<T> setter)
+        private void AddField<T>(string label, Func<T> getter, Action<T> setter)
         {
             var propertyRow = _properties.Add(label);
             propertyRow.SizeToChildren();
@@ -80,6 +94,9 @@ namespace CjClutter.OpenGl.Gui
                         AddInvalidControl(propertyRow);
                     }
                 };
+
+            var propertyRowContainer = new PropertyRowContainer<T>(propertyRow);
+
         }
 
         private void AddInvalidControl(Base control)
@@ -99,6 +116,15 @@ namespace CjClutter.OpenGl.Gui
         private FractalBrownianMotionSettings GetSettings()
         {
             return new FractalBrownianMotionSettings(_octaves, _amplitude, _frequency);
+        }
+
+        public void SetSettings(FractalBrownianMotionSettings settings)
+        {
+            _octaves = settings.Octaves;
+            _amplitude = settings.Amplitude;
+            _frequency = settings.Frequency;
+
+            Refresh();
         }
 
         public void Update()

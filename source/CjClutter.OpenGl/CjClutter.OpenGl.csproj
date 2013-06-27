@@ -113,6 +113,7 @@
     <Compile Include="Gui\GwenGuiBase.cs" />
     <Compile Include="Gui\GwenInputTranslator.cs" />
     <Compile Include="Gui\Menu.cs" />
+    <Compile Include="Gui\PropertyRowContainer.cs" />
     <Compile Include="Gui\Renderer.cs" />
     <Compile Include="Gui\SpecialProperties.cs" />
     <Compile Include="Input\Keboard\KeyArgActionPair.cs" />
