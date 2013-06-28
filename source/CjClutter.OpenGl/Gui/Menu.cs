@@ -1,5 +1,4 @@
-﻿using System;
-using CjClutter.OpenGl.Noise;
+﻿using CjClutter.OpenGl.Noise;
 using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 using OpenTK.Input;
@@ -21,7 +20,6 @@ namespace CjClutter.OpenGl.Gui
 
             _generationSettingsControl = new GenerationSettingsControl(Root);
             _generationSettingsControl.GenerationSettingsChanged += OnGenerationSettingsChanged;
-
         }
 
         private void OnGenerationSettingsChanged(FractalBrownianMotionSettings fractalBrownianMotionSettings)

@@ -4,12 +4,19 @@ using Gwen.Control;
 
 namespace CjClutter.OpenGl.Gui
 {
-    public class PropertyRowContainer<T>
+    public interface IPropertyRowContainer
+    {
+        bool IsValid { get; }
+        event Action IsValidChanged;
+    }
+
+    public class PropertyRowContainer<T> : IPropertyRowContainer
     {
         private readonly PropertyRow _propertyRow;
         private bool _isSettingValue;
 
         public event Action ValueChanged;
+        public event Action IsValidChanged;
 
         public PropertyRowContainer(PropertyRow propertyRow)
         {
@@ -17,7 +24,17 @@ namespace CjClutter.OpenGl.Gui
             propertyRow.ValueChanged += OnValueChanged;
         }
 
-        public bool IsValid { get; set; }
+        private bool _isValid;
+        public bool IsValid
+        {
+            get { return _isValid; }
+            set
+            {
+                _isValid = value;
+                if (IsValidChanged != null)
+                    IsValidChanged();
+            }
+        }
 
         private T _value;
         public T Value

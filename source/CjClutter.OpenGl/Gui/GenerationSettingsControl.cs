@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
 using CjClutter.OpenGl.Noise;
 using Gwen;
 using Gwen.Control;
+using System.Linq;
 
 namespace CjClutter.OpenGl.Gui
 {
@@ -17,9 +16,7 @@ namespace CjClutter.OpenGl.Gui
         private readonly Properties _properties;
         private readonly DockWithBackground _dockWithBackground;
         private readonly Button _button;
-
-        private readonly IList<Base> _invalidControls = new List<Base>();
-        private List<Base> _propertyRows = new List<Base>();
+        private readonly List<IPropertyRowContainer> _propertyRowContainers = new List<IPropertyRowContainer>();
 
         public GenerationSettingsControl(Base parent)
         {
@@ -45,23 +42,10 @@ namespace CjClutter.OpenGl.Gui
 
             _button.Clicked += OnSettingsChange;
 
-            Refresh();
-        }
-
-        
-
-        private void Refresh()
-        {
-            foreach (var propertyRow in _propertyRows)
-            {
-                _properties.RemoveChild(propertyRow, true);
-            }
-
             AddField("Octaves", () => _octaves, x => _octaves = x);
             AddField("Amplitude", () => _amplitude, x => _amplitude = x);
             AddField("Frequency", () => _frequency, x => _frequency = x);
         }
-
 
         public event Action<FractalBrownianMotionSettings> GenerationSettingsChanged;
 
@@ -76,41 +60,20 @@ namespace CjClutter.OpenGl.Gui
             var propertyRow = _properties.Add(label);
             propertyRow.SizeToChildren();
 
-            propertyRow.Value = getter().ToString();
-            propertyRow.ValueChanged += x =>
+            var propertyRowContainer = new PropertyRowContainer<T>(propertyRow)
                 {
-                    var text = propertyRow.Value;
-                    var converter = TypeDescriptor.GetConverter(typeof (T));
-
-                    try
-                    {
-                        var newValue = (T) converter.ConvertFromInvariantString(text);
-                        setter(newValue);
-
-                        RemoveValidControl(propertyRow);
-                    }
-                    catch (Exception e)
-                    {
-                        AddInvalidControl(propertyRow);
-                    }
+                    Value = getter()
                 };
 
-            var propertyRowContainer = new PropertyRowContainer<T>(propertyRow);
+            propertyRowContainer.ValueChanged += () => setter(propertyRowContainer.Value);
 
+            AddPropertyRowContainer(propertyRowContainer);
         }
 
-        private void AddInvalidControl(Base control)
+        private void AddPropertyRowContainer(IPropertyRowContainer propertyRowContainer)
         {
-            if (!_invalidControls.Contains(control))
-                _invalidControls.Add(control);
-
-            _button.IsDisabled = _invalidControls.Any();
-        }
-
-        private void RemoveValidControl(Base control)
-        {
-            _invalidControls.Remove(control);
-            _button.IsDisabled = _invalidControls.Any();
+            propertyRowContainer.IsValidChanged += () => _button.IsDisabled = !_propertyRowContainers.All(x => x.IsValid);
+            _propertyRowContainers.Add(propertyRowContainer);
         }
 
         private FractalBrownianMotionSettings GetSettings()
@@ -124,7 +87,9 @@ namespace CjClutter.OpenGl.Gui
             _amplitude = settings.Amplitude;
             _frequency = settings.Frequency;
 
-            Refresh();
+            //AddField("Octaves", () => _octaves, x => _octaves = x);
+            //AddField("Amplitude", () => _amplitude, x => _amplitude = x);
+            //AddField("Frequency", () => _frequency, x => _frequency = x);
         }
 
         public void Update()
