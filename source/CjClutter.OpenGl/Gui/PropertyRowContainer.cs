@@ -8,6 +8,7 @@ namespace CjClutter.OpenGl.Gui
     {
         bool IsValid { get; }
         event Action IsValidChanged;
+        Action Refresh { get; }
     }
 
     public class PropertyRowContainer<T> : IPropertyRowContainer
@@ -24,7 +25,7 @@ namespace CjClutter.OpenGl.Gui
             propertyRow.ValueChanged += OnValueChanged;
         }
 
-        private bool _isValid;
+        private bool _isValid = true;
         public bool IsValid
         {
             get { return _isValid; }
@@ -44,10 +45,13 @@ namespace CjClutter.OpenGl.Gui
             {
                 _value = value;
                 _isSettingValue = true;
-                _propertyRow.Value = value.ToString();
+                TypeConverter typeConverter = TypeDescriptor.GetConverter(typeof (T));
+                _propertyRow.Value = typeConverter.ConvertToInvariantString(value);
                 _isSettingValue = false;
             }
         }
+
+        public Action Refresh { get; set; }
 
         private void OnValueChanged(Base control)
         {
@@ -69,7 +73,7 @@ namespace CjClutter.OpenGl.Gui
             }
             catch (Exception)
             {
-                IsValid = true;
+                IsValid = false;
             }
         }
 

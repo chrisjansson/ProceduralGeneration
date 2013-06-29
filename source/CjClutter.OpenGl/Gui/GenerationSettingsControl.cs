@@ -66,6 +66,7 @@ namespace CjClutter.OpenGl.Gui
                 };
 
             propertyRowContainer.ValueChanged += () => setter(propertyRowContainer.Value);
+            propertyRowContainer.Refresh = () => propertyRowContainer.Value = getter();
 
             AddPropertyRowContainer(propertyRowContainer);
         }
@@ -76,7 +77,7 @@ namespace CjClutter.OpenGl.Gui
             _propertyRowContainers.Add(propertyRowContainer);
         }
 
-        private FractalBrownianMotionSettings GetSettings()
+        public FractalBrownianMotionSettings GetSettings()
         {
             return new FractalBrownianMotionSettings(_octaves, _amplitude, _frequency);
         }
@@ -87,9 +88,10 @@ namespace CjClutter.OpenGl.Gui
             _amplitude = settings.Amplitude;
             _frequency = settings.Frequency;
 
-            //AddField("Octaves", () => _octaves, x => _octaves = x);
-            //AddField("Amplitude", () => _amplitude, x => _amplitude = x);
-            //AddField("Frequency", () => _frequency, x => _frequency = x);
+            foreach (var propertyRowContainer in _propertyRowContainers)
+            {
+                propertyRowContainer.Refresh();
+            }
         }
 
         public void Update()

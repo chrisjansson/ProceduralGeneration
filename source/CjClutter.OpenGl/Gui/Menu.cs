@@ -20,6 +20,13 @@ namespace CjClutter.OpenGl.Gui
 
             _generationSettingsControl = new GenerationSettingsControl(Root);
             _generationSettingsControl.GenerationSettingsChanged += OnGenerationSettingsChanged;
+
+
+        }
+
+        public GenerationSettingsControl GenerationSettingsControl
+        {
+            get { return _generationSettingsControl; }
         }
 
         private void OnGenerationSettingsChanged(FractalBrownianMotionSettings fractalBrownianMotionSettings)

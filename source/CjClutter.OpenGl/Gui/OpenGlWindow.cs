@@ -59,6 +59,7 @@ namespace CjClutter.OpenGl.Gui
             _scene = new Scene();
             _hud = new Hud(this);
             _menu = new Menu(this, _scene);
+            _menu.GenerationSettingsControl.SetSettings(new FractalBrownianMotionSettings(6, 0.5, 0.6));
         }
 
         protected override void OnLoad(EventArgs e)
@@ -78,8 +79,7 @@ namespace CjClutter.OpenGl.Gui
             _keyboardInputObservable.SubscribeKey(KeyCombination.Tilde, CombinationDirection.Down, () => _menu.IsEnabled = !_menu.IsEnabled);
 
             //Inputs for "menu"
-
-            _scene.Reload(new FractalBrownianMotionSettings(6, 0.5, 0.6));
+            _scene.Reload(_menu.GenerationSettingsControl.GetSettings());
         }
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
