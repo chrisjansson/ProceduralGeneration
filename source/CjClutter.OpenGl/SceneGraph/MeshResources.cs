@@ -9,6 +9,6 @@ namespace CjClutter.OpenGl.SceneGraph
         public VertexBufferObject<Vertex3V> VerticesVbo { get; set; }
         public SimpleRenderProgram RenderProgram { get; set; }
         public VertexArrayObject VertexArrayObject { get; set; }
-        public VertexBufferObject<ushort> IndexVbo { get; set; }
+        public VertexBufferObject<uint> IndexVbo { get; set; }
     }
 }

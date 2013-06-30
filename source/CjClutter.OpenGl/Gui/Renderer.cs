@@ -58,7 +58,7 @@ namespace CjClutter.OpenGl.Gui
             meshResources.RenderProgram.WindowScale.Set(_windowScale);
             meshResources.RenderProgram.ModelMatrix.Set(mesh.ModelMatrix);
 
-            GL.DrawElements(BeginMode.Triangles, mesh.Faces.Count * 3, DrawElementsType.UnsignedShort, 0);
+            GL.DrawElements(BeginMode.Triangles, mesh.Faces.Count * 3, DrawElementsType.UnsignedInt, 0);
         }
 
         private void RunWithResourcesBound(Action action, params IBindable[] bindables)
@@ -92,13 +92,13 @@ namespace CjClutter.OpenGl.Gui
             resourcesForMesh.VerticesVbo.Data(mesh.Vertices.ToArray());
             resourcesForMesh.VerticesVbo.Unbind();
 
-            var faceIndices = mesh.Faces
-                .SelectMany(x => new[] { x.V0, x.V1, x.V2 })
+            uint[] faceIndices = mesh.Faces
+                .SelectMany(x => new uint[] { x.V0, x.V1, x.V2 })
                 .ToArray();
 
-            if (faceIndices.Length > ushort.MaxValue) throw new NotSupportedException("Implement selection of index data type to allow for bigger ranges");
+            if (mesh.Vertices.Count > uint.MaxValue) throw new NotSupportedException("Implement selection of index data type to allow for bigger ranges");
 
-            resourcesForMesh.IndexVbo = openGlResourceFactory.CreateVertexBufferObject<ushort>(BufferTarget.ElementArrayBuffer, sizeof(ushort));
+            resourcesForMesh.IndexVbo = openGlResourceFactory.CreateVertexBufferObject<uint>(BufferTarget.ElementArrayBuffer, sizeof(uint));
             resourcesForMesh.IndexVbo.Bind();
             resourcesForMesh.IndexVbo.Data(faceIndices);
             resourcesForMesh.IndexVbo.Unbind();
