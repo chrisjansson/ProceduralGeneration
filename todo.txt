@@ -1,3 +1,4 @@
 cache value in uniform setters/dirty check in setters
 add sources of dependencies so that they can be built if needed
-adjust terrain parameters from gui
+read and render heightmap from file
+shadows
