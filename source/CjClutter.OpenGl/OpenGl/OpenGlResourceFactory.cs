@@ -3,7 +3,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace CjClutter.OpenGl.OpenGl
 {
-    public class OpenGlResourceFactory
+    public class OpenGlResourceFactory : IOpenGlResourceFactory
     {
         private readonly OpenGl _openGl;
 

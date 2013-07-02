@@ -93,7 +93,7 @@ namespace CjClutter.OpenGl.Gui
             resourcesForMesh.VerticesVbo.Unbind();
 
             var faceIndices = mesh.Faces
-                .SelectMany(x => new[] { x.V0, x.V1, x.V2 })
+                .SelectMany(x => new ushort[] { (ushort) x.V0, (ushort) x.V1, (ushort) x.V2 })
                 .ToArray();
 
             if (faceIndices.Length > ushort.MaxValue) throw new NotSupportedException("Implement selection of index data type to allow for bigger ranges");
