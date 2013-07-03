@@ -41,6 +41,11 @@ namespace CjClutter.OpenGl.Gui
                     () => DrawMesh(scene, sceneObjectLocalCopy, resources), 
                     resources.RenderableMesh.VertexArrayObject, 
                     resources.RenderProgram);
+
+                RunWithResourcesBound(
+                    () => DrawNormals(scene, sceneObjectLocalCopy, resources),
+                    resources.RenderableMesh.VertexArrayObject,
+                    resources.NormalDebugProgram);
             }
         }
 
@@ -61,6 +66,24 @@ namespace CjClutter.OpenGl.Gui
 
             meshResources.RenderProgram.WindowScale.Set(_windowScale);
             meshResources.RenderProgram.ModelMatrix.Set(sceneObject.ModelMatrix);
+
+            GL.DrawElements(BeginMode.Triangles, sceneObject.Mesh.Faces.Length * 3, DrawElementsType.UnsignedInt, 0);
+        }
+
+        private void DrawNormals(Scene scene, SceneObject sceneObject, MeshResources meshResources)
+        {
+            GL.Enable(EnableCap.DepthTest);
+            GL.CullFace(CullFaceMode.Back);
+            GL.Enable(EnableCap.CullFace);
+            GL.FrontFace(FrontFaceDirection.Cw);
+
+            var projectionMatrix = scene.ProjectionMatrix.ToMatrix4();
+            meshResources.NormalDebugProgram.ProjectionMatrix.Set(projectionMatrix);
+
+            var viewMatrix = scene.ViewMatrix.ToMatrix4();
+            meshResources.NormalDebugProgram.ViewMatrix.Set(viewMatrix);
+
+            meshResources.NormalDebugProgram.ModelMatrix.Set(sceneObject.ModelMatrix);
 
             GL.DrawElements(BeginMode.Triangles, sceneObject.Mesh.Faces.Length * 3, DrawElementsType.UnsignedInt, 0);
         }
@@ -92,10 +115,14 @@ namespace CjClutter.OpenGl.Gui
             var simpleRenderProgram = new SimpleRenderProgram();
             simpleRenderProgram.Create();
 
+            var normalDebugProgram = new NormalDebugProgram();
+            normalDebugProgram.Create();
+
             var resources = new MeshResources
                 {
                     RenderProgram = simpleRenderProgram,
                     RenderableMesh = renderableMesh,
+                    NormalDebugProgram = normalDebugProgram,
                 };
 
             _resources.Add(sceneObject, resources);

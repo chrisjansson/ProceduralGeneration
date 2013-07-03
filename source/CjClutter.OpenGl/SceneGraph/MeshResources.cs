@@ -9,5 +9,6 @@ namespace CjClutter.OpenGl.SceneGraph
     {
         public SimpleRenderProgram RenderProgram { get; set; }
         public RenderableMesh RenderableMesh { get; set; }
+        public NormalDebugProgram NormalDebugProgram { get; set; }
     }
 }

@@ -5,7 +5,7 @@ namespace CjClutter.OpenGl.OpenGl.Diagnostics
 {
     public class ProgramDiagnostics
     {
-        public Boolean GetLinkStatus(Program program)
+        public Boolean GetLinkStatus(IProgram program)
         {
             int linkStatus;
             GL.GetProgram(program.ProgramId, ProgramParameter.LinkStatus, out linkStatus);
