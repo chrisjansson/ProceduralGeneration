@@ -20,6 +20,13 @@ namespace CjClutter.OpenGl.SceneGraph
         public Matrix4 ModelMatrix { get; set; }
     }
 
+    public class SceneObject
+    {
+        public Mesh3V3N Mesh { get; set; }
+        public Matrix4 ModelMatrix { get; set; }
+        public Vector4 Color { get; set; }
+    }
+
     public class Mesh3V3N
     {
         private readonly Vertex3V3N[] _vertices;

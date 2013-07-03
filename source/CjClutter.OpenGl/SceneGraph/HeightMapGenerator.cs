@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CjClutter.OpenGl.Noise;
 using CjClutter.OpenGl.OpenGl.VertexTypes;
 using OpenTK;
@@ -15,10 +16,9 @@ namespace CjClutter.OpenGl.SceneGraph
             _noiseGenerator = noiseGenerator;
         }
 
-        public Mesh GenerateMesh()
+        public Mesh3V3N GenerateMesh()
         {
-            var mesh = new Mesh();
-
+            var vertices = new List<Vertex3V3N>();
             for (var i = 0; i <= TerrainWidth; i++)
             {
                 for (var j = 0; j <= TerrainHeight; j++)
@@ -28,11 +28,12 @@ namespace CjClutter.OpenGl.SceneGraph
                     var y = 0.2 * _noiseGenerator.Noise(xin, yin);
 
                     var position = new Vector3((float)xin, (float)y, (float)yin);
-                    var vertex = new Vertex3V { Position = position };
-                    mesh.Vertices.Add(vertex);
+                    var vertex = new Vertex3V3N { Position = position };
+                    vertices.Add(vertex);
                 }
             }
 
+            var faces = new List<Face3>();
             for (var i = 0; i < TerrainWidth; i++)
             {
                 for (var j = 0; j < TerrainHeight; j++)
@@ -43,15 +44,17 @@ namespace CjClutter.OpenGl.SceneGraph
                     var v2 = (i + 1) * verticesInColumn + j + 1;
                     var v3 = i * verticesInColumn + j + 1;
 
-                    var f0 = new Face3 { V0 = (ushort)v0, V1 = (ushort)v1, V2 = (ushort)v2 };
-                    var f1 = new Face3 { V0 = (ushort)v0, V1 = (ushort)v2, V2 = (ushort)v3 };
+                    var f0 = new Face3 { V0 = v0, V1 = v1, V2 = v2 };
+                    var f1 = new Face3 { V0 = v0, V1 = v2, V2 = v3 };
 
-                    mesh.Faces.Add(f0);
-                    mesh.Faces.Add(f1);
+                    faces.Add(f0);
+                    faces.Add(f1);
                 }
             }
 
-            return mesh;
+            var mesh3V3N = new Mesh3V3N(vertices, faces);
+            mesh3V3N.CalculateNormals();
+            return mesh3V3N;
         }
     }
 }

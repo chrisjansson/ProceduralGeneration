@@ -9,22 +9,22 @@ namespace CjClutter.OpenGl.SceneGraph
     {
         public Scene()
         {
-            Meshes = new List<Mesh>();
+            SceneObjects = new List<SceneObject>();
         }
 
         public Matrix4d ViewMatrix { get; set; }
         public Matrix4d ProjectionMatrix { get; set; }
 
-        public List<Mesh> Meshes { get; set; }
+        public List<SceneObject> SceneObjects { get; set; }
 
         public void Reload(FractalBrownianMotionSettings fractalBrownianMotionSettings)
         {
-            Meshes.Clear();
+            SceneObjects.Clear();
 
             var terrainGenerator = new TerrainGenerator(fractalBrownianMotionSettings);
             var generate = terrainGenerator.Generate();
 
-            Meshes.AddRange(generate);
+            SceneObjects.AddRange(generate);
         }
 
         public void Update(double elapsedTime)

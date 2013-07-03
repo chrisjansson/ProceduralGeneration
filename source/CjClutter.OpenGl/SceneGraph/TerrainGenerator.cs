@@ -15,9 +15,9 @@ namespace CjClutter.OpenGl.SceneGraph
             _colorCycle = new ColorCycle();
         }
 
-        public IList<Mesh> Generate()
+        public IList<SceneObject> Generate()
         {
-            var meshes = new List<Mesh>();
+            var meshes = new List<SceneObject>();
 
             const int numberOfChunksX = 10;
             const int numberOfChunksY = 10;
@@ -30,11 +30,14 @@ namespace CjClutter.OpenGl.SceneGraph
 
                     var heightMapGenerator = new HeightMapGenerator(noiseGenerator);
                     var mesh = heightMapGenerator.GenerateMesh();
-                    var translationMatrix = Matrix4.CreateTranslation(offset.X - numberOfChunksX / 2.0f, 0, offset.Y - numberOfChunksY / 2.0f);
-                    mesh.ModelMatrix = translationMatrix;
-                    mesh.Color = _colorCycle.GetNext();
 
-                    meshes.Add(mesh);
+                    var sceneObject = new SceneObject();
+                    sceneObject.Mesh = mesh;
+
+                    var translationMatrix = Matrix4.CreateTranslation(offset.X - numberOfChunksX / 2.0f, 0, offset.Y - numberOfChunksY / 2.0f);
+                    sceneObject.ModelMatrix = translationMatrix;
+                    sceneObject.Color = _colorCycle.GetNext();
+                    meshes.Add(sceneObject);
                 }
             }
 
