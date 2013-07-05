@@ -3,3 +3,4 @@ cache value in uniform setters/dirty check in setters
 add sources of dependencies so that they can be built if needed
 read and render heightmap from file
 shadows
+gl debug extensions
