@@ -38,8 +38,8 @@ namespace CjClutter.OpenGl.Gui
                 var resources = GetOrCreateResources(sceneObject);
                 var sceneObjectLocalCopy = sceneObject;
                 RunWithResourcesBound(
-                    () => DrawMesh(scene, sceneObjectLocalCopy, resources), 
-                    resources.RenderableMesh.VertexArrayObject, 
+                    () => DrawMesh(scene, sceneObjectLocalCopy, resources),
+                    resources.RenderableMesh.VertexArrayObject,
                     resources.RenderProgram);
 
                 RunWithResourcesBound(
@@ -142,20 +142,15 @@ namespace CjClutter.OpenGl.Gui
             _windowScale = new Vector2(width, height);
         }
 
-        private Matrix4d CreateProjectionMatrix(int width, int height)
+        private Matrix4d CreateProjectionMatrix(float width, float height)
         {
-            if (_projectionMode == ProjectionMode.Perspective)
-            {
-                return Matrix4d.CreatePerspectiveFieldOfView(Math.PI / 4, (double)width / height, 1, 100);
-            }
-
-            return Matrix4d.CreateOrthographic(2, 2, 1, 100);
+            return _projectionMode.ComputeProjectionMatrix(width, height);
         }
 
         public void SetProjectionMode(ProjectionMode projectionMode)
         {
             _projectionMode = projectionMode;
-            _projectionMatrix = CreateProjectionMatrix((int) _windowScale.X, (int) _windowScale.Y);
+            _projectionMatrix = CreateProjectionMatrix(_windowScale.X, _windowScale.Y);
         }
     }
 }

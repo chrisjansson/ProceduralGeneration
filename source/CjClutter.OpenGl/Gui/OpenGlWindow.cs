@@ -10,7 +10,6 @@ using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Input;
 using FrameEventArgs = OpenTK.FrameEventArgs;
 
 namespace CjClutter.OpenGl.Gui
@@ -171,8 +170,36 @@ namespace CjClutter.OpenGl.Gui
     }
 }
 
-public enum ProjectionMode
+public abstract class ProjectionMode
 {
-    Orthographic,
-    Perspective
-};
+    public static readonly ProjectionMode Orthographic = new OrthographicProjection();
+    public static readonly ProjectionMode Perspective = new PerspectiveProjection();
+
+    public const int NearPlane = 1;
+    public const int FarPlane = 100;
+
+    public abstract Matrix4d ComputeProjectionMatrix(double width, double height);
+}
+
+public class PerspectiveProjection : ProjectionMode
+{
+    public const double FieldOfView = Math.PI/4;
+
+    public override Matrix4d ComputeProjectionMatrix(double width, double height)
+    {
+        var aspectRatio = width/height;
+
+        return Matrix4d.CreatePerspectiveFieldOfView(FieldOfView, aspectRatio, NearPlane, FarPlane);
+    }
+}
+
+public class OrthographicProjection : ProjectionMode
+{
+    public const double CameraWidth = 2;
+    public const double CameraHeight = 2;
+
+    public override Matrix4d ComputeProjectionMatrix(double width, double height)
+    {
+        return Matrix4d.CreateOrthographic(CameraWidth, CameraHeight, NearPlane, FarPlane);
+    }
+}
