@@ -52,7 +52,7 @@ namespace CjClutter.OpenGl.Gui
             _keyboardInputObservable = new KeyboardInputObservable(_keyboardInputProcessor);
 
             var trackballCameraRotationCalculator = new TrackballCameraRotationCalculator();
-            _trackballCamera = new TrackballCamera(new PerspectiveCamera(), trackballCameraRotationCalculator);
+            _trackballCamera = new TrackballCamera(new LookAtCamera(), trackballCameraRotationCalculator);
             _openTkCamera = new OpenTkCamera(_mouseInputProcessor, _trackballCamera);
 
             _renderer = new Renderer();

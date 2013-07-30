@@ -98,11 +98,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Camera\CameraBase.cs" />
     <Compile Include="Camera\ICamera.cs" />
     <Compile Include="Camera\ITrackballCamera.cs" />
     <Compile Include="Camera\ITrackballCameraRotationCalculator.cs" />
-    <Compile Include="Camera\PerspectiveCamera.cs" />
+    <Compile Include="Camera\LookAtCamera.cs" />
     <Compile Include="Camera\TrackballCamera.cs" />
     <Compile Include="Camera\TrackballCameraRotationCalculator.cs" />
     <Compile Include="CoordinateSystems\GuiToRelativeCoordinateTransformer.cs" />
