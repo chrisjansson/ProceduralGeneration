@@ -5,7 +5,7 @@ using OpenTK.Input;
 
 namespace CjClutter.OpenGl.Input
 {
-    public class OpenTkCamera
+    public class TrackballCameraController
     {
         private readonly MouseInputProcessor _mouseInputProcessor;
         private readonly ITrackballCamera _trackballCamera;
@@ -14,7 +14,7 @@ namespace CjClutter.OpenGl.Input
         private Vector2d _mouseDownPosition;
         private Vector2d _currentMousePosition;
 
-        public OpenTkCamera(MouseInputProcessor mouseInputProcessor, ITrackballCamera trackballCamera)
+        public TrackballCameraController(MouseInputProcessor mouseInputProcessor, ITrackballCamera trackballCamera)
         {
             _mouseInputProcessor = mouseInputProcessor;
             _trackballCamera = trackballCamera;
@@ -28,13 +28,15 @@ namespace CjClutter.OpenGl.Input
 
             ProcessMouseUp();
             
-            ProcessRotate();
+            ProcessRotatation();
             
-            var mouseWheelDelta = _mouseInputProcessor.GetMouseWheelDelta();
-            if (mouseWheelDelta != 0)
-            {
-                _trackballCamera.Zoom(mouseWheelDelta);    
-            }
+            ProcessScroll();
+        }
+
+        private void GetCurrentMousePosition()
+        {
+            var relativeMousePosition = _mouseInputProcessor.GetRelativeMousePosition();
+            _currentMousePosition = relativeMousePosition;
         }
 
         private void ProcessMouseDown()
@@ -55,7 +57,7 @@ namespace CjClutter.OpenGl.Input
             }
         }
 
-        private void ProcessRotate()
+        private void ProcessRotatation()
         {
             if (_mouseDown && (_currentMousePosition != _mouseDownPosition))
             {
@@ -63,10 +65,13 @@ namespace CjClutter.OpenGl.Input
             }
         }
 
-        private void GetCurrentMousePosition()
+        private void ProcessScroll()
         {
-            var relativeMousePosition = _mouseInputProcessor.GetRelativeMousePosition();
-            _currentMousePosition = relativeMousePosition;
+            var mouseWheelDelta = _mouseInputProcessor.GetMouseWheelDelta();
+            if (mouseWheelDelta != 0)
+            {
+                _trackballCamera.Zoom(mouseWheelDelta);
+            }
         }
     }
 }

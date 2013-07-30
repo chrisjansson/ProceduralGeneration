@@ -146,7 +146,7 @@
     <Compile Include="Input\Mouse\IButtonActionEvaluator.cs" />
     <Compile Include="Input\Mouse\MouseInputObservable.cs" />
     <Compile Include="Input\Mouse\MouseInputProcessor.cs" />
-    <Compile Include="Input\OpenTkCamera.cs" />
+    <Compile Include="Input\TrackballCameraController.cs" />
     <Compile Include="Noise\FractalBrownianMotion.cs" />
     <Compile Include="Noise\FractalBrownianMotionSettings.cs" />
     <Compile Include="Noise\ImprovedPerlinNoise.cs" />
