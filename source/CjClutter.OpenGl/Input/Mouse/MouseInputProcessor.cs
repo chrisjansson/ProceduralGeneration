@@ -12,6 +12,8 @@ namespace CjClutter.OpenGl.Input.Mouse
 
         private MouseState _previousFrameMouseState;
         private MouseState _currentFrameMouseState;
+        private Vector2d _currentRelativeMousePosition;
+        private Vector2d _previousRelativeMousePosition;
 
         public MouseInputProcessor(GameWindow gameWindow, IGuiToRelativeCoordinateTransformer guiToRelativeCoordinateTransformer)
         {
@@ -29,6 +31,20 @@ namespace CjClutter.OpenGl.Input.Mouse
         {
             _previousFrameMouseState = _currentFrameMouseState;
             _currentFrameMouseState = mouseState;
+
+            CalculateRelativeMousePosition();
+        }
+
+        private void CalculateRelativeMousePosition()
+        {
+            var mouseDevice = _gameWindow.Mouse;
+
+            var x = mouseDevice.X;
+            var y = mouseDevice.Y;
+            var absoluteMouseCoordinates = new Vector2d(x, y);
+
+            _previousRelativeMousePosition = _currentRelativeMousePosition;
+            _currentRelativeMousePosition = _guiToRelativeCoordinateTransformer.TransformToRelative(absoluteMouseCoordinates);
         }
 
         public bool WasButtonReleased(MouseButton button)
@@ -72,13 +88,12 @@ namespace CjClutter.OpenGl.Input.Mouse
 
         public Vector2d GetRelativeMousePosition()
         {
-            var mouseDevice = _gameWindow.Mouse;
-            
-            var x = mouseDevice.X;
-            var y = mouseDevice.Y;
-            var absoluteMouseCoordinates = new Vector2d(x, y);
+            return _currentRelativeMousePosition;
+        }
 
-            return _guiToRelativeCoordinateTransformer.TransformToRelative(absoluteMouseCoordinates);
+        public Vector2d GetRelativeMousePositionDelta()
+        {
+            return _currentRelativeMousePosition - _previousRelativeMousePosition;
         }
 
         public float GetMouseWheelDelta()
