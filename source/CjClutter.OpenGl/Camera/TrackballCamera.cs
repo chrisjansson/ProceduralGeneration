@@ -1,5 +1,4 @@
-﻿using CjClutter.OpenGl.OpenTk;
-using OpenTK;
+﻿using OpenTK;
 
 namespace CjClutter.OpenGl.Camera
 {
@@ -9,9 +8,6 @@ namespace CjClutter.OpenGl.Camera
 
         private readonly ICamera _camera;
         private readonly ITrackballCameraRotationCalculator _cameraRotationCalculator;
-
-        private Matrix4d _cameraOrientation = Matrix4d.Identity;
-        private Matrix4d _tempCameraOrientation = Matrix4d.Identity;
 
         public TrackballCamera(ICamera camera, ITrackballCameraRotationCalculator cameraRotationCalculator)
         {
@@ -39,25 +35,15 @@ namespace CjClutter.OpenGl.Camera
 
         public Matrix4d GetCameraMatrix()
         {
-            var cameraMatrix = _camera.GetCameraMatrix();
-            var orientationMatrix = GetOrientationMatrix();
-
-            return orientationMatrix.Multiply(cameraMatrix);
+            return _camera.GetCameraMatrix();
         }
 
         public void Rotate(Vector2d startPoint, Vector2d endPoint)
         {
-            Quaterniond rotation = CalculateRotation(startPoint, endPoint);
-            _tempCameraOrientation = rotation.GetRotationMatrix();
-        }
+            var rotation = CalculateRotation(startPoint, endPoint);
 
-        public void CommitRotation(Vector2d startPoint, Vector2d endPoint)
-        {
-            Quaterniond rotation = CalculateRotation(startPoint, endPoint);
-            Matrix4d rotationMatrix = rotation.GetRotationMatrix();
-
-            _cameraOrientation = _cameraOrientation.Multiply(rotationMatrix);
-            _tempCameraOrientation = Matrix4d.Identity;
+            var result = Vector3d.Transform(Position, rotation);
+            Position = result;
         }
 
         public void Zoom(double delta)
@@ -70,11 +56,6 @@ namespace CjClutter.OpenGl.Camera
             {
                 Position = newPosition;
             }
-        }
-
-        private Matrix4d GetOrientationMatrix()
-        {
-            return _cameraOrientation.Multiply(_tempCameraOrientation);
         }
 
         private Quaterniond CalculateRotation(Vector2d startPoint, Vector2d endPoint)
