@@ -15,12 +15,8 @@ namespace CjClutter.OpenGl.Camera
         public Vector3d Target { get; set; }
         public Vector3d Up { get; set; }
 
-        public virtual Matrix4d GetCameraMatrix()
+        public Matrix4d GetCameraMatrix()
         {
-            Position.Normalize();
-            Target.Normalize();
-            Up.Normalize();
-
             return Matrix4d.LookAt(Position, Target, Up);
         }
     }
