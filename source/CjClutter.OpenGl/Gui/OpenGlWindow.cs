@@ -22,7 +22,7 @@ namespace CjClutter.OpenGl.Gui
         private readonly MouseInputObservable _mouseInputObservable;
         private readonly KeyboardInputProcessor _keyboardInputProcessor = new KeyboardInputProcessor();
         private readonly KeyboardInputObservable _keyboardInputObservable;
-        private readonly TrackballCameraController _trackballCameraController;
+        private readonly OpentkTrackballCameraControls _opentkTrackballCameraControls;
         private readonly Scene _scene;
         private readonly Hud _hud;
         private readonly Renderer _renderer;
@@ -54,7 +54,7 @@ namespace CjClutter.OpenGl.Gui
             var trackballCameraRotationCalculator = new TrackballCameraRotationCalculator();
             _camera = new LookAtCamera();
             _trackballCamera = new TrackballCamera(_camera, trackballCameraRotationCalculator);
-            _trackballCameraController = new TrackballCameraController(_mouseInputProcessor, _trackballCamera);
+            _opentkTrackballCameraControls = new OpentkTrackballCameraControls(_mouseInputProcessor, _trackballCamera);
 
             _renderer = new Renderer();
             _scene = new Scene();
@@ -162,7 +162,7 @@ namespace CjClutter.OpenGl.Gui
             _mouseInputProcessor.Update(mouseState);
             _mouseInputObservable.ProcessMouseButtons();
 
-            _trackballCameraController.Update();
+            _opentkTrackballCameraControls.Update();
         }
 
         public TimeSpan ElapsedTime

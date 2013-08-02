@@ -5,12 +5,12 @@ using OpenTK.Input;
 
 namespace CjClutter.OpenGl.Input
 {
-    public class TrackballCameraController
+    public class OpentkTrackballCameraControls
     {
         private readonly MouseInputProcessor _mouseInputProcessor;
         private readonly ITrackballCamera _trackballCamera;
 
-        public TrackballCameraController(MouseInputProcessor mouseInputProcessor, ITrackballCamera trackballCamera)
+        public OpentkTrackballCameraControls(MouseInputProcessor mouseInputProcessor, ITrackballCamera trackballCamera)
         {
             _mouseInputProcessor = mouseInputProcessor;
             _trackballCamera = trackballCamera;
