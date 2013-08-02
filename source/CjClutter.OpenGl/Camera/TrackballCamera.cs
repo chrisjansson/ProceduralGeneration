@@ -15,24 +15,6 @@ namespace CjClutter.OpenGl.Camera
             _cameraRotationCalculator = cameraRotationCalculator;
         }
 
-        public Vector3d Position
-        {
-            get { return _camera.Position; }
-            set { _camera.Position = value; }
-        }
-
-        public Vector3d Target
-        {
-            get { return _camera.Target; }
-            set { _camera.Target = value; }
-        }
-
-        public Vector3d Up
-        {
-            get { return _camera.Up; }
-            set { _camera.Up = value; }
-        }
-
         public Matrix4d ComputeCameraMatrix()
         {
             return _camera.ComputeCameraMatrix();
@@ -42,19 +24,19 @@ namespace CjClutter.OpenGl.Camera
         {
             var rotation = CalculateRotation(startPoint, endPoint);
 
-            var result = Vector3d.Transform(Position, rotation);
-            Position = result;
+            var result = Vector3d.Transform(_camera.Position, rotation);
+            _camera.Position = result;
         }
 
         public void Zoom(double delta)
         {
-            var toTarget = Target - Position;
+            var toTarget = _camera.Target - _camera.Position;
             toTarget.Normalize();
 
-            var newPosition = Position - (toTarget * -delta * 0.5);
+            var newPosition = _camera.Position - (toTarget * -delta * 0.5);
             if (newPosition.Length >= MinimumDistanceToTarget)
             {
-                Position = newPosition;
+                _camera.Position = newPosition;
             }
         }
 

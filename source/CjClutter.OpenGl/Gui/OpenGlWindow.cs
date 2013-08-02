@@ -28,6 +28,7 @@ namespace CjClutter.OpenGl.Gui
         private readonly Renderer _renderer;
         private readonly TrackballCamera _trackballCamera;
         private readonly Menu _menu;
+        private readonly ICamera _camera;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -51,7 +52,8 @@ namespace CjClutter.OpenGl.Gui
             _keyboardInputObservable = new KeyboardInputObservable(_keyboardInputProcessor);
 
             var trackballCameraRotationCalculator = new TrackballCameraRotationCalculator();
-            _trackballCamera = new TrackballCamera(new LookAtCamera(), trackballCameraRotationCalculator);
+            _camera = new LookAtCamera();
+            _trackballCamera = new TrackballCamera(_camera, trackballCameraRotationCalculator);
             _trackballCameraController = new TrackballCameraController(_mouseInputProcessor, _trackballCamera);
 
             _renderer = new Renderer();
@@ -124,7 +126,7 @@ namespace CjClutter.OpenGl.Gui
             _frameTimeCounter.UpdateFrameTime(e.Time);
 
             _scene.Update(ElapsedTime.TotalSeconds);
-            _renderer.Render(_scene, _trackballCamera);
+            _renderer.Render(_scene, _camera);
 
             GL.Clear(ClearBufferMask.DepthBufferBit);
             //_hud.Update(ElapsedTime.TotalSeconds, _frameTimeCounter.FrameTime);

@@ -22,7 +22,6 @@ namespace CjClutter.OpenGl.Camera
         }
     }
 
-
     //The coordinate system is right handed by default following old OpenGL conventions
     //The projection matrix produced by opentk flips z values which aso inverts the handedness of the coordinate system 
     //the projection matrix transforms to clip coordinates and later transformed to NDC which are left handed
