@@ -26,7 +26,6 @@ namespace CjClutter.OpenGl.Gui
         private readonly Scene _scene;
         private readonly Hud _hud;
         private readonly Renderer _renderer;
-        private readonly TrackballCamera _trackballCamera;
         private readonly Menu _menu;
         private readonly ICamera _camera;
 
@@ -53,8 +52,8 @@ namespace CjClutter.OpenGl.Gui
 
             var trackballCameraRotationCalculator = new TrackballCameraRotationCalculator();
             _camera = new LookAtCamera();
-            _trackballCamera = new TrackballCamera(_camera, trackballCameraRotationCalculator);
-            _opentkTrackballCameraControls = new OpentkTrackballCameraControls(_mouseInputProcessor, _trackballCamera);
+            var trackballCamera = new TrackballCamera(_camera, trackballCameraRotationCalculator);
+            _opentkTrackballCameraControls = new OpentkTrackballCameraControls(_mouseInputProcessor, trackballCamera);
 
             _renderer = new Renderer();
             _scene = new Scene();
