@@ -26,7 +26,7 @@ namespace CjClutter.OpenGl.Gui
 
         public void Render(Scene scene, ICamera camera)
         {
-            var cameraMatrix = camera.GetCameraMatrix();
+            var cameraMatrix = camera.ComputeCameraMatrix();
             scene.ViewMatrix = cameraMatrix;
             scene.ProjectionMatrix = _projectionMatrix;
 

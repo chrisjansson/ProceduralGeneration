@@ -33,9 +33,9 @@ namespace CjClutter.OpenGl.Camera
             set { _camera.Up = value; }
         }
 
-        public Matrix4d GetCameraMatrix()
+        public Matrix4d ComputeCameraMatrix()
         {
-            return _camera.GetCameraMatrix();
+            return _camera.ComputeCameraMatrix();
         }
 
         public void Rotate(Vector2d startPoint, Vector2d endPoint)

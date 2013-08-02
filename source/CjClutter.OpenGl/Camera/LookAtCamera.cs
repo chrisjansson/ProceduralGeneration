@@ -1,3 +1,4 @@
+using System;
 using OpenTK;
 
 namespace CjClutter.OpenGl.Camera
@@ -15,9 +16,47 @@ namespace CjClutter.OpenGl.Camera
         public Vector3d Target { get; set; }
         public Vector3d Up { get; set; }
 
-        public Matrix4d GetCameraMatrix()
+        public Matrix4d ComputeCameraMatrix()
         {
             return Matrix4d.LookAt(Position, Target, Up);
+        }
+    }
+
+
+    //The coordinate system is right handed by default following old OpenGL conventions
+    //The projection matrix produced by opentk flips z values which aso inverts the handedness of the coordinate system 
+    //the projection matrix transforms to clip coordinates and later transformed to NDC which are left handed
+    public abstract class ProjectionMode
+    {
+        public static readonly ProjectionMode Orthographic = new OrthographicProjection();
+        public static readonly ProjectionMode Perspective = new PerspectiveProjection();
+
+        public const int NearPlane = 1;
+        public const int FarPlane = 100;
+
+        public abstract Matrix4d ComputeProjectionMatrix(double width, double height);
+    }
+
+    public class PerspectiveProjection : ProjectionMode
+    {
+        public const double FieldOfView = Math.PI / 4;
+
+        public override Matrix4d ComputeProjectionMatrix(double width, double height)
+        {
+            var aspectRatio = width / height;
+
+            return Matrix4d.CreatePerspectiveFieldOfView(FieldOfView, aspectRatio, NearPlane, FarPlane);
+        }
+    }
+
+    public class OrthographicProjection : ProjectionMode
+    {
+        public const double CameraWidth = 2;
+        public const double CameraHeight = 2;
+
+        public override Matrix4d ComputeProjectionMatrix(double width, double height)
+        {
+            return Matrix4d.CreateOrthographic(CameraWidth, CameraHeight, NearPlane, FarPlane);
         }
     }
 }
