@@ -15,8 +15,6 @@ namespace CjClutter.OpenGl.Gui
     {
         private readonly Dictionary<SceneObject, MeshResources> _resources = new Dictionary<SceneObject, MeshResources>();
         private readonly ResourceAllocator _resourceAllocator;
-        private ProjectionMode _projectionMode = ProjectionMode.Perspective;
-        private Matrix4d _projectionMatrix;
         private Vector2 _windowScale;
 
         public Renderer()
@@ -28,7 +26,9 @@ namespace CjClutter.OpenGl.Gui
         {
             var cameraMatrix = camera.ComputeCameraMatrix();
             scene.ViewMatrix = cameraMatrix;
-            scene.ProjectionMatrix = _projectionMatrix;
+
+            var projectionMatrix = camera.ComputeProjectionMatrix(_windowScale.X, _windowScale.Y);
+            scene.ProjectionMatrix = projectionMatrix;
 
             GL.ClearColor(Color4.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -138,19 +138,7 @@ namespace CjClutter.OpenGl.Gui
 
         public void Resize(int width, int height)
         {
-            _projectionMatrix = CreateProjectionMatrix(width, height);
             _windowScale = new Vector2(width, height);
-        }
-
-        private Matrix4d CreateProjectionMatrix(float width, float height)
-        {
-            return _projectionMode.ComputeProjectionMatrix(width, height);
-        }
-
-        public void SetProjectionMode(ProjectionMode projectionMode)
-        {
-            _projectionMode = projectionMode;
-            _projectionMatrix = CreateProjectionMatrix(_windowScale.X, _windowScale.Y);
         }
     }
 }

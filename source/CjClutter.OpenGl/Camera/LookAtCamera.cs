@@ -5,6 +5,8 @@ namespace CjClutter.OpenGl.Camera
 {
     public class LookAtCamera : ICamera
     {
+        private ProjectionMode _projection = ProjectionMode.Perspective;
+
         public LookAtCamera()
         {
             Position = new Vector3d(0, 0, 2);
@@ -16,9 +18,20 @@ namespace CjClutter.OpenGl.Camera
         public Vector3d Target { get; set; }
         public Vector3d Up { get; set; }
 
+        public ProjectionMode Projection
+        {
+            get { return _projection; }
+            set { _projection = value; }
+        }
+
         public Matrix4d ComputeCameraMatrix()
         {
             return Matrix4d.LookAt(Position, Target, Up);
+        }
+
+        public Matrix4d ComputeProjectionMatrix(double width, double height)
+        {
+            return Projection.ComputeProjectionMatrix(width, height);
         }
     }
 
@@ -34,28 +47,28 @@ namespace CjClutter.OpenGl.Camera
         public const int FarPlane = 100;
 
         public abstract Matrix4d ComputeProjectionMatrix(double width, double height);
-    }
 
-    public class PerspectiveProjection : ProjectionMode
-    {
-        public const double FieldOfView = Math.PI / 4;
-
-        public override Matrix4d ComputeProjectionMatrix(double width, double height)
+        private class PerspectiveProjection : ProjectionMode
         {
-            var aspectRatio = width / height;
+            private const double FieldOfView = Math.PI / 4;
 
-            return Matrix4d.CreatePerspectiveFieldOfView(FieldOfView, aspectRatio, NearPlane, FarPlane);
+            public override Matrix4d ComputeProjectionMatrix(double width, double height)
+            {
+                var aspectRatio = width / height;
+
+                return Matrix4d.CreatePerspectiveFieldOfView(FieldOfView, aspectRatio, NearPlane, FarPlane);
+            }
         }
-    }
 
-    public class OrthographicProjection : ProjectionMode
-    {
-        public const double CameraWidth = 2;
-        public const double CameraHeight = 2;
-
-        public override Matrix4d ComputeProjectionMatrix(double width, double height)
+        private class OrthographicProjection : ProjectionMode
         {
-            return Matrix4d.CreateOrthographic(CameraWidth, CameraHeight, NearPlane, FarPlane);
+            private const double CameraWidth = 2;
+            private const double CameraHeight = 2;
+
+            public override Matrix4d ComputeProjectionMatrix(double width, double height)
+            {
+                return Matrix4d.CreateOrthographic(CameraWidth, CameraHeight, NearPlane, FarPlane);
+            }
         }
     }
 }

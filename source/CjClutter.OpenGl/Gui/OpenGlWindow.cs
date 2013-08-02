@@ -74,8 +74,8 @@ namespace CjClutter.OpenGl.Gui
 
             //Inputs for "game"
             _keyboardInputObservable.SubscribeKey(KeyCombination.Esc, CombinationDirection.Down, Exit);
-            _keyboardInputObservable.SubscribeKey(KeyCombination.P, CombinationDirection.Down, () => _renderer.SetProjectionMode(ProjectionMode.Perspective));
-            _keyboardInputObservable.SubscribeKey(KeyCombination.O, CombinationDirection.Down, () => _renderer.SetProjectionMode(ProjectionMode.Orthographic));
+            _keyboardInputObservable.SubscribeKey(KeyCombination.P, CombinationDirection.Down, () => _camera.Projection = ProjectionMode.Perspective);
+            _keyboardInputObservable.SubscribeKey(KeyCombination.O, CombinationDirection.Down, () => _camera.Projection = ProjectionMode.Orthographic);
             _keyboardInputObservable.SubscribeKey(KeyCombination.Tilde, CombinationDirection.Down, () => _menu.IsEnabled = !_menu.IsEnabled);
 
             //Inputs for "menu"
