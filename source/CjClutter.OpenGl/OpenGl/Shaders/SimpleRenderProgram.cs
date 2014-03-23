@@ -76,14 +76,27 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
 #version 330
 
 layout(location = 0)in vec4 position;
+layout(location = 1)in vec3 normal;
 
 uniform mat4 ProjectionMatrix;
 uniform mat4 ViewMatrix;
 uniform mat4 ModelMatrix;
 
+uniform vec4 Color;
+
+out VertexData
+{
+    vec4 color;
+} vertex;
+
 void main()
 {
     gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * position;
+
+    vec3 normCamSpace = (ViewMatrix * ModelMatrix * vec4(normal.x, normal.y, normal.z, 0)).xyz;
+    float incidence = dot(normCamSpace, normalize((ViewMatrix * vec4(4, 1, 0, 0)).xyz));
+    incidence = clamp(incidence, 0, 1);
+    vertex.color = Color * incidence + vec4(0.2, 0.2, 0.2, 1.0);
 }
 ";
 
@@ -95,6 +108,13 @@ noperspective out vec3 dist;
 
 layout(triangles) in;
 layout (triangle_strip, max_vertices=3) out;
+
+in VertexData
+{
+    vec4 color;
+} vertex[];
+
+out vec4 fragmentColor;
 
 void main() 
 {
@@ -109,14 +129,17 @@ void main()
 
     dist = vec3(area/length(v0),0,0);
     gl_Position = gl_in[0].gl_Position;
+    fragmentColor = vertex[0].color;
     EmitVertex();
 
     dist = vec3(0,area/length(v1),0);
     gl_Position = gl_in[1].gl_Position;
+    fragmentColor = vertex[1].color;
     EmitVertex();
 
     dist = vec3(0,0,area/length(v2));
     gl_Position = gl_in[2].gl_Position;
+    fragmentColor = vertex[2].color;
     EmitVertex();
 
     EndPrimitive();
@@ -127,8 +150,8 @@ void main()
 #version 330
 
 uniform vec4 WireframeColor = vec4(0.1, 0.1, 0.1, 1.0);
-uniform vec4 Color;
 out vec4 fragColor;
+in vec4 fragmentColor;
 
 noperspective in vec3 dist;
 
@@ -137,7 +160,7 @@ void main()
     float nearD = min(min(dist[0],dist[1]),dist[2]);
     float edgeIntensity = exp2(-1.0*nearD*nearD);
 
-    fragColor = (edgeIntensity * WireframeColor) + ((1.0-edgeIntensity) * Color);
+    fragColor = (edgeIntensity * WireframeColor) + ((1.0-edgeIntensity) * fragmentColor);
 }
 ";
 
