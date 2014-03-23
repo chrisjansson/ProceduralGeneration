@@ -23,7 +23,7 @@ namespace CjClutter.OpenGl.OpenGl
             var shader = new Shader(_openGl);
             shader.Create(shaderType);
 
-            return shader;
+            return new DebugShader(shader, new ConsoleLogger());
         }
 
         public VertexArrayObject CreateVertexArrayObject()

@@ -121,6 +121,7 @@
     <Compile Include="Input\Keboard\CombinationDirection.cs" />
     <Compile Include="KeyCombination.cs" />
     <Compile Include="KeyDictionary.cs" />
+    <Compile Include="OpenGl\DebugShader.cs" />
     <Compile Include="OpenGl\Diagnostics\DebugProgram.cs" />
     <Compile Include="OpenGl\Diagnostics\ConsoleLogger.cs" />
     <Compile Include="OpenGl\Diagnostics\ProgramDiagnostics.cs" />
