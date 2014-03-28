@@ -21,10 +21,12 @@ namespace CjClutter.OpenGl.SceneGraph
         {
             SceneObjects.Clear();
 
-            var terrainGenerator = new TerrainGenerator(fractalBrownianMotionSettings);
-            var generate = terrainGenerator.Generate();
+            //var terrainGenerator = new TerrainGenerator(fractalBrownianMotionSettings);
+            //var generate = terrainGenerator.Generate();
 
-            SceneObjects.AddRange(generate);
+            //SceneObjects.AddRange(generate);
+
+            SceneObjects.Add(new WaterSceneObject());
         }
 
         public void Update(double elapsedTime)
@@ -35,6 +37,11 @@ namespace CjClutter.OpenGl.SceneGraph
             //{
             //    mesh.Color = color;    
             //}
+
+            foreach (var sceneObject in SceneObjects)
+            {
+                sceneObject.Update(elapsedTime);
+            }
         }
 
         public void Unload()

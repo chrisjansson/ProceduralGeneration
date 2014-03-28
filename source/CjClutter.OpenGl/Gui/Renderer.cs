@@ -36,6 +36,17 @@ namespace CjClutter.OpenGl.Gui
             foreach (var sceneObject in scene.SceneObjects)
             {
                 var resources = GetOrCreateResources(sceneObject);
+                if (sceneObject.Mesh.IsDirty)
+                {
+                    if (resources.RenderableMesh != null)
+                    {
+                        resources.RenderableMesh.Delete();
+                    }
+
+                    resources.RenderableMesh = _resourceAllocator.AllocateResourceFor(sceneObject.Mesh);
+                }
+
+
                 var sceneObjectLocalCopy = sceneObject;
                 RunWithResourcesBound(
                     () => DrawMesh(scene, sceneObjectLocalCopy, resources),
@@ -110,8 +121,6 @@ namespace CjClutter.OpenGl.Gui
                 return _resources[sceneObject];
             }
 
-            var renderableMesh = _resourceAllocator.AllocateResourceFor(sceneObject.Mesh);
-
             var simpleRenderProgram = new SimpleRenderProgram();
             simpleRenderProgram.Create();
 
@@ -121,7 +130,6 @@ namespace CjClutter.OpenGl.Gui
             var resources = new MeshResources
                 {
                     RenderProgram = simpleRenderProgram,
-                    RenderableMesh = renderableMesh,
                     NormalDebugProgram = normalDebugProgram,
                 };
 
