@@ -1,5 +1,7 @@
 ﻿using CjClutter.OpenGl.OpenGl;
 using CjClutter.OpenGl.OpenGl.VertexTypes;
+using CjClutter.OpenGl.SceneGraph;
+using OpenTK.Graphics.OpenGL;
 
 namespace CjClutter.OpenGl.Gui
 {
@@ -26,6 +28,13 @@ namespace CjClutter.OpenGl.Gui
             _elementBuffer.Delete();
             _vertexBuffer.Delete();
             _vertexArrayObject.Delete();
+        }
+
+        public void Update(Mesh3V3N mesh)
+        {
+            _vertexBuffer.Bind();
+            _vertexBuffer.Data(mesh.Vertices, BufferUsageHint.StreamDraw);
+            _vertexBuffer.Unbind();
         }
     }
 }

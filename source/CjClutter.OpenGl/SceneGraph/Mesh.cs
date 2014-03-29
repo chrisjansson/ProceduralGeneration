@@ -34,8 +34,8 @@ namespace CjClutter.OpenGl.SceneGraph
     public class WaterSceneObject : SceneObject
     {
         private ImprovedPerlinNoise _improvedPerlinNoise;
-        private const int TerrainWidth = 100;
-        private const int TerrainHeight = 100;
+        private const int TerrainWidth = 200;
+        private const int TerrainHeight = 200;
 
         public WaterSceneObject()
         {

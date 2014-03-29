@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.OpenGl;
 using CjClutter.OpenGl.OpenGl.Shaders;
@@ -24,6 +25,8 @@ namespace CjClutter.OpenGl.Gui
 
         public void Render(Scene scene, ICamera camera)
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var cameraMatrix = camera.ComputeCameraMatrix();
             scene.ViewMatrix = cameraMatrix;
 
@@ -36,16 +39,17 @@ namespace CjClutter.OpenGl.Gui
             foreach (var sceneObject in scene.SceneObjects)
             {
                 var resources = GetOrCreateResources(sceneObject);
-                if (sceneObject.Mesh.IsDirty)
+                if (resources.RenderableMesh == null)
                 {
-                    if (resources.RenderableMesh != null)
-                    {
-                        resources.RenderableMesh.Delete();
-                    }
-
                     resources.RenderableMesh = _resourceAllocator.AllocateResourceFor(sceneObject.Mesh);
+                    resources.Back = _resourceAllocator.AllocateResourceFor(sceneObject.Mesh);
                 }
 
+                if (sceneObject.Mesh.IsDirty)
+                {
+                    //resources.Back = _resourceAllocator.AllocateResourceFor(sceneObject.Mesh);
+                    resources.Back.Update(sceneObject.Mesh);
+                }
 
                 var sceneObjectLocalCopy = sceneObject;
                 RunWithResourcesBound(
@@ -57,7 +61,20 @@ namespace CjClutter.OpenGl.Gui
                     () => DrawNormals(scene, sceneObjectLocalCopy, resources),
                     resources.RenderableMesh.VertexArrayObject,
                     resources.NormalDebugProgram);
+
+
+                if (sceneObject.Mesh.IsDirty)
+                {
+                    var temp = resources.RenderableMesh;
+                    resources.RenderableMesh = resources.Back;
+                    resources.Back = temp;
+                    sceneObject.Mesh.IsDirty = false;
+                }
+
+
             }
+
+            Console.WriteLine(stopwatch.Elapsed.TotalMilliseconds);
         }
 
         private void DrawMesh(Scene scene, SceneObject sceneObject, MeshResources meshResources)
