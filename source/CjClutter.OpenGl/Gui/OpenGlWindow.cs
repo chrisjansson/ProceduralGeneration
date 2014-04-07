@@ -30,6 +30,7 @@ namespace CjClutter.OpenGl.Gui
         private readonly ICamera _camera;
         private EntityManager _entityManager;
         private RenderSystem _renderSystem;
+        private InputSystem _inputSystem;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -82,6 +83,7 @@ namespace CjClutter.OpenGl.Gui
             //Inputs for "menu"
             _entityManager = new EntityManager();
             _renderSystem = new RenderSystem(_camera);
+            _inputSystem = new InputSystem(_keyboardInputProcessor, _camera);
 
             var terrainGenerator = new TerrainGenerator(FractalBrownianMotionSettings.Default);
             var staticMeshes = terrainGenerator.Generate();
@@ -135,6 +137,7 @@ namespace CjClutter.OpenGl.Gui
         {
             _frameTimeCounter.UpdateFrameTime(e.Time);
 
+            _inputSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
             _renderSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
 
             GL.Clear(ClearBufferMask.DepthBufferBit);

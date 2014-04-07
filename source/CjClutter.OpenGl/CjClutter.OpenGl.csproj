@@ -111,6 +111,7 @@
     <Compile Include="EntityComponent\EntityManager.cs" />
     <Compile Include="EntityComponent\IEntityComponent.cs" />
     <Compile Include="EntityComponent\IEntitySystem.cs" />
+    <Compile Include="EntityComponent\InputSystem.cs" />
     <Compile Include="EntityComponent\StaticMesh.cs" />
     <Compile Include="Gui\DockWithBackground.cs" />
     <Compile Include="Gui\GenerationSettingsControl.cs" />
