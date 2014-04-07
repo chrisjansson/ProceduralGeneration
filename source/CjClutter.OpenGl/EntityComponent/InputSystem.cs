@@ -1,5 +1,6 @@
 ﻿using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.Input.Keboard;
+using CjClutter.OpenGl.OpenTk;
 using OpenTK;
 using OpenTK.Input;
 
@@ -53,6 +54,22 @@ namespace CjClutter.OpenGl.EntityComponent
                 var result = Vector3d.Multiply(-right, delta);
                 _camera.Target += result;
                 _camera.Position += result;
+            }
+
+            if (_keyboardInputProcessor.IsButtonDown(Key.E))
+            {
+                var rotation = Matrix4d.Rotate(forward, delta);
+                _camera.Target = Vector3d.Transform(_camera.Target, rotation);
+                _camera.Position = Vector3d.Transform(_camera.Position, rotation);
+                _camera.Up = Vector3d.Transform(_camera.Up, rotation);
+            }
+
+            if (_keyboardInputProcessor.IsButtonDown(Key.Q))
+            {
+                var rotation = Matrix4d.Rotate(forward, -delta);
+                _camera.Target = Vector3d.Transform(_camera.Target, rotation);
+                _camera.Position = Vector3d.Transform(_camera.Position, rotation);
+                _camera.Up = Vector3d.Transform(_camera.Up, rotation);
             }
 
             _lastUpdate = elapsedTime;
