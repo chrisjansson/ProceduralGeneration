@@ -30,8 +30,8 @@ namespace CjClutter.OpenGl.Gui
             var cameraMatrix = camera.ComputeCameraMatrix();
             scene.ViewMatrix = cameraMatrix;
 
-            var projectionMatrix = camera.ComputeProjectionMatrix(_windowScale.X, _windowScale.Y);
-            scene.ProjectionMatrix = projectionMatrix;
+            //var projectionMatrix = camera.ComputeProjectionMatrix(_windowScale.X, _windowScale.Y);
+            //scene.ProjectionMatrix = projectionMatrix;
 
             GL.ClearColor(Color4.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);

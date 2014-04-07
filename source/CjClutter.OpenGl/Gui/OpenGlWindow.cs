@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.CoordinateSystems;
+using CjClutter.OpenGl.EntityComponent;
 using CjClutter.OpenGl.Input;
 using CjClutter.OpenGl.Input.Keboard;
 using CjClutter.OpenGl.Input.Mouse;
@@ -23,11 +24,12 @@ namespace CjClutter.OpenGl.Gui
         private readonly KeyboardInputProcessor _keyboardInputProcessor = new KeyboardInputProcessor();
         private readonly KeyboardInputObservable _keyboardInputObservable;
         private readonly OpentkTrackballCameraControls _opentkTrackballCameraControls;
-        private readonly Scene _scene;
         private readonly Hud _hud;
         private readonly Renderer _renderer;
         private readonly Menu _menu;
         private readonly ICamera _camera;
+        private EntityManager _entityManager;
+        private RenderSystem _renderSystem;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -56,10 +58,9 @@ namespace CjClutter.OpenGl.Gui
             _opentkTrackballCameraControls = new OpentkTrackballCameraControls(_mouseInputProcessor, trackballCamera);
 
             _renderer = new Renderer();
-            _scene = new Scene();
             _hud = new Hud(this);
-            _menu = new Menu(this, _scene);
-            _menu.GenerationSettingsControl.SetSettings(new FractalBrownianMotionSettings(6, 0.5, 0.6));
+            //_menu = new Menu(this, _scene);
+            //_menu.GenerationSettingsControl.SetSettings(new FractalBrownianMotionSettings(6, 0.5, 0.6));
         }
 
         protected override void OnLoad(EventArgs e)
@@ -79,14 +80,23 @@ namespace CjClutter.OpenGl.Gui
             _keyboardInputObservable.SubscribeKey(KeyCombination.Tilde, CombinationDirection.Down, () => _menu.IsEnabled = !_menu.IsEnabled);
 
             //Inputs for "menu"
-            _scene.Reload(_menu.GenerationSettingsControl.GetSettings());
+            _entityManager = new EntityManager();
+            _renderSystem = new RenderSystem(_camera);
+
+            var terrainGenerator = new TerrainGenerator(FractalBrownianMotionSettings.Default);
+            var staticMeshes = terrainGenerator.Generate();
+            foreach (var staticMesh in staticMeshes)
+            {
+                var name = Guid.NewGuid().ToString();
+                var entity = new Entity(name);
+                _entityManager.Add(entity);
+                _entityManager.AddComponentToEntity(entity, staticMesh);
+            }
         }
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
-            _scene.Unload();
             _hud.Close();
-            _menu.Close();
         }
 
         private void ToggleFullScren()
@@ -103,15 +113,16 @@ namespace CjClutter.OpenGl.Gui
 
         protected override void OnUnload(EventArgs e)
         {
-            _scene.Unload();
         }
 
         protected override void OnResize(EventArgs e)
         {
             GL.Viewport(0, 0, Width, Height);
+            _camera.Width = Width;
+            _camera.Height = Height;
             _renderer.Resize(Width, Height);
             _hud.Resize(Width, Height);
-            _menu.Resize(Width, Height);
+            //_menu.Resize(Width, Height);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -124,14 +135,13 @@ namespace CjClutter.OpenGl.Gui
         {
             _frameTimeCounter.UpdateFrameTime(e.Time);
 
-            _scene.Update(ElapsedTime.TotalSeconds);
-            _renderer.Render(_scene, _camera);
+            _renderSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
 
             GL.Clear(ClearBufferMask.DepthBufferBit);
             //_hud.Update(ElapsedTime.TotalSeconds, _frameTimeCounter.FrameTime);
             //_hud.Draw();
-            _menu.Update();
-            _menu.Draw();
+            //_menu.Update();
+            //_menu.Draw();
 
             SwapBuffers();
         }

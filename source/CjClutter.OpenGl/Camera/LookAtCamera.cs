@@ -18,6 +18,9 @@ namespace CjClutter.OpenGl.Camera
         public Vector3d Target { get; set; }
         public Vector3d Up { get; set; }
 
+        public double Width { get; set; }
+        public double Height { get; set; }
+
         public ProjectionMode Projection
         {
             get { return _projection; }
@@ -29,9 +32,9 @@ namespace CjClutter.OpenGl.Camera
             return Matrix4d.LookAt(Position, Target, Up);
         }
 
-        public Matrix4d ComputeProjectionMatrix(double width, double height)
+        public Matrix4d ComputeProjectionMatrix()
         {
-            return Projection.ComputeProjectionMatrix(width, height);
+            return Projection.ComputeProjectionMatrix(Width, Height);
         }
     }
 

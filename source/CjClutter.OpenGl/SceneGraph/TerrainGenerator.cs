@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CjClutter.OpenGl.EntityComponent;
 using CjClutter.OpenGl.Noise;
 using OpenTK;
 
@@ -15,9 +16,9 @@ namespace CjClutter.OpenGl.SceneGraph
             _colorCycle = new ColorCycle();
         }
 
-        public IList<SceneObject> Generate()
+        public IList<StaticMesh> Generate()
         {
-            var meshes = new List<SceneObject>();
+            var meshes = new List<StaticMesh>();
 
             const int numberOfChunksX = 10;
             const int numberOfChunksY = 10;
@@ -31,7 +32,7 @@ namespace CjClutter.OpenGl.SceneGraph
                     var heightMapGenerator = new HeightMapGenerator(noiseGenerator);
                     var mesh = heightMapGenerator.GenerateMesh();
 
-                    var sceneObject = new SceneObject();
+                    var sceneObject = new StaticMesh();
                     sceneObject.Mesh = mesh;
 
                     var translationMatrix = Matrix4.CreateTranslation(offset.X - numberOfChunksX / 2.0f, 0, offset.Y - numberOfChunksY / 2.0f);
