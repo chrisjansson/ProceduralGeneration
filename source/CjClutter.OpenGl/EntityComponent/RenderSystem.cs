@@ -15,7 +15,7 @@ namespace CjClutter.OpenGl.EntityComponent
         private readonly Dictionary<StaticMesh, RenderableMesh> _allocatedResources = new Dictionary<StaticMesh, RenderableMesh>();
         private readonly SimpleRenderProgram _simpleRenderProgram;
         private readonly ICamera _camera;
-        private NormalDebugProgram _normalDebugProgram;
+        private readonly NormalDebugProgram _normalDebugProgram;
 
         public RenderSystem(ICamera camera)
         {
