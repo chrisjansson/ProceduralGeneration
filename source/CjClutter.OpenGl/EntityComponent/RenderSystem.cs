@@ -29,6 +29,11 @@ namespace CjClutter.OpenGl.EntityComponent
             GL.ClearColor(Color4.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+            GL.Enable(EnableCap.DepthTest);
+            GL.CullFace(CullFaceMode.Back);
+            GL.Enable(EnableCap.CullFace);
+            GL.FrontFace(FrontFaceDirection.Cw);
+
             _simpleRenderProgram.Bind();
             _simpleRenderProgram.ProjectionMatrix.Set(_camera.ComputeProjectionMatrix().ToMatrix4());
             _simpleRenderProgram.ViewMatrix.Set(_camera.ComputeCameraMatrix().ToMatrix4());
@@ -45,12 +50,6 @@ namespace CjClutter.OpenGl.EntityComponent
                 var resources = _allocatedResources[component];
                 resources.VertexArrayObject.Bind();
                 
-
-                GL.Enable(EnableCap.DepthTest);
-                GL.CullFace(CullFaceMode.Back);
-                GL.Enable(EnableCap.CullFace);
-                GL.FrontFace(FrontFaceDirection.Cw);
-
                 _simpleRenderProgram.ModelMatrix.Set(component.ModelMatrix);
                 _simpleRenderProgram.Color.Set(component.Color);
 

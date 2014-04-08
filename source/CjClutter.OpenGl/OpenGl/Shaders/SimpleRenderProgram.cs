@@ -163,6 +163,5 @@ void main()
     fragColor = (edgeIntensity * WireframeColor) + ((1.0-edgeIntensity) * fragmentColor);
 }
 ";
-
     }
 }
