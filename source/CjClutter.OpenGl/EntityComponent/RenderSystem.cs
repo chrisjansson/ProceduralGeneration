@@ -15,6 +15,7 @@ namespace CjClutter.OpenGl.EntityComponent
         private readonly Dictionary<StaticMesh, RenderableMesh> _allocatedResources = new Dictionary<StaticMesh, RenderableMesh>();
         private readonly SimpleRenderProgram _simpleRenderProgram;
         private readonly ICamera _camera;
+        private NormalDebugProgram _normalDebugProgram;
 
         public RenderSystem(ICamera camera)
         {
@@ -22,6 +23,8 @@ namespace CjClutter.OpenGl.EntityComponent
             _resourceAllocator = new ResourceAllocator(new OpenGlResourceFactory());
             _simpleRenderProgram = new SimpleRenderProgram();
             _simpleRenderProgram.Create();
+            _normalDebugProgram = new NormalDebugProgram();
+            _normalDebugProgram.Create();
         }
 
         public void Update(double elapsedTime, EntityManager entityManager)
@@ -42,12 +45,8 @@ namespace CjClutter.OpenGl.EntityComponent
             foreach (var entity in entityManager.GetEntitiesWithComponent<StaticMesh>())
             {
                 var component = entityManager.GetComponent<StaticMesh>(entity);
-                if (!_allocatedResources.ContainsKey(component))
-                {
-                    _allocatedResources[component] = _resourceAllocator.AllocateResourceFor(component.Mesh);
-                }
+                var resources = EnsureResources(component);
 
-                var resources = _allocatedResources[component];
                 resources.VertexArrayObject.Bind();
                 
                 _simpleRenderProgram.ModelMatrix.Set(component.ModelMatrix);
@@ -57,8 +56,36 @@ namespace CjClutter.OpenGl.EntityComponent
 
                 resources.VertexArrayObject.Unbind();
             }
-
             _simpleRenderProgram.Unbind();
+
+            _normalDebugProgram.Bind();
+            _normalDebugProgram.ProjectionMatrix.Set(_camera.ComputeProjectionMatrix().ToMatrix4());
+            _normalDebugProgram.ViewMatrix.Set(_camera.ComputeCameraMatrix().ToMatrix4());
+            foreach (var entity in entityManager.GetEntitiesWithComponent<NormalComponent>())
+            {
+                var component = entityManager.GetComponent<StaticMesh>(entity);
+                var resources = EnsureResources(component);
+
+                resources.VertexArrayObject.Bind();
+
+                _normalDebugProgram.ModelMatrix.Set(component.ModelMatrix);
+
+                GL.DrawElements(BeginMode.Triangles, component.Mesh.Faces.Length * 3, DrawElementsType.UnsignedInt, 0);
+
+                resources.VertexArrayObject.Unbind();
+
+            }
+            _normalDebugProgram.Unbind();
+        }
+
+        private RenderableMesh EnsureResources(StaticMesh component)
+        {
+            if (!_allocatedResources.ContainsKey(component))
+            {
+                _allocatedResources[component] = _resourceAllocator.AllocateResourceFor(component.Mesh);
+            }
+
+            return _allocatedResources[component];
         }
     }
 }

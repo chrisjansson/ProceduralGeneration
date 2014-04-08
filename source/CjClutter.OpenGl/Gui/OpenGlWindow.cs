@@ -93,6 +93,11 @@ namespace CjClutter.OpenGl.Gui
                 var entity = new Entity(name);
                 _entityManager.Add(entity);
                 _entityManager.AddComponentToEntity(entity, staticMesh);
+
+                if (staticMeshes.IndexOf(staticMesh) % 3 == 0)
+                {
+                    _entityManager.AddComponentToEntity(entity, new NormalComponent());
+                }
             }
         }
 
