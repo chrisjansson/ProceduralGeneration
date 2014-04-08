@@ -146,6 +146,8 @@ namespace CjClutter.OpenGl.Gui
             //_menu.Update();
             //_menu.Draw();
 
+            Console.WriteLine(_frameTimeCounter.Fps);
+
             SwapBuffers();
         }
 

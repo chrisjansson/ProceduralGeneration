@@ -29,6 +29,10 @@ namespace CjClutter.OpenGl.EntityComponent
             GL.ClearColor(Color4.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+            _simpleRenderProgram.Bind();
+            _simpleRenderProgram.ProjectionMatrix.Set(_camera.ComputeProjectionMatrix().ToMatrix4());
+            _simpleRenderProgram.ViewMatrix.Set(_camera.ComputeCameraMatrix().ToMatrix4());
+
             foreach (var entity in entityManager.GetEntitiesWithComponent<StaticMesh>())
             {
                 var component = entityManager.GetComponent<StaticMesh>(entity);
@@ -39,15 +43,13 @@ namespace CjClutter.OpenGl.EntityComponent
 
                 var resources = _allocatedResources[component];
                 resources.VertexArrayObject.Bind();
-                _simpleRenderProgram.Bind();
+                
 
                 GL.Enable(EnableCap.DepthTest);
                 GL.CullFace(CullFaceMode.Back);
                 GL.Enable(EnableCap.CullFace);
                 GL.FrontFace(FrontFaceDirection.Cw);
 
-                _simpleRenderProgram.ProjectionMatrix.Set(_camera.ComputeProjectionMatrix().ToMatrix4());
-                _simpleRenderProgram.ViewMatrix.Set(_camera.ComputeCameraMatrix().ToMatrix4());
                 _simpleRenderProgram.ModelMatrix.Set(component.ModelMatrix);
                 _simpleRenderProgram.Color.Set(component.Color);
 
@@ -57,8 +59,9 @@ namespace CjClutter.OpenGl.EntityComponent
                 GL.DrawElements(BeginMode.Triangles, component.Mesh.Faces.Length * 3, DrawElementsType.UnsignedInt, 0);
 
                 resources.VertexArrayObject.Unbind();
-                _simpleRenderProgram.Unbind();
             }
+
+            _simpleRenderProgram.Unbind();
         }
     }
 }
