@@ -29,7 +29,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2FDC8918-CCF7-427C-82CD-BA67A8887C9C}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ObjLoader.Test</RootNamespace>
     <AssemblyName>CjClutter.ObjLoader.Test</AssemblyName>
