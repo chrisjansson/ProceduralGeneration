@@ -32,6 +32,7 @@ namespace CjClutter.OpenGl.EntityComponent
             _simpleRenderProgram.Bind();
             _simpleRenderProgram.ProjectionMatrix.Set(_camera.ComputeProjectionMatrix().ToMatrix4());
             _simpleRenderProgram.ViewMatrix.Set(_camera.ComputeCameraMatrix().ToMatrix4());
+            //meshResources.RenderProgram.WindowScale.Set(_windowScale);
 
             foreach (var entity in entityManager.GetEntitiesWithComponent<StaticMesh>())
             {
@@ -52,9 +53,6 @@ namespace CjClutter.OpenGl.EntityComponent
 
                 _simpleRenderProgram.ModelMatrix.Set(component.ModelMatrix);
                 _simpleRenderProgram.Color.Set(component.Color);
-
-                //meshResources.RenderProgram.WindowScale.Set(_windowScale);
-                //meshResources.RenderProgram.ModelMatrix.Set(sceneObject.ModelMatrix);
 
                 GL.DrawElements(BeginMode.Triangles, component.Mesh.Faces.Length * 3, DrawElementsType.UnsignedInt, 0);
 
