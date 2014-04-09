@@ -69,90 +69,6 @@ namespace CjClutter.OpenGl.Gui
 
         protected override void OnLoad(EventArgs e)
         {
-            Console.WriteLine("Getting a 1024x768 snapshot" + "of http://www.awesomium.com ...");
-
-            // Create a WebView.
-            // WebView implements IDisposable. You can dispose and
-            // destroy the view by calling WebView.Close().
-            // Here we demonstrate wrapping it in a using statement.
-
-            var texture = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, texture);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int) TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-
-            var color = new[] {1.0f, 0.0f, 0.0f, 1.0f};
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, color);
-
-            using (var webView = WebCore.CreateWebView(1024, 768))
-            {
-                webView.Source = new Uri("http://google.se");
-
-                // Handle the LoadCompleted event to monitor
-                // page loading.
-
-                // Wait for the page to load.
-                while (webView.IsLoading)
-                {
-                    Thread.Sleep(100);
-
-                    // WebCore provides an Auto-Update feature
-                    // for UI applications. A console application
-                    // has no UI and no synchronization context
-                    // so we need to manually call Update here.
-                    WebCore.Update();
-                }
-
-                var bitmapSurface = (BitmapSurface) webView.Surface;
-
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, 1024, 768, 0, PixelFormat.Bgra, PixelType.UnsignedByte, bitmapSurface.Buffer);
-                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-            }
-            // Shut down Awesomium before exiting.
-            WebCore.Shutdown();
-
-            var vertices = new[]{
-                //  Position      Color             Texcoords
-                    -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // Top-left
-                     0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // Top-right
-                     0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, // Bottom-right
-                    -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f  // Bottom-left
-                };
-
-            var openGlResourceFactory = new OpenGlResourceFactory();
-            var shader = openGlResourceFactory.CreateShader(ShaderType.VertexShader);
-            shader.SetSource(@"#version 150 core
-    in vec2 position;
-    in vec3 color;
-    in vec2 texcoord;
-    out vec3 Color;
-    out vec2 Texcoord;
-    void main() {
-       Color = color;
-       Texcoord = texcoord;
-       gl_Position = vec4(position, 0.0, 1.0);
-    }");
-            shader.Compile();
-
-            var shader1 = openGlResourceFactory.CreateShader(ShaderType.FragmentShader);
-            shader1.SetSource(@"#version 150 core
-    in vec3 Color;
-    in vec2 Texcoord;
-    out vec4 outColor;
-    uniform sampler2D tex;
-    void main() {
-       outColor = texture(tex, Texcoord) * vec4(Color, 1.0);
-    }");
-            shader1.Compile();
-
-            var program = openGlResourceFactory.CreateProgram();
-            program.AttachShader(shader);
-            program.AttachShader(shader1);
-            program.Link();
-
-            var vertexBufferObject = new VertexBufferObject<float>(BufferTarget.ArrayBuffer, sizeof (float));
-            vertexBufferObject.Bind();
-            vertexBufferObject.Data(vertices);
             
 
             _stopwatch = new Stopwatch();
@@ -229,20 +145,140 @@ namespace CjClutter.OpenGl.Gui
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            _frameTimeCounter.UpdateFrameTime(e.Time);
+            Console.WriteLine("Getting a 1024x768 snapshot" + "of http://www.awesomium.com ...");
 
-            _inputSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
-            _renderSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
+            var openGlResourceFactory = new OpenGlResourceFactory();
+            var vertexArrayObject = openGlResourceFactory.CreateVertexArrayObject();
+            vertexArrayObject.Create();
+            vertexArrayObject.Bind();
 
-            GL.Clear(ClearBufferMask.DepthBufferBit);
-            //_hud.Update(ElapsedTime.TotalSeconds, _frameTimeCounter.FrameTime);
-            //_hud.Draw();
-            //_menu.Update();
-            //_menu.Draw();
 
-            Console.WriteLine(_frameTimeCounter.Fps);
+            var shader = openGlResourceFactory.CreateShader(ShaderType.VertexShader);
+            shader.SetSource(@"#version 330
+    layout(location = 0)in vec2 position;
+    layout(location = 1)in vec3 color;
+    layout(location = 2)in vec2 texcoord;
+    out vec3 Color;
+    out vec2 Texcoord;
+    void main() {
+       Color = color;
+       Texcoord = texcoord;
+       gl_Position = vec4(position, 0.0, 1.0);
+    }");
+            shader.Compile();
 
-            SwapBuffers();
+            var shader1 = openGlResourceFactory.CreateShader(ShaderType.FragmentShader);
+            shader1.SetSource(@"#version 330
+    in vec3 Color;
+    in vec2 Texcoord;
+    out vec4 outColor;
+    uniform sampler2D tex;
+    void main() {
+       outColor = texture(tex, Texcoord) * vec4(Color, 1.0);
+    }");
+            shader1.Compile();
+
+            var program = openGlResourceFactory.CreateProgram();
+            program.Create();
+            program.AttachShader(shader);
+            program.AttachShader(shader1);
+            program.Link();
+
+            program.Use();
+
+
+            var vertices = new[]{
+                //  Position      Color             Texcoords
+                    -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // Top-left
+                     0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // Top-right
+                     0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, // Bottom-right
+                    -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f  // Bottom-left
+                };
+
+
+            var vertexBufferObject = new VertexBufferObject<float>(BufferTarget.ArrayBuffer, sizeof(float));
+            vertexBufferObject.Generate();
+            vertexBufferObject.Bind();
+            vertexBufferObject.Data(vertices);
+
+            var bufferObject = new VertexBufferObject<uint>(BufferTarget.ElementArrayBuffer, sizeof(uint));
+            bufferObject.Generate();
+            bufferObject.Bind();
+            bufferObject.Data(new uint[] { 0, 1, 2, 2, 3, 0 });
+
+            GL.EnableVertexAttribArray(0);
+            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 7 * sizeof(float), 0);
+
+            GL.EnableVertexAttribArray(1);
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 7 * sizeof(float), 2 * sizeof(float));
+
+            GL.EnableVertexAttribArray(2);
+            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 7 * sizeof(float), 5 * sizeof(float));
+
+            // Create a WebView.
+            // WebView implements IDisposable. You can dispose and
+            // destroy the view by calling WebView.Close().
+            // Here we demonstrate wrapping it in a using statement.
+
+            var texture = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+
+            var color = new[] { 1.0f, 0.0f, 0.0f, 1.0f };
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, color);
+
+            using (var webView = WebCore.CreateWebView(1024, 768))
+            {
+                webView.Source = new Uri("http://google.se");
+
+                // Handle the LoadCompleted event to monitor
+                // page loading.
+
+                // Wait for the page to load.
+                while (webView.IsLoading)
+                {
+                    Thread.Sleep(100);
+
+                    // WebCore provides an Auto-Update feature
+                    // for UI applications. A console application
+                    // has no UI and no synchronization context
+                    // so we need to manually call Update here.
+                    WebCore.Update();
+                }
+
+                var bitmapSurface = (BitmapSurface)webView.Surface;
+
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, 1024, 768, 0, PixelFormat.Bgra, PixelType.UnsignedByte, bitmapSurface.Buffer);
+                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            }
+            // Shut down Awesomium before exiting.
+            WebCore.Shutdown();
+
+            
+
+            while (true)
+            {
+                GL.DrawElements(BeginMode.Triangles, 6, DrawElementsType.UnsignedInt, 0);
+                SwapBuffers();
+            }
+                
+
+            
+
+            //_frameTimeCounter.UpdateFrameTime(e.Time);
+
+            //_inputSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
+            //_renderSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
+
+            //GL.Clear(ClearBufferMask.DepthBufferBit);
+            ////_hud.Update(ElapsedTime.TotalSeconds, _frameTimeCounter.FrameTime);
+            ////_hud.Draw();
+            ////_menu.Update();
+            ////_menu.Draw();
+
+            //Console.WriteLine(_frameTimeCounter.Fps);
+
         }
 
         private void ProcessKeyboardInput()
