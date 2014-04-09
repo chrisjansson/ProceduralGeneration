@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.Threading;
+using Awesomium.Core;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.CoordinateSystems;
 using CjClutter.OpenGl.EntityComponent;
@@ -7,6 +9,7 @@ using CjClutter.OpenGl.Input;
 using CjClutter.OpenGl.Input.Keboard;
 using CjClutter.OpenGl.Input.Mouse;
 using CjClutter.OpenGl.Noise;
+using CjClutter.OpenGl.OpenGl;
 using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 using OpenTK.Graphics;
@@ -66,6 +69,92 @@ namespace CjClutter.OpenGl.Gui
 
         protected override void OnLoad(EventArgs e)
         {
+            Console.WriteLine("Getting a 1024x768 snapshot" + "of http://www.awesomium.com ...");
+
+            // Create a WebView.
+            // WebView implements IDisposable. You can dispose and
+            // destroy the view by calling WebView.Close().
+            // Here we demonstrate wrapping it in a using statement.
+
+            var texture = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int) TextureWrapMode.Repeat);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+
+            var color = new[] {1.0f, 0.0f, 0.0f, 1.0f};
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, color);
+
+            using (var webView = WebCore.CreateWebView(1024, 768))
+            {
+                webView.Source = new Uri("http://google.se");
+
+                // Handle the LoadCompleted event to monitor
+                // page loading.
+
+                // Wait for the page to load.
+                while (webView.IsLoading)
+                {
+                    Thread.Sleep(100);
+
+                    // WebCore provides an Auto-Update feature
+                    // for UI applications. A console application
+                    // has no UI and no synchronization context
+                    // so we need to manually call Update here.
+                    WebCore.Update();
+                }
+
+                var bitmapSurface = (BitmapSurface) webView.Surface;
+
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, 1024, 768, 0, PixelFormat.Bgra, PixelType.UnsignedByte, bitmapSurface.Buffer);
+                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            }
+            // Shut down Awesomium before exiting.
+            WebCore.Shutdown();
+
+            var vertices = new[]{
+                //  Position      Color             Texcoords
+                    -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // Top-left
+                     0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // Top-right
+                     0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, // Bottom-right
+                    -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f  // Bottom-left
+                };
+
+            var openGlResourceFactory = new OpenGlResourceFactory();
+            var shader = openGlResourceFactory.CreateShader(ShaderType.VertexShader);
+            shader.SetSource(@"#version 150 core
+    in vec2 position;
+    in vec3 color;
+    in vec2 texcoord;
+    out vec3 Color;
+    out vec2 Texcoord;
+    void main() {
+       Color = color;
+       Texcoord = texcoord;
+       gl_Position = vec4(position, 0.0, 1.0);
+    }");
+            shader.Compile();
+
+            var shader1 = openGlResourceFactory.CreateShader(ShaderType.FragmentShader);
+            shader1.SetSource(@"#version 150 core
+    in vec3 Color;
+    in vec2 Texcoord;
+    out vec4 outColor;
+    uniform sampler2D tex;
+    void main() {
+       outColor = texture(tex, Texcoord) * vec4(Color, 1.0);
+    }");
+            shader1.Compile();
+
+            var program = openGlResourceFactory.CreateProgram();
+            program.AttachShader(shader);
+            program.AttachShader(shader1);
+            program.Link();
+
+            var vertexBufferObject = new VertexBufferObject<float>(BufferTarget.ArrayBuffer, sizeof (float));
+            vertexBufferObject.Bind();
+            vertexBufferObject.Data(vertices);
+            
+
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
 
@@ -112,7 +201,7 @@ namespace CjClutter.OpenGl.Gui
             {
                 WindowState = WindowState.Normal;
             }
-            else if(WindowState == WindowState.Normal)
+            else if (WindowState == WindowState.Normal)
             {
                 WindowState = WindowState.Fullscreen;
             }
