@@ -10,6 +10,7 @@ using CjClutter.OpenGl.Input.Keboard;
 using CjClutter.OpenGl.Input.Mouse;
 using CjClutter.OpenGl.Noise;
 using CjClutter.OpenGl.OpenGl;
+using CjClutter.OpenGl.OpenGl.Shaders;
 using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 using OpenTK.Graphics;
@@ -145,47 +146,14 @@ namespace CjClutter.OpenGl.Gui
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            Console.WriteLine("Getting a 1024x768 snapshot" + "of http://www.awesomium.com ...");
-
             var openGlResourceFactory = new OpenGlResourceFactory();
             var vertexArrayObject = openGlResourceFactory.CreateVertexArrayObject();
             vertexArrayObject.Create();
             vertexArrayObject.Bind();
 
-
-            var shader = openGlResourceFactory.CreateShader(ShaderType.VertexShader);
-            shader.SetSource(@"#version 330
-    layout(location = 0)in vec2 position;
-    layout(location = 1)in vec3 color;
-    layout(location = 2)in vec2 texcoord;
-    out vec3 Color;
-    out vec2 Texcoord;
-    void main() {
-       Color = color;
-       Texcoord = texcoord;
-       gl_Position = vec4(position, 0.0, 1.0);
-    }");
-            shader.Compile();
-
-            var shader1 = openGlResourceFactory.CreateShader(ShaderType.FragmentShader);
-            shader1.SetSource(@"#version 330
-    in vec3 Color;
-    in vec2 Texcoord;
-    out vec4 outColor;
-    uniform sampler2D tex;
-    void main() {
-       outColor = texture(tex, Texcoord) * vec4(Color, 1.0);
-    }");
-            shader1.Compile();
-
-            var program = openGlResourceFactory.CreateProgram();
-            program.Create();
-            program.AttachShader(shader);
-            program.AttachShader(shader1);
-            program.Link();
-
-            program.Use();
-
+            var guiRenderProgram = new GuiRenderProgram();
+            guiRenderProgram.Create();
+            guiRenderProgram.Bind();
 
             var vertices = new[]{
                 //  Position      Color             Texcoords
@@ -231,7 +199,6 @@ namespace CjClutter.OpenGl.Gui
             using (var webView = WebCore.CreateWebView(1024, 768))
             {
                 webView.Source = new Uri("http://google.se");
-
                 // Handle the LoadCompleted event to monitor
                 // page loading.
 
@@ -248,7 +215,6 @@ namespace CjClutter.OpenGl.Gui
                 }
 
                 var bitmapSurface = (BitmapSurface)webView.Surface;
-
                 GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, 1024, 768, 0, PixelFormat.Bgra, PixelType.UnsignedByte, bitmapSurface.Buffer);
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
             }

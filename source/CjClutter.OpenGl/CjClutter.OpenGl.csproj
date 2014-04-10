@@ -136,6 +136,7 @@
     <Compile Include="OpenGl\Diagnostics\ProgramDiagnostics.cs" />
     <Compile Include="OpenGl\Diagnostics\ShaderDiagnostics.cs" />
     <Compile Include="OpenGl\IOpenGlResourceFactory.cs" />
+    <Compile Include="OpenGl\Shaders\GuiRenderProgram.cs" />
     <Compile Include="OpenGl\Shaders\NormalDebugProgram.cs" />
     <Compile Include="OpenGl\Uniform.cs" />
     <Compile Include="OpenGl\IBindable.cs" />
