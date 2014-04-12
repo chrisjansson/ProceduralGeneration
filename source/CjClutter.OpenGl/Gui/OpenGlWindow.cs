@@ -161,11 +161,11 @@ namespace CjClutter.OpenGl.Gui
             guiRenderProgram.Bind();
 
             var vertices = new[]{
-                //  Position      Color             Texcoords
-                    -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // Top-left
-                     0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // Top-right
-                     0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, // Bottom-right
-                    -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f  // Bottom-left
+                //  Position      Texcoords
+                    -0.5f,  0.5f, 0.0f, 0.0f, // Top-left
+                     0.5f,  0.5f, 1.0f, 0.0f, // Top-right
+                     0.5f, -0.5f, 1.0f, 1.0f, // Bottom-right
+                    -0.5f, -0.5f, 0.0f, 1.0f  // Bottom-left
                 };
 
             var vertexBufferObject = new VertexBufferObject<float>(BufferTarget.ArrayBuffer, sizeof(float));
@@ -179,13 +179,10 @@ namespace CjClutter.OpenGl.Gui
             bufferObject.Data(new uint[] { 0, 1, 2, 2, 3, 0 });
 
             GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 7 * sizeof(float), 0);
-
-            GL.EnableVertexAttribArray(1);
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 7 * sizeof(float), 2 * sizeof(float));
+            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
 
             GL.EnableVertexAttribArray(2);
-            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 7 * sizeof(float), 5 * sizeof(float));
+            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 2 * sizeof(float));
 
             var texture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, texture);
