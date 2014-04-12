@@ -26,23 +26,19 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
         
         private const string VertexShaderSource = @"#version 330
     layout(location = 0)in vec2 position;
-    layout(location = 1)in vec3 color;
     layout(location = 2)in vec2 texcoord;
-    out vec3 Color;
     out vec2 Texcoord;
     void main() {
-       Color = color;
        Texcoord = texcoord;
        gl_Position = vec4(position, 0.0, 1.0);
     }";
 
         private const string FragmentShaderSource = @"#version 330
-    in vec3 Color;
     in vec2 Texcoord;
     out vec4 outColor;
     uniform sampler2D tex;
     void main() {
-       outColor = texture(tex, Texcoord) * vec4(Color, 1.0);
+       outColor = texture(tex, Texcoord);
     }";
         public void Bind()
         {
