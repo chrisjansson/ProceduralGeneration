@@ -1,7 +1,11 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using Awesomium.Core;
+using Awesomium.Core.Data;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.CoordinateSystems;
 using CjClutter.OpenGl.EntityComponent;
@@ -12,6 +16,7 @@ using CjClutter.OpenGl.Noise;
 using CjClutter.OpenGl.OpenGl;
 using CjClutter.OpenGl.OpenGl.Shaders;
 using CjClutter.OpenGl.SceneGraph;
+using Microsoft.SqlServer.Server;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -70,7 +75,7 @@ namespace CjClutter.OpenGl.Gui
 
         protected override void OnLoad(EventArgs e)
         {
-            
+
 
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
@@ -163,7 +168,6 @@ namespace CjClutter.OpenGl.Gui
                     -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f  // Bottom-left
                 };
 
-
             var vertexBufferObject = new VertexBufferObject<float>(BufferTarget.ArrayBuffer, sizeof(float));
             vertexBufferObject.Generate();
             vertexBufferObject.Bind();
@@ -183,55 +187,46 @@ namespace CjClutter.OpenGl.Gui
             GL.EnableVertexAttribArray(2);
             GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 7 * sizeof(float), 5 * sizeof(float));
 
-            // Create a WebView.
-            // WebView implements IDisposable. You can dispose and
-            // destroy the view by calling WebView.Close().
-            // Here we demonstrate wrapping it in a using statement.
-
-            var texture = GL.GenTexture();
+            <var texture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, texture);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
 
             var color = new[] { 1.0f, 0.0f, 0.0f, 1.0f };
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, color);
-
-            using (var webView = WebCore.CreateWebView(1024, 768))
+            var awesomiumThread = new Task<byte[]>(() =>
             {
-                webView.Source = new Uri("http://google.se");
-                // Handle the LoadCompleted event to monitor
-                // page loading.
+                var bytes = new byte[4 * 1024 * 768];
+                WebCore.Initialize(WebConfig.Default);
 
-                // Wait for the page to load.
-                while (webView.IsLoading)
+                using (var webView = WebCore.CreateWebView(1024, 768))
                 {
-                    Thread.Sleep(100);
+                    webView.LoadHTML("<html><h1>Hello</h1></html>");
+                    webView.LoadingFrameComplete += (sender, args) =>
+                    {
+                        var bitmapSurface = (BitmapSurface)webView.Surface;
+                        Marshal.Copy(bitmapSurface.Buffer, bytes, 0, bytes.Length);
 
-                    // WebCore provides an Auto-Update feature
-                    // for UI applications. A console application
-                    // has no UI and no synchronization context
-                    // so we need to manually call Update here.
-                    WebCore.Update();
+                        WebCore.Shutdown();
+                    };
+                    
+                    WebCore.Run();
                 }
 
-                var bitmapSurface = (BitmapSurface)webView.Surface;
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, 1024, 768, 0, PixelFormat.Bgra, PixelType.UnsignedByte, bitmapSurface.Buffer);
-                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-            }
-            // Shut down Awesomium before exiting.
-            WebCore.Shutdown();
+                return bytes;
+            });
+           
+            awesomiumThread.Start();
+            awesomiumThread.Wait();
 
-            
-
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, 1024, 768, 0, PixelFormat.Bgra, PixelType.UnsignedByte, awesomiumThread.Result);
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
             while (true)
             {
                 GL.DrawElements(BeginMode.Triangles, 6, DrawElementsType.UnsignedInt, 0);
                 SwapBuffers();
             }
-                
-
             
-
             //_frameTimeCounter.UpdateFrameTime(e.Time);
 
             //_inputSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
@@ -244,7 +239,6 @@ namespace CjClutter.OpenGl.Gui
             ////_menu.Draw();
 
             //Console.WriteLine(_frameTimeCounter.Fps);
-
         }
 
         private void ProcessKeyboardInput()

@@ -23,7 +23,7 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
             _program.AttachShader(fragmentShader);
             _program.Link();
         }
-
+        
         private const string VertexShaderSource = @"#version 330
     layout(location = 0)in vec2 position;
     layout(location = 1)in vec3 color;
