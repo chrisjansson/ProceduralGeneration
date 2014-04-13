@@ -21,7 +21,9 @@ using Microsoft.SqlServer.Server;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
 using FrameEventArgs = OpenTK.FrameEventArgs;
+using MouseButton = OpenTK.Input.MouseButton;
 
 namespace CjClutter.OpenGl.Gui
 {
@@ -99,7 +101,7 @@ namespace CjClutter.OpenGl.Gui
             _keyboardInputObservable.SubscribeKey(KeyCombination.Esc, CombinationDirection.Down, Exit);
             _keyboardInputObservable.SubscribeKey(KeyCombination.P, CombinationDirection.Down, () => _camera.Projection = ProjectionMode.Perspective);
             _keyboardInputObservable.SubscribeKey(KeyCombination.O, CombinationDirection.Down, () => _camera.Projection = ProjectionMode.Orthographic);
-            _keyboardInputObservable.SubscribeKey(KeyCombination.Tilde, CombinationDirection.Down, () => _menu.IsEnabled = !_menu.IsEnabled);
+            //_keyboardInputObservable.SubscribeKey(KeyCombination.Tilde, CombinationDirection.Down, () => _menu.IsEnabled = !_menu.IsEnabled);
 
             //Inputs for "menu"
             _entityManager = new EntityManager();
@@ -120,12 +122,28 @@ namespace CjClutter.OpenGl.Gui
                     _entityManager.AddComponentToEntity(entity, new NormalComponent());
                 }
             }
+
+            Mouse.Move += MouseOnMove;
+        }
+
+        private void MouseOnMove(object sender, MouseMoveEventArgs mouseMoveEventArgs)
+        {
+            WebCore.QueueWork(_webView, () =>
+            {
+                _webView.InjectMouseMove(Mouse.X, Mouse.Y);
+            });
         }
 
         private ConcurrentQueue<byte[]> _frames = new ConcurrentQueue<byte[]>(); 
         private void WebViewOnLoadingFrameComplete(object sender, Awesomium.Core.FrameEventArgs frameEventArgs)
         {
             var bitmapSurface = (BitmapSurface) _webView.Surface;
+            bitmapSurface.Updated += (o, args) =>
+            {
+                var bytes2 = new byte[bitmapSurface.RowSpan*bitmapSurface.Height];
+                Marshal.Copy(bitmapSurface.Buffer, bytes2, 0, bytes2.Length);
+                _frames.Enqueue(bytes2);
+            };
             var bytes = new byte[bitmapSurface.RowSpan*bitmapSurface.Height];
             Marshal.Copy(bitmapSurface.Buffer, bytes, 0, bytes.Length);
             _frames.Enqueue(bytes);
@@ -165,9 +183,24 @@ namespace CjClutter.OpenGl.Gui
             //_menu.Resize(Width, Height);
         }
 
+        protected override void OnKeyPress(KeyPressEventArgs e)
+        {
+            WebCore.QueueWork(_webView, () =>
+            {
+                WebKeyboardEvent webKeyboardEvent = new WebKeyboardEvent
+                {
+                    Type = WebKeyboardEventType.Char,
+                    Text = new String(new char[] { e.KeyChar, (char)0, (char)0, (char)0 })
+                };
+                _webView.InjectKeyboardEvent(webKeyboardEvent);
+            });
+        }
+
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             ProcessMouseInput();
+
+
             ProcessKeyboardInput();
         }
 
@@ -194,10 +227,10 @@ namespace CjClutter.OpenGl.Gui
 
                 var vertices = new[]{
                 //  Position      Texcoords
-                    -0.5f,  0.5f, 0.0f, 0.0f, // Top-left
-                     0.5f,  0.5f, 1.0f, 0.0f, // Top-right
-                     0.5f, -0.5f, 1.0f, 1.0f, // Bottom-right
-                    -0.5f, -0.5f, 0.0f, 1.0f  // Bottom-left
+                    -1f,  1f, 0.0f, 0.0f, // Top-left
+                     1f,  1f, 1.0f, 0.0f, // Top-right
+                     1f, -1f, 1.0f, 1.0f, // Bottom-right
+                    -1f, -1, 0.0f, 1.0f  // Bottom-left
                 };
 
                 var vertexBufferObject = new VertexBufferObject<float>(BufferTarget.ArrayBuffer, sizeof(float));
@@ -254,16 +287,16 @@ namespace CjClutter.OpenGl.Gui
             {
                 _texture = new Texture();
                 _texture.Create();
+                Render(string.Format("<html><h1>{0}</h1><br><input value='Hello world!'></input><br><input type='button'>Woot a button</input></html>", _frameTimeCounter.Fps));
             }
 
             _frameTimeCounter.UpdateFrameTime(e.Time);
 
             //_inputSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
-            _renderSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
+            //_renderSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
 
             GL.Clear(ClearBufferMask.DepthBufferBit);
-
-            Render(string.Format("<html><h1>{0}</h1><br><input value='Hello world!'></input><br><input type='button'>Woot a button</input></html>", _frameTimeCounter.Fps));
+            
             if (!_frames.IsEmpty)
             {
                 byte[] frame = null;
@@ -274,6 +307,18 @@ namespace CjClutter.OpenGl.Gui
             _texture.Render();
 
             SwapBuffers();
+
+            //WebCore.QueueWork(_webView, () =>
+            //{
+            //    var bitmapSurface = (BitmapSurface)_webView.Surface;
+            //    if (bitmapSurface == null)
+            //    {
+            //        return;
+            //    }
+            //    var bytes = new byte[bitmapSurface.RowSpan * bitmapSurface.Height];
+            //    Marshal.Copy(bitmapSurface.Buffer, bytes, 0, bytes.Length);
+            //    _frames.Enqueue(bytes);
+            //});
         }
 
         private void ProcessKeyboardInput()
@@ -287,6 +332,7 @@ namespace CjClutter.OpenGl.Gui
 
             _keyboardInputProcessor.Update(keyboardState);
             _keyboardInputObservable.ProcessKeys();
+
         }
 
         private void ProcessMouseInput()
@@ -300,6 +346,22 @@ namespace CjClutter.OpenGl.Gui
 
             _mouseInputProcessor.Update(mouseState);
             _mouseInputObservable.ProcessMouseButtons();
+
+            if (_mouseInputProcessor.WasButtonPressed(MouseButton.Left))
+            {
+                WebCore.QueueWork(_webView, () =>
+                {
+                    _webView.InjectMouseDown(Awesomium.Core.MouseButton.Left);
+                });
+            }
+
+            if (_mouseInputProcessor.WasButtonReleased(MouseButton.Left))
+            {
+                WebCore.QueueWork(_webView, () =>
+                {
+                    _webView.InjectMouseUp(Awesomium.Core.MouseButton.Left);
+                });
+            }
 
             _opentkTrackballCameraControls.Update();
         }
