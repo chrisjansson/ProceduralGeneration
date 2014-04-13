@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -73,9 +74,18 @@ namespace CjClutter.OpenGl.Gui
             //_menu.GenerationSettingsControl.SetSettings(new FractalBrownianMotionSettings(6, 0.5, 0.6));
         }
 
+        private IWebView _webView;
         protected override void OnLoad(EventArgs e)
         {
+            _awesomiumThread = new Thread(() =>
+            {
+                WebCore.Initialize(WebConfig.Default);
 
+                _webView = WebCore.CreateWebView(1024, 768);
+                _webView.LoadingFrameComplete += WebViewOnLoadingFrameComplete;
+                WebCore.Run();
+            });
+            _awesomiumThread.Start();
 
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
@@ -112,6 +122,15 @@ namespace CjClutter.OpenGl.Gui
             }
         }
 
+        private ConcurrentQueue<byte[]> _frames = new ConcurrentQueue<byte[]>(); 
+        private void WebViewOnLoadingFrameComplete(object sender, Awesomium.Core.FrameEventArgs frameEventArgs)
+        {
+            var bitmapSurface = (BitmapSurface) _webView.Surface;
+            var bytes = new byte[bitmapSurface.RowSpan*bitmapSurface.Height];
+            Marshal.Copy(bitmapSurface.Buffer, bytes, 0, bytes.Length);
+            _frames.Enqueue(bytes);
+        }
+
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
             _hud.Close();
@@ -129,10 +148,13 @@ namespace CjClutter.OpenGl.Gui
             }
         }
 
-        protected override void OnUnload(EventArgs e)
+        public override void Exit()
         {
-        }
+            WebCore.Shutdown();
+            _awesomiumThread.Join();
 
+            base.Exit();
+        }
         protected override void OnResize(EventArgs e)
         {
             GL.Viewport(0, 0, Width, Height);
@@ -149,18 +171,28 @@ namespace CjClutter.OpenGl.Gui
             ProcessKeyboardInput();
         }
 
-        protected override void OnRenderFrame(FrameEventArgs e)
+        private void Render(string html)
         {
-            var openGlResourceFactory = new OpenGlResourceFactory();
-            var vertexArrayObject = openGlResourceFactory.CreateVertexArrayObject();
-            vertexArrayObject.Create();
-            vertexArrayObject.Bind();
+            WebCore.QueueWork(_webView, () => _webView.LoadHTML(html));    
+        }
 
-            var guiRenderProgram = new GuiRenderProgram();
-            guiRenderProgram.Create();
-            guiRenderProgram.Bind();
+        private class Texture
+        {
+            private VertexArrayObject _vertexArrayObject;
+            private GuiRenderProgram _guiRenderProgram;
 
-            var vertices = new[]{
+            public void Create()
+            {
+                var openGlResourceFactory = new OpenGlResourceFactory();
+                _vertexArrayObject = openGlResourceFactory.CreateVertexArrayObject();
+                _vertexArrayObject.Create();
+                _vertexArrayObject.Bind();
+
+                _guiRenderProgram = new GuiRenderProgram();
+                _guiRenderProgram.Create();
+                _guiRenderProgram.Bind();
+
+                var vertices = new[]{
                 //  Position      Texcoords
                     -0.5f,  0.5f, 0.0f, 0.0f, // Top-left
                      0.5f,  0.5f, 1.0f, 0.0f, // Top-right
@@ -168,74 +200,80 @@ namespace CjClutter.OpenGl.Gui
                     -0.5f, -0.5f, 0.0f, 1.0f  // Bottom-left
                 };
 
-            var vertexBufferObject = new VertexBufferObject<float>(BufferTarget.ArrayBuffer, sizeof(float));
-            vertexBufferObject.Generate();
-            vertexBufferObject.Bind();
-            vertexBufferObject.Data(vertices);
+                var vertexBufferObject = new VertexBufferObject<float>(BufferTarget.ArrayBuffer, sizeof(float));
+                vertexBufferObject.Generate();
+                vertexBufferObject.Bind();
+                vertexBufferObject.Data(vertices);
 
-            var bufferObject = new VertexBufferObject<uint>(BufferTarget.ElementArrayBuffer, sizeof(uint));
-            bufferObject.Generate();
-            bufferObject.Bind();
-            bufferObject.Data(new uint[] { 0, 1, 2, 2, 3, 0 });
+                var bufferObject = new VertexBufferObject<uint>(BufferTarget.ElementArrayBuffer, sizeof(uint));
+                bufferObject.Generate();
+                bufferObject.Bind();
+                bufferObject.Data(new uint[] { 0, 1, 2, 2, 3, 0 });
 
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
+                GL.EnableVertexAttribArray(0);
+                GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
 
-            GL.EnableVertexAttribArray(2);
-            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 2 * sizeof(float));
+                GL.EnableVertexAttribArray(2);
+                GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 4 * sizeof(float), 2 * sizeof(float));
 
-            var texture = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, texture);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+                var texture = GL.GenTexture();
+                GL.BindTexture(TextureTarget.Texture2D, texture);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
 
-            var color = new[] { 1.0f, 0.0f, 0.0f, 1.0f };
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, color);
-            var awesomiumThread = new Task<byte[]>(() =>
-            {
-                var bytes = new byte[4 * 1024 * 768];
-                WebCore.Initialize(WebConfig.Default);
+                var color = new[] { 1.0f, 0.0f, 0.0f, 1.0f };
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, color);
 
-                using (var webView = WebCore.CreateWebView(1024, 768))
-                {
-                    webView.LoadHTML("<html><h1>Hello</h1></html>");
-                    webView.LoadingFrameComplete += (sender, args) =>
-                    {
-                        var bitmapSurface = (BitmapSurface)webView.Surface;
-                        Marshal.Copy(bitmapSurface.Buffer, bytes, 0, bytes.Length);
-
-                        WebCore.Shutdown();
-                    };
-                    
-                    WebCore.Run();
-                }
-
-                return bytes;
-            });
-           
-            awesomiumThread.Start();
-            awesomiumThread.Wait();
-
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, 1024, 768, 0, PixelFormat.Bgra, PixelType.UnsignedByte, awesomiumThread.Result);
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-            while (true)
-            {
-                GL.DrawElements(BeginMode.Triangles, 6, DrawElementsType.UnsignedInt, 0);
-                SwapBuffers();
+                _vertexArrayObject.Unbind();
+                vertexBufferObject.Unbind();
+                bufferObject.Unbind();
             }
-            
-            //_frameTimeCounter.UpdateFrameTime(e.Time);
+
+            public void Render()
+            {
+                _guiRenderProgram.Bind();
+                _vertexArrayObject.Bind();
+                GL.DrawElements(BeginMode.Triangles, 6, DrawElementsType.UnsignedInt, 0);
+                _vertexArrayObject.Unbind();
+                _guiRenderProgram.Unbind();
+            }
+
+            public void Upload(byte[] frame)
+            {
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, 1024, 768, 0, PixelFormat.Bgra, PixelType.UnsignedByte, frame);
+                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            }
+        }
+
+        private Texture _texture;
+        private Thread _awesomiumThread;
+
+        protected override void OnRenderFrame(FrameEventArgs e)
+        {
+            if (_texture == null)
+            {
+                _texture = new Texture();
+                _texture.Create();
+            }
+
+            _frameTimeCounter.UpdateFrameTime(e.Time);
 
             //_inputSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
-            //_renderSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
+            _renderSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
 
-            //GL.Clear(ClearBufferMask.DepthBufferBit);
-            ////_hud.Update(ElapsedTime.TotalSeconds, _frameTimeCounter.FrameTime);
-            ////_hud.Draw();
-            ////_menu.Update();
-            ////_menu.Draw();
+            GL.Clear(ClearBufferMask.DepthBufferBit);
 
-            //Console.WriteLine(_frameTimeCounter.Fps);
+            Render(string.Format("<html><h1>{0}</h1><br><input value='Hello world!'></input><br><input type='button'>Woot a button</input></html>", _frameTimeCounter.Fps));
+            if (!_frames.IsEmpty)
+            {
+                byte[] frame = null;
+                _frames.TryDequeue(out frame);
+                _texture.Upload(frame);
+            }
+
+            _texture.Render();
+
+            SwapBuffers();
         }
 
         private void ProcessKeyboardInput()
