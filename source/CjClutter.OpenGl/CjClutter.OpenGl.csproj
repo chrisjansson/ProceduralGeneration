@@ -181,6 +181,7 @@
     <Compile Include="OpenGl\VertexTypes\Vertex3V3N.cs" />
     <Compile Include="OpenGl\VertexTypes\Vertex3V3NTests.cs" />
     <Compile Include="OpenGl\VertexTypes\Vertex3VTests.cs" />
+    <Compile Include="OpenTkToAwesomiumKeyMapper.cs" />
     <Compile Include="OpenTk\Matrix4dExtensions.cs" />
     <Compile Include="OpenTk\PointExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

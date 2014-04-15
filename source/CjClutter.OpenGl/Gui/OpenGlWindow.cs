@@ -183,6 +183,35 @@ namespace CjClutter.OpenGl.Gui
             //_menu.Resize(Width, Height);
         }
 
+        private OpenTkToAwesomiumKeyMapper _keyMapper = new OpenTkToAwesomiumKeyMapper();
+        protected override void OnKeyDown(KeyboardKeyEventArgs e)
+        {
+            WebCore.QueueWork(_webView, () =>
+            {
+                WebKeyboardEvent webKeyboardEvent = new WebKeyboardEvent
+                {
+                    Type = WebKeyboardEventType.KeyDown,
+                    VirtualKeyCode = _keyMapper.Map(e.Key),
+                    KeyIdentifier = Utilities.GetKeyIdentifierFromVirtualKeyCode(_keyMapper.Map(e.Key))
+                };
+                _webView.InjectKeyboardEvent(webKeyboardEvent);
+            });
+        }
+
+        protected override void OnKeyUp(KeyboardKeyEventArgs e)
+        {
+            WebCore.QueueWork(_webView, () =>
+            {
+                WebKeyboardEvent webKeyboardEvent = new WebKeyboardEvent
+                {
+                    Type = WebKeyboardEventType.KeyUp,
+                    VirtualKeyCode = _keyMapper.Map(e.Key),
+                    KeyIdentifier = Utilities.GetKeyIdentifierFromVirtualKeyCode(_keyMapper.Map(e.Key))
+                };
+                _webView.InjectKeyboardEvent(webKeyboardEvent);
+            });
+        }
+
         protected override void OnKeyPress(KeyPressEventArgs e)
         {
             WebCore.QueueWork(_webView, () =>
@@ -199,7 +228,6 @@ namespace CjClutter.OpenGl.Gui
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             ProcessMouseInput();
-
 
             ProcessKeyboardInput();
         }
@@ -287,7 +315,7 @@ namespace CjClutter.OpenGl.Gui
             {
                 _texture = new Texture();
                 _texture.Create();
-                Render(string.Format("<html><h1>{0}</h1><br><input value='Hello world!'></input><br><input type='button'>Woot a button</input></html>", _frameTimeCounter.Fps));
+                Render(string.Format("<html><h1>{0}</h1><br><input value='Hello world!'><br><input value='Hello world!'></input><br><input type='button'>Woot a button</input></html>", _frameTimeCounter.Fps));
             }
 
             _frameTimeCounter.UpdateFrameTime(e.Time);
@@ -352,6 +380,7 @@ namespace CjClutter.OpenGl.Gui
                 WebCore.QueueWork(_webView, () =>
                 {
                     _webView.InjectMouseDown(Awesomium.Core.MouseButton.Left);
+                    _webView.FocusView();
                 });
             }
 
