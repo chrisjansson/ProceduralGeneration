@@ -17,6 +17,7 @@ using CjClutter.OpenGl.Noise;
 using CjClutter.OpenGl.OpenGl;
 using CjClutter.OpenGl.OpenGl.Shaders;
 using CjClutter.OpenGl.SceneGraph;
+using Gwen.Control;
 using Microsoft.SqlServer.Server;
 using OpenTK;
 using OpenTK.Graphics;
@@ -134,17 +135,17 @@ namespace CjClutter.OpenGl.Gui
             });
         }
 
-        private ConcurrentQueue<byte[]> _frames = new ConcurrentQueue<byte[]>(); 
+        private ConcurrentQueue<byte[]> _frames = new ConcurrentQueue<byte[]>();
         private void WebViewOnLoadingFrameComplete(object sender, Awesomium.Core.FrameEventArgs frameEventArgs)
         {
-            var bitmapSurface = (BitmapSurface) _webView.Surface;
+            var bitmapSurface = (BitmapSurface)_webView.Surface;
             bitmapSurface.Updated += (o, args) =>
             {
-                var bytes2 = new byte[bitmapSurface.RowSpan*bitmapSurface.Height];
+                var bytes2 = new byte[bitmapSurface.RowSpan * bitmapSurface.Height];
                 Marshal.Copy(bitmapSurface.Buffer, bytes2, 0, bytes2.Length);
                 _frames.Enqueue(bytes2);
             };
-            var bytes = new byte[bitmapSurface.RowSpan*bitmapSurface.Height];
+            var bytes = new byte[bitmapSurface.RowSpan * bitmapSurface.Height];
             Marshal.Copy(bitmapSurface.Buffer, bytes, 0, bytes.Length);
             _frames.Enqueue(bytes);
         }
@@ -186,30 +187,41 @@ namespace CjClutter.OpenGl.Gui
         private OpenTkToAwesomiumKeyMapper _keyMapper = new OpenTkToAwesomiumKeyMapper();
         protected override void OnKeyDown(KeyboardKeyEventArgs e)
         {
-            WebCore.QueueWork(_webView, () =>
-            {
-                WebKeyboardEvent webKeyboardEvent = new WebKeyboardEvent
-                {
-                    Type = WebKeyboardEventType.KeyDown,
-                    VirtualKeyCode = _keyMapper.Map(e.Key),
-                    KeyIdentifier = Utilities.GetKeyIdentifierFromVirtualKeyCode(_keyMapper.Map(e.Key))
-                };
-                _webView.InjectKeyboardEvent(webKeyboardEvent);
-            });
+            InjectKey(e, WebKeyboardEventType.KeyDown);
         }
 
         protected override void OnKeyUp(KeyboardKeyEventArgs e)
         {
-            WebCore.QueueWork(_webView, () =>
+            InjectKey(e, WebKeyboardEventType.KeyUp);
+        }
+
+        private void InjectKey(KeyboardKeyEventArgs e, WebKeyboardEventType webKeyboardEventType)
+        {
+            var virtualKeyCode = _keyMapper.Map(e.Key);
+
+            var webKeyboardEvent = new WebKeyboardEvent
             {
-                WebKeyboardEvent webKeyboardEvent = new WebKeyboardEvent
-                {
-                    Type = WebKeyboardEventType.KeyUp,
-                    VirtualKeyCode = _keyMapper.Map(e.Key),
-                    KeyIdentifier = Utilities.GetKeyIdentifierFromVirtualKeyCode(_keyMapper.Map(e.Key))
-                };
-                _webView.InjectKeyboardEvent(webKeyboardEvent);
-            });
+                Type = webKeyboardEventType,
+                VirtualKeyCode = virtualKeyCode,
+                Modifiers = GetModifiers(e),
+                KeyIdentifier = Utilities.GetKeyIdentifierFromVirtualKeyCode(virtualKeyCode)
+            };
+
+            WebCore.QueueWork(_webView, () => _webView.InjectKeyboardEvent(webKeyboardEvent));
+        }
+
+        private Modifiers GetModifiers(KeyboardKeyEventArgs e)
+        {
+            Modifiers modifiers = 0;
+
+            if (e.Modifiers == KeyModifiers.Alt)
+                modifiers |= Modifiers.AltKey;
+            if (e.Modifiers == KeyModifiers.Control)
+                modifiers |= Modifiers.ControlKey;
+            if (e.Modifiers == KeyModifiers.Shift)
+                modifiers |= Modifiers.ShiftKey;
+
+            return modifiers;
         }
 
         protected override void OnKeyPress(KeyPressEventArgs e)
@@ -234,7 +246,7 @@ namespace CjClutter.OpenGl.Gui
 
         private void Render(string html)
         {
-            WebCore.QueueWork(_webView, () => _webView.LoadHTML(html));    
+            WebCore.QueueWork(_webView, () => _webView.LoadHTML(html));
         }
 
         private class Texture
@@ -315,7 +327,15 @@ namespace CjClutter.OpenGl.Gui
             {
                 _texture = new Texture();
                 _texture.Create();
-                Render(string.Format("<html><h1>{0}</h1><br><input value='Hello world!'><br><input value='Hello world!'></input><br><input type='button'>Woot a button</input></html>", _frameTimeCounter.Fps));
+                Render(string.Format("<html>" +
+                                     "<h1>{0}</h1>" +
+                                     "<br>" +
+                                     "<input value='Hello world!'></input>" +
+                                     "<br>" +
+                                     "<input value='Hello world!'></input>" +
+                                     "<br>" +
+                                     "<input type='button' onclick='alert(\"Hello\")'>Woot a button</input>" +
+                                     "</html>", _frameTimeCounter.Fps));
             }
 
             _frameTimeCounter.UpdateFrameTime(e.Time);
@@ -324,7 +344,7 @@ namespace CjClutter.OpenGl.Gui
             //_renderSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
 
             GL.Clear(ClearBufferMask.DepthBufferBit);
-            
+
             if (!_frames.IsEmpty)
             {
                 byte[] frame = null;
