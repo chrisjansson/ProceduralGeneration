@@ -137,6 +137,7 @@ namespace CjClutter.OpenGl.Gui
             _camera.Height = Height;
             _renderer.Resize(Width, Height);
             _hud.Resize(Width, Height);
+            _awesomiumGui.Resize(Width, Height);
             //_menu.Resize(Width, Height);
         }
 
@@ -214,9 +215,9 @@ namespace CjClutter.OpenGl.Gui
                 _guiRenderProgram.Unbind();
             }
 
-            public void Upload(byte[] frame)
+            public void Upload(Frame frame)
             {
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, 1024, 768, 0, PixelFormat.Bgra, PixelType.UnsignedByte, frame);
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, frame.Width, frame.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, frame.Buffer);
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
             }
         }
@@ -250,7 +251,7 @@ namespace CjClutter.OpenGl.Gui
 
             if (!_awesomiumGui._frames.IsEmpty)
             {
-                byte[] frame = null;
+                Frame frame = null;
                 _awesomiumGui._frames.TryDequeue(out frame);
                 _texture.Upload(frame);
             }

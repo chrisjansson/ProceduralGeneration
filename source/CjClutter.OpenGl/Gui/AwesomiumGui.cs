@@ -9,11 +9,26 @@ using FrameEventArgs = Awesomium.Core.FrameEventArgs;
 
 namespace CjClutter.OpenGl.Gui
 {
+
+    public class Frame
+    {
+        public byte[] Buffer { get; private set; }
+        public int Width { get; private set; }
+        public int Height { get; private set; }
+
+        public Frame(byte[] buffer, int width, int height)
+        {
+            Buffer = buffer;
+            Width = width;
+            Height = height;
+        }
+
+    }
     public class AwesomiumGui
     {
         private WebView _webView;
         private readonly OpenTkToAwesomiumKeyMapper _keyMapper = new OpenTkToAwesomiumKeyMapper();
-        public readonly ConcurrentQueue<byte[]> _frames = new ConcurrentQueue<byte[]>();
+        public readonly ConcurrentQueue<Frame> _frames = new ConcurrentQueue<Frame>();
         private Thread _thread;
 
         public void Start()
@@ -49,11 +64,11 @@ namespace CjClutter.OpenGl.Gui
             {
                 var bytes2 = new byte[bitmapSurface.RowSpan * bitmapSurface.Height];
                 Marshal.Copy(bitmapSurface.Buffer, bytes2, 0, bytes2.Length);
-                _frames.Enqueue(bytes2);
+                _frames.Enqueue(new Frame(bytes2, bitmapSurface.Width, bitmapSurface.Height));
             };
             var bytes = new byte[bitmapSurface.RowSpan * bitmapSurface.Height];
             Marshal.Copy(bitmapSurface.Buffer, bytes, 0, bytes.Length);
-            _frames.Enqueue(bytes);
+            _frames.Enqueue(new Frame(bytes, bitmapSurface.Width, bitmapSurface.Height));
         }
 
         public void KeyPress(KeyPressEventArgs args)
@@ -123,6 +138,11 @@ namespace CjClutter.OpenGl.Gui
         public void MouseUp(MouseButtonEventArgs args)
         {
             WebCore.QueueWork(_webView, () => _webView.InjectMouseUp(Awesomium.Core.MouseButton.Left));
+        }
+
+        public void Resize(int width, int height)
+        {
+            WebCore.QueueWork(_webView, () => _webView.Resize(width, height));
         }
     }
 }
