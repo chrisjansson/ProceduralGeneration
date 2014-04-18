@@ -1,12 +1,5 @@
 using System;
-using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
-using Awesomium.Core;
-using Awesomium.Core.Data;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.CoordinateSystems;
 using CjClutter.OpenGl.EntityComponent;
@@ -17,14 +10,10 @@ using CjClutter.OpenGl.Noise;
 using CjClutter.OpenGl.OpenGl;
 using CjClutter.OpenGl.OpenGl.Shaders;
 using CjClutter.OpenGl.SceneGraph;
-using Gwen.Control;
-using Microsoft.SqlServer.Server;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Input;
 using FrameEventArgs = OpenTK.FrameEventArgs;
-using MouseButton = OpenTK.Input.MouseButton;
 
 namespace CjClutter.OpenGl.Gui
 {
@@ -73,23 +62,13 @@ namespace CjClutter.OpenGl.Gui
 
             _renderer = new Renderer();
             _hud = new Hud(this);
+            _awesomiumGui = new AwesomiumGui();
             //_menu = new Menu(this, _scene);
             //_menu.GenerationSettingsControl.SetSettings(new FractalBrownianMotionSettings(6, 0.5, 0.6));
         }
 
-        private IWebView _webView;
         protected override void OnLoad(EventArgs e)
         {
-            _awesomiumThread = new Thread(() =>
-            {
-                WebCore.Initialize(WebConfig.Default);
-
-                _webView = WebCore.CreateWebView(1024, 768);
-                _webView.LoadingFrameComplete += WebViewOnLoadingFrameComplete;
-                WebCore.Run();
-            });
-            _awesomiumThread.Start();
-
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
 
@@ -124,34 +103,18 @@ namespace CjClutter.OpenGl.Gui
                 }
             }
 
-            Mouse.Move += MouseOnMove;
-        }
-
-        private void MouseOnMove(object sender, MouseMoveEventArgs mouseMoveEventArgs)
-        {
-            WebCore.QueueWork(_webView, () =>
-            {
-                _webView.InjectMouseMove(Mouse.X, Mouse.Y);
-            });
-        }
-
-        private ConcurrentQueue<byte[]> _frames = new ConcurrentQueue<byte[]>();
-        private void WebViewOnLoadingFrameComplete(object sender, Awesomium.Core.FrameEventArgs frameEventArgs)
-        {
-            var bitmapSurface = (BitmapSurface)_webView.Surface;
-            bitmapSurface.Updated += (o, args) =>
-            {
-                var bytes2 = new byte[bitmapSurface.RowSpan * bitmapSurface.Height];
-                Marshal.Copy(bitmapSurface.Buffer, bytes2, 0, bytes2.Length);
-                _frames.Enqueue(bytes2);
-            };
-            var bytes = new byte[bitmapSurface.RowSpan * bitmapSurface.Height];
-            Marshal.Copy(bitmapSurface.Buffer, bytes, 0, bytes.Length);
-            _frames.Enqueue(bytes);
+            _awesomiumGui.Start();
+            Mouse.Move += (_, args) => _awesomiumGui.MouseMove(args);
+            Mouse.ButtonDown += (_, args) => _awesomiumGui.MouseDown(args);
+            Mouse.ButtonUp += (_, args) => _awesomiumGui.MouseUp(args);
+            KeyDown += (_, args) => _awesomiumGui.KeyDown(args);
+            KeyUp += (_, args) => _awesomiumGui.KeyUp(args);
+            KeyPress += (_, args) => _awesomiumGui.KeyPress(args);
         }
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
+            _awesomiumGui.Stop();
             _hud.Close();
         }
 
@@ -167,13 +130,6 @@ namespace CjClutter.OpenGl.Gui
             }
         }
 
-        public override void Exit()
-        {
-            WebCore.Shutdown();
-            _awesomiumThread.Join();
-
-            base.Exit();
-        }
         protected override void OnResize(EventArgs e)
         {
             GL.Viewport(0, 0, Width, Height);
@@ -182,59 +138,6 @@ namespace CjClutter.OpenGl.Gui
             _renderer.Resize(Width, Height);
             _hud.Resize(Width, Height);
             //_menu.Resize(Width, Height);
-        }
-
-        private OpenTkToAwesomiumKeyMapper _keyMapper = new OpenTkToAwesomiumKeyMapper();
-        protected override void OnKeyDown(KeyboardKeyEventArgs e)
-        {
-            InjectKey(e, WebKeyboardEventType.KeyDown);
-        }
-
-        protected override void OnKeyUp(KeyboardKeyEventArgs e)
-        {
-            InjectKey(e, WebKeyboardEventType.KeyUp);
-        }
-
-        private void InjectKey(KeyboardKeyEventArgs e, WebKeyboardEventType webKeyboardEventType)
-        {
-            var virtualKeyCode = _keyMapper.Map(e.Key);
-
-            var webKeyboardEvent = new WebKeyboardEvent
-            {
-                Type = webKeyboardEventType,
-                VirtualKeyCode = virtualKeyCode,
-                Modifiers = GetModifiers(e),
-                KeyIdentifier = Utilities.GetKeyIdentifierFromVirtualKeyCode(virtualKeyCode)
-            };
-
-            WebCore.QueueWork(_webView, () => _webView.InjectKeyboardEvent(webKeyboardEvent));
-        }
-
-        private Modifiers GetModifiers(KeyboardKeyEventArgs e)
-        {
-            Modifiers modifiers = 0;
-
-            if (e.Modifiers == KeyModifiers.Alt)
-                modifiers |= Modifiers.AltKey;
-            if (e.Modifiers == KeyModifiers.Control)
-                modifiers |= Modifiers.ControlKey;
-            if (e.Modifiers == KeyModifiers.Shift)
-                modifiers |= Modifiers.ShiftKey;
-
-            return modifiers;
-        }
-
-        protected override void OnKeyPress(KeyPressEventArgs e)
-        {
-            WebCore.QueueWork(_webView, () =>
-            {
-                WebKeyboardEvent webKeyboardEvent = new WebKeyboardEvent
-                {
-                    Type = WebKeyboardEventType.Char,
-                    Text = new String(new char[] { e.KeyChar, (char)0, (char)0, (char)0 })
-                };
-                _webView.InjectKeyboardEvent(webKeyboardEvent);
-            });
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -246,7 +149,7 @@ namespace CjClutter.OpenGl.Gui
 
         private void Render(string html)
         {
-            WebCore.QueueWork(_webView, () => _webView.LoadHTML(html));
+            _awesomiumGui.SetSource(html);
         }
 
         private class Texture
@@ -319,7 +222,7 @@ namespace CjClutter.OpenGl.Gui
         }
 
         private Texture _texture;
-        private Thread _awesomiumThread;
+        private AwesomiumGui _awesomiumGui;
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
@@ -345,28 +248,16 @@ namespace CjClutter.OpenGl.Gui
 
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
-            if (!_frames.IsEmpty)
+            if (!_awesomiumGui._frames.IsEmpty)
             {
                 byte[] frame = null;
-                _frames.TryDequeue(out frame);
+                _awesomiumGui._frames.TryDequeue(out frame);
                 _texture.Upload(frame);
             }
 
             _texture.Render();
 
             SwapBuffers();
-
-            //WebCore.QueueWork(_webView, () =>
-            //{
-            //    var bitmapSurface = (BitmapSurface)_webView.Surface;
-            //    if (bitmapSurface == null)
-            //    {
-            //        return;
-            //    }
-            //    var bytes = new byte[bitmapSurface.RowSpan * bitmapSurface.Height];
-            //    Marshal.Copy(bitmapSurface.Buffer, bytes, 0, bytes.Length);
-            //    _frames.Enqueue(bytes);
-            //});
         }
 
         private void ProcessKeyboardInput()
@@ -395,22 +286,6 @@ namespace CjClutter.OpenGl.Gui
             _mouseInputProcessor.Update(mouseState);
             _mouseInputObservable.ProcessMouseButtons();
 
-            if (_mouseInputProcessor.WasButtonPressed(MouseButton.Left))
-            {
-                WebCore.QueueWork(_webView, () =>
-                {
-                    _webView.InjectMouseDown(Awesomium.Core.MouseButton.Left);
-                    _webView.FocusView();
-                });
-            }
-
-            if (_mouseInputProcessor.WasButtonReleased(MouseButton.Left))
-            {
-                WebCore.QueueWork(_webView, () =>
-                {
-                    _webView.InjectMouseUp(Awesomium.Core.MouseButton.Left);
-                });
-            }
 
             _opentkTrackballCameraControls.Update();
         }

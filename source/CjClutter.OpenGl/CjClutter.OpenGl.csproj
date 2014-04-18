@@ -119,6 +119,7 @@
     <Compile Include="EntityComponent\InputSystem.cs" />
     <Compile Include="EntityComponent\NormalComponent.cs" />
     <Compile Include="EntityComponent\StaticMesh.cs" />
+    <Compile Include="Gui\AwesomiumGui.cs" />
     <Compile Include="Gui\DockWithBackground.cs" />
     <Compile Include="Gui\GenerationSettingsControl.cs" />
     <Compile Include="Gui\GwenGuiBase.cs" />

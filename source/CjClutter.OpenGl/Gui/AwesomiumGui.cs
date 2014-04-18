@@ -1,0 +1,128 @@
+﻿using System;
+using System.Collections.Concurrent;
+using System.Runtime.InteropServices;
+using System.Threading;
+using Awesomium.Core;
+using OpenTK;
+using OpenTK.Input;
+using FrameEventArgs = Awesomium.Core.FrameEventArgs;
+
+namespace CjClutter.OpenGl.Gui
+{
+    public class AwesomiumGui
+    {
+        private WebView _webView;
+        private readonly OpenTkToAwesomiumKeyMapper _keyMapper = new OpenTkToAwesomiumKeyMapper();
+        public readonly ConcurrentQueue<byte[]> _frames = new ConcurrentQueue<byte[]>();
+        private Thread _thread;
+
+        public void Start()
+        {
+            _thread = new Thread(StartWebView);
+            _thread.Start();
+        }
+
+        public void Stop()
+        {
+            WebCore.Shutdown();
+            _thread.Join();
+        }
+
+        private void StartWebView()
+        {
+            WebCore.Initialize(WebConfig.Default);
+
+            _webView = WebCore.CreateWebView(1024, 768);
+            _webView.LoadingFrameComplete += WebViewOnLoadingFrameComplete;
+            WebCore.Run();
+        }
+
+        public void SetSource(string html)
+        {
+            WebCore.QueueWork(_webView, () => _webView.LoadHTML(html));
+        }
+
+        private void WebViewOnLoadingFrameComplete(object sender, FrameEventArgs frameEventArgs)
+        {
+            var bitmapSurface = (BitmapSurface)_webView.Surface;
+            bitmapSurface.Updated += (o, args) =>
+            {
+                var bytes2 = new byte[bitmapSurface.RowSpan * bitmapSurface.Height];
+                Marshal.Copy(bitmapSurface.Buffer, bytes2, 0, bytes2.Length);
+                _frames.Enqueue(bytes2);
+            };
+            var bytes = new byte[bitmapSurface.RowSpan * bitmapSurface.Height];
+            Marshal.Copy(bitmapSurface.Buffer, bytes, 0, bytes.Length);
+            _frames.Enqueue(bytes);
+        }
+
+        public void KeyPress(KeyPressEventArgs args)
+        {
+            var webKeyboardEvent = new WebKeyboardEvent
+            {
+                Type = WebKeyboardEventType.Char,
+                Text = new String(new[] { args.KeyChar, (char)0, (char)0, (char)0 })
+            };
+
+            WebCore.QueueWork(_webView, () => _webView.InjectKeyboardEvent(webKeyboardEvent));
+        }
+
+        public void KeyDown(KeyboardKeyEventArgs args)
+        {
+            InjectKey(args, WebKeyboardEventType.KeyDown);
+        }
+
+        public void KeyUp(KeyboardKeyEventArgs args)
+        {
+            InjectKey(args, WebKeyboardEventType.KeyUp);
+        }
+
+        public void MouseMove(MouseMoveEventArgs args)
+        {
+            WebCore.QueueWork(_webView, () => _webView.InjectMouseMove(args.X, args.Y));
+        }
+
+        private void InjectKey(KeyboardKeyEventArgs e, WebKeyboardEventType webKeyboardEventType)
+        {
+            var virtualKeyCode = _keyMapper.Map(e.Key);
+
+            var webKeyboardEvent = new WebKeyboardEvent
+            {
+                Type = webKeyboardEventType,
+                VirtualKeyCode = virtualKeyCode,
+                Modifiers = ConvertModifiers(e.Modifiers),
+                KeyIdentifier = Utilities.GetKeyIdentifierFromVirtualKeyCode(virtualKeyCode)
+            };
+
+            WebCore.QueueWork(_webView, () => _webView.InjectKeyboardEvent(webKeyboardEvent));
+        }
+
+        private static Modifiers ConvertModifiers(KeyModifiers keyModifiers)
+        {
+            Modifiers modifiers = 0;
+
+            if (keyModifiers == KeyModifiers.Alt)
+                modifiers |= Modifiers.AltKey;
+            if (keyModifiers == KeyModifiers.Control)
+                modifiers |= Modifiers.ControlKey;
+            if (keyModifiers == KeyModifiers.Shift)
+                modifiers |= Modifiers.ShiftKey;
+
+            return modifiers;
+        }
+
+        public void MouseDown(MouseButtonEventArgs args)
+        {
+            WebCore.QueueWork(_webView, () =>
+            {
+                _webView.InjectMouseDown(Awesomium.Core.MouseButton.Left);
+                _webView.FocusView();
+            });
+        }
+
+        public void MouseUp(MouseButtonEventArgs args)
+        {
+            WebCore.QueueWork(_webView, () => _webView.InjectMouseUp(Awesomium.Core.MouseButton.Left));
+        }
+    }
+}
