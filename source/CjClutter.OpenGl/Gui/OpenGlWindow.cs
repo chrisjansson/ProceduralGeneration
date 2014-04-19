@@ -149,12 +149,6 @@ namespace CjClutter.OpenGl.Gui
             ProcessKeyboardInput();
         }
 
-        private void Render(string html)
-        {
-            Thread.Sleep(1000);
-            _awesomiumGui.SetSource(html);
-        }
-
         private class Texture
         {
             private VertexArrayObject _vertexArrayObject;
@@ -219,7 +213,7 @@ namespace CjClutter.OpenGl.Gui
 
             public void Upload(Frame frame)
             {
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, frame.Width, frame.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, frame.Buffer);
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, frame.Width, frame.Height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, frame.Buffer);
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
             }
         }
@@ -233,21 +227,17 @@ namespace CjClutter.OpenGl.Gui
             {
                 _texture = new Texture();
                 _texture.Create();
-                Render(string.Format("<html>" +
-                                     "<h1>{0}</h1>" +
-                                     "<br>" +
-                                     "<input value='Hello world!'></input>" +
-                                     "<br>" +
-                                     "<input value='Hello world!'></input>" +
-                                     "<br>" +
-                                     "<input type='button' onclick='alert(\"Hello\")'>Woot a button</input>" +
-                                     "</html>", _frameTimeCounter.Fps));
             }
 
             _frameTimeCounter.UpdateFrameTime(e.Time);
 
-            //_inputSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
-            //_renderSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
+
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+
+            _inputSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
+            _renderSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
 
             GL.Clear(ClearBufferMask.DepthBufferBit);
 

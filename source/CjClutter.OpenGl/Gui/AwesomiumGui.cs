@@ -50,6 +50,8 @@ namespace CjClutter.OpenGl.Gui
             _webView = WebCore.CreateWebView(1024, 768);
             while (!_webView.IsLive) {}
 
+            _webView.IsTransparent = true;
+            _webView.LoadHTML(Source);
             _webView.LoadingFrameComplete += WebViewOnLoadingFrameComplete;
             _webView.DocumentReady += WebViewOnDocumentReady;
             WebCore.Run();
@@ -62,24 +64,20 @@ namespace CjClutter.OpenGl.Gui
             _viewModel = _webView.CreateGlobalJavascriptObject("viewModel");
             _viewModel.Bind("getDate", true, (_, a) => a.Result = DateTime.Now.ToString());
         }
-
-        public void SetSource(string html)
-        {
-            WebCore.QueueWork(_webView, () => _webView.LoadHTML(Source));
-        }
-
+    
         private void WebViewOnLoadingFrameComplete(object sender, FrameEventArgs frameEventArgs)
         {
-            var bitmapSurface = (BitmapSurface) _webView.Surface;
-            bitmapSurface.Updated += (o, args) =>
-            {
-                var bytes2 = new byte[bitmapSurface.RowSpan*bitmapSurface.Height];
-                Marshal.Copy(bitmapSurface.Buffer, bytes2, 0, bytes2.Length);
-                _frames.Enqueue(new Frame(bytes2, bitmapSurface.Width, bitmapSurface.Height));
-            };
-            var bytes = new byte[bitmapSurface.RowSpan*bitmapSurface.Height];
-            Marshal.Copy(bitmapSurface.Buffer, bytes, 0, bytes.Length);
-            _frames.Enqueue(new Frame(bytes, bitmapSurface.Width, bitmapSurface.Height));
+            var surface = (BitmapSurface) _webView.Surface;
+            surface.Updated += (_, __) => EnqeueFrame(surface);
+         
+            EnqeueFrame(surface);
+        }
+
+        private void EnqeueFrame(BitmapSurface surface)
+        {
+            var bytes = new byte[surface.RowSpan * surface.Height];
+            Marshal.Copy(surface.Buffer, bytes, 0, bytes.Length);
+            _frames.Enqueue(new Frame(bytes, surface.Width, surface.Height));
         }
 
         public void KeyPress(KeyPressEventArgs args)
@@ -166,8 +164,12 @@ namespace CjClutter.OpenGl.Gui
             };
         </script>
     </head>
-    <input type='button' value='Apply' onclick='buttonClick()'></input>
-    <h1 id='elementId'></h1>
+    <body style='margin: 0px'>
+        <div style='width: 100%;background: red'>
+            <input type='button' value='Apply' onclick='buttonClick()'></input>
+            <h1 id='elementId'></h1>
+        </div>
+    </body>
 </html>";
     }
 }
