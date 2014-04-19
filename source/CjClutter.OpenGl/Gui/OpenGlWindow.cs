@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Threading;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.CoordinateSystems;
 using CjClutter.OpenGl.EntityComponent;
@@ -150,6 +151,7 @@ namespace CjClutter.OpenGl.Gui
 
         private void Render(string html)
         {
+            Thread.Sleep(1000);
             _awesomiumGui.SetSource(html);
         }
 

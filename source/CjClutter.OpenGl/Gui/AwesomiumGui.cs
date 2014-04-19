@@ -9,7 +9,6 @@ using FrameEventArgs = Awesomium.Core.FrameEventArgs;
 
 namespace CjClutter.OpenGl.Gui
 {
-
     public class Frame
     {
         public byte[] Buffer { get; private set; }
@@ -22,14 +21,15 @@ namespace CjClutter.OpenGl.Gui
             Width = width;
             Height = height;
         }
-
     }
+
     public class AwesomiumGui
     {
         private WebView _webView;
         private readonly OpenTkToAwesomiumKeyMapper _keyMapper = new OpenTkToAwesomiumKeyMapper();
         public readonly ConcurrentQueue<Frame> _frames = new ConcurrentQueue<Frame>();
         private Thread _thread;
+        private JSObject _viewModel;
 
         public void Start()
         {
@@ -48,25 +48,36 @@ namespace CjClutter.OpenGl.Gui
             WebCore.Initialize(WebConfig.Default);
 
             _webView = WebCore.CreateWebView(1024, 768);
+            while (!_webView.IsLive) {}
+
             _webView.LoadingFrameComplete += WebViewOnLoadingFrameComplete;
+            _webView.DocumentReady += WebViewOnDocumentReady;
             WebCore.Run();
+        }
+
+        private void WebViewOnDocumentReady(object sender, UrlEventArgs urlEventArgs)
+        {
+            _webView.DocumentReady -= WebViewOnDocumentReady;
+
+            _viewModel = _webView.CreateGlobalJavascriptObject("viewModel");
+            _viewModel.Bind("getDate", true, (_, a) => a.Result = DateTime.Now.ToString());
         }
 
         public void SetSource(string html)
         {
-            WebCore.QueueWork(_webView, () => _webView.LoadHTML(html));
+            WebCore.QueueWork(_webView, () => _webView.LoadHTML(Source));
         }
 
         private void WebViewOnLoadingFrameComplete(object sender, FrameEventArgs frameEventArgs)
         {
-            var bitmapSurface = (BitmapSurface)_webView.Surface;
+            var bitmapSurface = (BitmapSurface) _webView.Surface;
             bitmapSurface.Updated += (o, args) =>
             {
-                var bytes2 = new byte[bitmapSurface.RowSpan * bitmapSurface.Height];
+                var bytes2 = new byte[bitmapSurface.RowSpan*bitmapSurface.Height];
                 Marshal.Copy(bitmapSurface.Buffer, bytes2, 0, bytes2.Length);
                 _frames.Enqueue(new Frame(bytes2, bitmapSurface.Width, bitmapSurface.Height));
             };
-            var bytes = new byte[bitmapSurface.RowSpan * bitmapSurface.Height];
+            var bytes = new byte[bitmapSurface.RowSpan*bitmapSurface.Height];
             Marshal.Copy(bitmapSurface.Buffer, bytes, 0, bytes.Length);
             _frames.Enqueue(new Frame(bytes, bitmapSurface.Width, bitmapSurface.Height));
         }
@@ -76,7 +87,7 @@ namespace CjClutter.OpenGl.Gui
             var webKeyboardEvent = new WebKeyboardEvent
             {
                 Type = WebKeyboardEventType.Char,
-                Text = new String(new[] { args.KeyChar, (char)0, (char)0, (char)0 })
+                Text = new String(new[] {args.KeyChar, (char) 0, (char) 0, (char) 0})
             };
 
             WebCore.QueueWork(_webView, () => _webView.InjectKeyboardEvent(webKeyboardEvent));
@@ -144,5 +155,19 @@ namespace CjClutter.OpenGl.Gui
         {
             WebCore.QueueWork(_webView, () => _webView.Resize(width, height));
         }
+
+        private const string Source = @"
+<html>
+    <head>
+        <script type='text/javascript'>
+            var buttonClick = function() {
+                var header = document.getElementById('elementId');
+                header.innerText = viewModel.getDate();
+            };
+        </script>
+    </head>
+    <input type='button' value='Apply' onclick='buttonClick()'></input>
+    <h1 id='elementId'></h1>
+</html>";
     }
 }
