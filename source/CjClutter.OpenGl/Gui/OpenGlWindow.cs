@@ -231,14 +231,13 @@ namespace CjClutter.OpenGl.Gui
 
             _frameTimeCounter.UpdateFrameTime(e.Time);
 
-
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
             _inputSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
             _renderSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
 
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
             if (!_awesomiumGui._frames.IsEmpty)
@@ -249,6 +248,8 @@ namespace CjClutter.OpenGl.Gui
             }
 
             _texture.Render();
+
+            GL.Disable(EnableCap.Blend);
 
             SwapBuffers();
         }

@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Awesomium.Core;
+using CjClutter.OpenGl.Noise;
 using OpenTK;
 using OpenTK.Input;
 using FrameEventArgs = Awesomium.Core.FrameEventArgs;
@@ -31,6 +32,13 @@ namespace CjClutter.OpenGl.Gui
         private Thread _thread;
         private JSObject _viewModel;
 
+        public event Action<FractalBrownianMotionSettings> SettingsChanged;
+
+        public AwesomiumGui()
+        {
+            SettingsChanged += _ => { };
+        }
+
         public void Start()
         {
             _thread = new Thread(StartWebView);
@@ -48,7 +56,7 @@ namespace CjClutter.OpenGl.Gui
             WebCore.Initialize(WebConfig.Default);
 
             _webView = WebCore.CreateWebView(1024, 768);
-            while (!_webView.IsLive) {}
+            while (!_webView.IsLive) { }
 
             _webView.IsTransparent = true;
             _webView.LoadHTML(Source);
@@ -61,15 +69,24 @@ namespace CjClutter.OpenGl.Gui
         {
             _webView.DocumentReady -= WebViewOnDocumentReady;
 
-            _viewModel = _webView.CreateGlobalJavascriptObject("viewModel");
-            _viewModel.Bind("getDate", true, (_, a) => a.Result = DateTime.Now.ToString());
+            //_viewModel = _webView.CreateGlobalJavascriptObject("viewModel");
+            _viewModel = _webView.ExecuteJavascriptWithResult("viewModel");
+            _viewModel.Bind("apply", false, (_, a) =>
+            {
+                var octaves = _viewModel["octaves"].IsInteger ? int.Parse(_viewModel["octaves"]) : 0;
+                var amplitude = _viewModel["octaves"].IsInteger ? double.Parse(_viewModel["octaves"]) : 0;
+                var frequency = _viewModel["octaves"].IsInteger ? double.Parse(_viewModel["octaves"]) : 0;
+
+                var fractalBrownianMotionSettings = new FractalBrownianMotionSettings(octaves, amplitude, frequency);
+                SettingsChanged(fractalBrownianMotionSettings);
+            });
         }
-    
+
         private void WebViewOnLoadingFrameComplete(object sender, FrameEventArgs frameEventArgs)
         {
-            var surface = (BitmapSurface) _webView.Surface;
+            var surface = (BitmapSurface)_webView.Surface;
             surface.Updated += (_, __) => EnqeueFrame(surface);
-         
+
             EnqeueFrame(surface);
         }
 
@@ -85,7 +102,7 @@ namespace CjClutter.OpenGl.Gui
             var webKeyboardEvent = new WebKeyboardEvent
             {
                 Type = WebKeyboardEventType.Char,
-                Text = new String(new[] {args.KeyChar, (char) 0, (char) 0, (char) 0})
+                Text = new String(new[] { args.KeyChar, (char)0, (char)0, (char)0 })
             };
 
             WebCore.QueueWork(_webView, () => _webView.InjectKeyboardEvent(webKeyboardEvent));
@@ -158,16 +175,25 @@ namespace CjClutter.OpenGl.Gui
 <html>
     <head>
         <script type='text/javascript'>
-            var buttonClick = function() {
-                var header = document.getElementById('elementId');
-                header.innerText = viewModel.getDate();
-            };
+            var viewModel = {};
+            viewModel.frequency = 1;
+            viewModel.amplitude = 2;
+            viewModel.octaves = 3;
+
+            var applyValues = function() {
+                viewModel.frequency = document.getElementById('frequency').value;
+                viewModel.amplitude = document.getElementById('amplitude').value;
+                viewModel.octaves = document.getElementById('octaves').value;
+                viewModel.apply();
+            };         
         </script>
     </head>
     <body style='margin: 0px'>
         <div style='width: 100%;background: red'>
-            <input type='button' value='Apply' onclick='buttonClick()'></input>
-            <h1 id='elementId'></h1>
+            Octaves: <input id='octaves' /><br>
+            Amplitude: <input id='amplitude' /><br>
+            Frequency: <input id='frequency' /><br>
+            <input type='button' value='Apply' onclick='applyValues()'></input>
         </div>
     </body>
 </html>";
