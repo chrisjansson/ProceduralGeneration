@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using CjClutter.OpenGl.EntityComponent;
+﻿using CjClutter.OpenGl.EntityComponent;
 using CjClutter.OpenGl.Noise;
 using OpenTK;
 
@@ -16,33 +15,18 @@ namespace CjClutter.OpenGl.SceneGraph
             _colorCycle = new ColorCycle();
         }
 
-        public IList<StaticMesh> Generate()
+        public void GenerateMesh(StaticMesh staticMesh, int x, int y, int numberOfChunksX, int numberOfChunksY)
         {
-            var meshes = new List<StaticMesh>();
+            var offset = new Vector2(x, y);
+            var noiseGenerator = new ChunkNoiseGenerator(offset, _noise);
 
-            const int numberOfChunksX = 10;
-            const int numberOfChunksY = 10;
-            for (var i = 0; i < numberOfChunksX; i++)
-            {
-                for (var j = 0; j < numberOfChunksX; j++)
-                {
-                    var offset = new Vector2(i, j);
-                    var noiseGenerator = new ChunkNoiseGenerator(offset, _noise);
+            var heightMapGenerator = new HeightMapGenerator(noiseGenerator);
+            var mesh = heightMapGenerator.GenerateMesh();
 
-                    var heightMapGenerator = new HeightMapGenerator(noiseGenerator);
-                    var mesh = heightMapGenerator.GenerateMesh();
-
-                    var sceneObject = new StaticMesh();
-                    sceneObject.Mesh = mesh;
-
-                    var translationMatrix = Matrix4.CreateTranslation(offset.X - numberOfChunksX / 2.0f, 0, offset.Y - numberOfChunksY / 2.0f);
-                    sceneObject.ModelMatrix = translationMatrix;
-                    sceneObject.Color = _colorCycle.GetNext();
-                    meshes.Add(sceneObject);
-                }
-            }
-
-            return meshes;
+            var translationMatrix = Matrix4.CreateTranslation(offset.X - numberOfChunksX / 2.0f, 0, offset.Y - numberOfChunksY / 2.0f);
+            staticMesh.ModelMatrix = translationMatrix;
+            staticMesh.Color = _colorCycle.GetNext();
+            staticMesh.Update(mesh);
         }
     }
 }

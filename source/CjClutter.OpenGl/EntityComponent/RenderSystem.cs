@@ -80,6 +80,8 @@ namespace CjClutter.OpenGl.EntityComponent
 
         private RenderableMesh EnsureResources(StaticMesh component)
         {
+            //Add is dirty checking
+            
             if (!_allocatedResources.ContainsKey(component))
             {
                 _allocatedResources[component] = _resourceAllocator.AllocateResourceFor(component.Mesh);

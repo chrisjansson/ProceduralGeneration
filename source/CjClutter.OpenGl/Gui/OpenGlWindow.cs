@@ -86,21 +86,35 @@ namespace CjClutter.OpenGl.Gui
 
             //Inputs for "menu"
             _entityManager = new EntityManager();
+            _terrainSystem = new TerrainSystem(FractalBrownianMotionSettings.Default);
             _renderSystem = new RenderSystem(_camera);
             _inputSystem = new InputSystem(_keyboardInputProcessor, _camera);
 
-            var terrainGenerator = new TerrainGenerator(FractalBrownianMotionSettings.Default);
-            var staticMeshes = terrainGenerator.Generate();
-            foreach (var staticMesh in staticMeshes)
-            {
-                var name = Guid.NewGuid().ToString();
-                var entity = new Entity(name);
-                _entityManager.Add(entity);
-                _entityManager.AddComponentToEntity(entity, staticMesh);
+            //var terrainGenerator = new TerrainGenerator(FractalBrownianMotionSettings.Default);
+            //var staticMeshes = terrainGenerator.Generate();
+            //foreach (var staticMesh in staticMeshes)
+            //{
+            //    var name = Guid.NewGuid().ToString();
+            //    var entity = new Entity(name);
+            //    _entityManager.Add(entity);
+            //    _entityManager.AddComponentToEntity(entity, staticMesh);
 
-                if (staticMeshes.IndexOf(staticMesh) % 3 == 0)
+            //    if (staticMeshes.IndexOf(staticMesh) % 3 == 0)
+            //    {
+            //        _entityManager.AddComponentToEntity(entity, new NormalComponent());
+            //    }
+            //}
+
+            const int numberOfChunksX = 10;
+            const int numberOfChunksY = 10;
+            for (var i = 0; i < numberOfChunksX; i++)
+            {
+                for (var j = 0; j < numberOfChunksY; j++)
                 {
-                    _entityManager.AddComponentToEntity(entity, new NormalComponent());
+                    var entity = new Entity(Guid.NewGuid().ToString());
+                    _entityManager.Add(entity);
+                    _entityManager.AddComponentToEntity(entity, new ChunkComponent(i, j));
+                    _entityManager.AddComponentToEntity(entity, new StaticMesh());
                 }
             }
 
@@ -220,6 +234,7 @@ namespace CjClutter.OpenGl.Gui
 
         private Texture _texture;
         private AwesomiumGui _awesomiumGui;
+        private TerrainSystem _terrainSystem;
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
@@ -234,6 +249,7 @@ namespace CjClutter.OpenGl.Gui
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
             _inputSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
+            _terrainSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
             _renderSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
 
             GL.Enable(EnableCap.Blend);
