@@ -15,7 +15,7 @@ namespace CjClutter.OpenGl.SceneGraph
             _colorCycle = new ColorCycle();
         }
 
-        public void GenerateMesh(StaticMesh staticMesh, int x, int y, int numberOfChunksX, int numberOfChunksY)
+        public void GenerateMesh(StaticMesh staticMesh, int x, int y, float numberOfChunksX, float numberOfChunksY)
         {
             var offset = new Vector2(x, y);
             var noiseGenerator = new ChunkNoiseGenerator(offset, _noise);

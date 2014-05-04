@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Awesomium.Core;
@@ -69,17 +70,24 @@ namespace CjClutter.OpenGl.Gui
         {
             _webView.DocumentReady -= WebViewOnDocumentReady;
 
-            //_viewModel = _webView.CreateGlobalJavascriptObject("viewModel");
             _viewModel = _webView.ExecuteJavascriptWithResult("viewModel");
-            _viewModel.Bind("apply", false, (_, a) =>
-            {
-                var octaves = _viewModel["octaves"].IsInteger ? int.Parse(_viewModel["octaves"]) : 0;
-                var amplitude = _viewModel["octaves"].IsInteger ? double.Parse(_viewModel["octaves"]) : 0;
-                var frequency = _viewModel["octaves"].IsInteger ? double.Parse(_viewModel["octaves"]) : 0;
+            dynamic viewModel = _viewModel;
+            viewModel.octaves = FractalBrownianMotionSettings.Default.Octaves;
+            viewModel.frequency = FractalBrownianMotionSettings.Default.Frequency;
+            viewModel.amplitude = FractalBrownianMotionSettings.Default.Amplitude;
+            viewModel.apply = (JavascriptAsynchMethodEventHandler) Apply;
+            _webView.ExecuteJavascript("echo();");
+        }
 
-                var fractalBrownianMotionSettings = new FractalBrownianMotionSettings(octaves, amplitude, frequency);
-                SettingsChanged(fractalBrownianMotionSettings);
-            });
+        private void Apply(object sender, JavascriptMethodEventArgs e)
+        {
+            dynamic viewModel = _viewModel;
+            var octaves = int.Parse(viewModel.octaves, CultureInfo.InvariantCulture);
+            var amplitude = double.Parse(viewModel.amplitude, CultureInfo.InvariantCulture);
+            var frequency = double.Parse(viewModel.frequency, CultureInfo.InvariantCulture);
+
+            var fractalBrownianMotionSettings = new FractalBrownianMotionSettings(octaves, amplitude, frequency);
+            SettingsChanged(fractalBrownianMotionSettings);
         }
 
         private void WebViewOnLoadingFrameComplete(object sender, FrameEventArgs frameEventArgs)
@@ -175,10 +183,17 @@ namespace CjClutter.OpenGl.Gui
 <html>
     <head>
         <script type='text/javascript'>
-            var viewModel = {};
-            viewModel.frequency = 1;
-            viewModel.amplitude = 2;
-            viewModel.octaves = 3;
+            var viewModel = {
+                frequency : 1.0,
+                amplitude: 2.0,
+                octaves: 3.0,
+            };
+
+            var echo = function() {
+                document.getElementById('frequency').value = viewModel.frequency;
+                document.getElementById('amplitude').value = viewModel.amplitude;
+                document.getElementById('octaves').value = viewModel.octaves;
+            }
 
             var applyValues = function() {
                 viewModel.frequency = document.getElementById('frequency').value;

@@ -118,7 +118,10 @@ namespace CjClutter.OpenGl.Gui
                 }
             }
 
+            
+
             _awesomiumGui.Start();
+            _awesomiumGui.SettingsChanged += s => _terrainSystem.SetTerrainSettings(s);
             Mouse.Move += (_, args) => _awesomiumGui.MouseMove(args);
             Mouse.ButtonDown += (_, args) => _awesomiumGui.MouseDown(args);
             Mouse.ButtonUp += (_, args) => _awesomiumGui.MouseUp(args);
