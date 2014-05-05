@@ -27,17 +27,59 @@ namespace CjClutter.OpenGl.Gui
 
     public class AwesomiumGui
     {
-        private WebView _webView;
         private readonly OpenTkToAwesomiumKeyMapper _keyMapper = new OpenTkToAwesomiumKeyMapper();
+        private readonly OpenGlWindow _inputSource;
+        private WebView _webView;
         public readonly ConcurrentQueue<Frame> _frames = new ConcurrentQueue<Frame>();
         private Thread _thread;
         private JSObject _viewModel;
 
         public event Action<FractalBrownianMotionSettings> SettingsChanged;
 
-        public AwesomiumGui()
+        public AwesomiumGui(OpenGlWindow openGlWindow)
         {
+            _inputSource = openGlWindow;
             SettingsChanged += _ => { };
+        }
+
+        private bool _isEnabled;
+        public bool IsEnabled
+        {
+            get { return _isEnabled; }
+            set
+            {
+                if (_isEnabled == value) return;
+                if (value)
+                {
+                    Enable();
+                }
+                else
+                {
+                    Disable();
+                }
+                _isEnabled = value;
+            }
+        }
+
+        private void Enable()
+        {
+            _isEnabled = true;
+            _inputSource.Mouse.Move += MouseMove;
+            _inputSource.Mouse.ButtonDown += MouseDown;
+            _inputSource.Mouse.ButtonUp += MouseUp;
+            _inputSource.KeyDown += KeyDown;
+            _inputSource.KeyUp += KeyUp;
+            _inputSource.KeyPress += KeyPress;
+        }
+
+        private void Disable()
+        {
+            _inputSource.Mouse.Move -= MouseMove;
+            _inputSource.Mouse.ButtonDown -= MouseDown;
+            _inputSource.Mouse.ButtonUp -= MouseUp;
+            _inputSource.KeyDown -= KeyDown;
+            _inputSource.KeyUp -= KeyUp;
+            _inputSource.KeyPress -= KeyPress;
         }
 
         public void Start()
@@ -105,7 +147,7 @@ namespace CjClutter.OpenGl.Gui
             _frames.Enqueue(new Frame(bytes, surface.Width, surface.Height));
         }
 
-        public void KeyPress(KeyPressEventArgs args)
+        private void KeyPress(object sender, KeyPressEventArgs args)
         {
             var webKeyboardEvent = new WebKeyboardEvent
             {
@@ -116,17 +158,17 @@ namespace CjClutter.OpenGl.Gui
             WebCore.QueueWork(_webView, () => _webView.InjectKeyboardEvent(webKeyboardEvent));
         }
 
-        public void KeyDown(KeyboardKeyEventArgs args)
+        private void KeyDown(object sender, KeyboardKeyEventArgs args)
         {
             InjectKey(args, WebKeyboardEventType.KeyDown);
         }
 
-        public void KeyUp(KeyboardKeyEventArgs args)
+        private void KeyUp(object sender, KeyboardKeyEventArgs args)
         {
             InjectKey(args, WebKeyboardEventType.KeyUp);
         }
 
-        public void MouseMove(MouseMoveEventArgs args)
+        private void MouseMove(object sender, MouseMoveEventArgs args)
         {
             WebCore.QueueWork(_webView, () => _webView.InjectMouseMove(args.X, args.Y));
         }
@@ -160,7 +202,7 @@ namespace CjClutter.OpenGl.Gui
             return modifiers;
         }
 
-        public void MouseDown(MouseButtonEventArgs args)
+        private void MouseDown(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
             WebCore.QueueWork(_webView, () =>
             {
@@ -169,7 +211,7 @@ namespace CjClutter.OpenGl.Gui
             });
         }
 
-        public void MouseUp(MouseButtonEventArgs args)
+        private void MouseUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
             WebCore.QueueWork(_webView, () => _webView.InjectMouseUp(Awesomium.Core.MouseButton.Left));
         }

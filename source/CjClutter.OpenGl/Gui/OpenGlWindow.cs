@@ -28,6 +28,9 @@ namespace CjClutter.OpenGl.Gui
         private EntityManager _entityManager;
         private RenderSystem _renderSystem;
         private InputSystem _inputSystem;
+        private Texture _texture;
+        private readonly AwesomiumGui _awesomiumGui;
+        private TerrainSystem _terrainSystem;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -54,19 +57,20 @@ namespace CjClutter.OpenGl.Gui
             _opentkTrackballCameraControls = new OpentkTrackballCameraControls(_mouseInputProcessor, trackballCamera);
 
             _renderer = new Renderer();
-            _awesomiumGui = new AwesomiumGui();
+            _awesomiumGui = new AwesomiumGui(this);
         }
 
         protected override void OnLoad(EventArgs e)
         {
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
-            
+
             _keyboardInputObservable.SubscribeKey(KeyCombination.LeftAlt && KeyCombination.Enter, CombinationDirection.Down, ToggleFullScren);
 
             _keyboardInputObservable.SubscribeKey(KeyCombination.Esc, CombinationDirection.Down, Exit);
             _keyboardInputObservable.SubscribeKey(KeyCombination.P, CombinationDirection.Down, () => _camera.Projection = ProjectionMode.Perspective);
             _keyboardInputObservable.SubscribeKey(KeyCombination.O, CombinationDirection.Down, () => _camera.Projection = ProjectionMode.Orthographic);
+            _keyboardInputObservable.SubscribeKey(KeyCombination.Tilde, CombinationDirection.Down, () => _awesomiumGui.IsEnabled = !_awesomiumGui.IsEnabled);
 
             _entityManager = new EntityManager();
             _terrainSystem = new TerrainSystem(FractalBrownianMotionSettings.Default);
@@ -88,12 +92,6 @@ namespace CjClutter.OpenGl.Gui
 
             _awesomiumGui.Start();
             _awesomiumGui.SettingsChanged += s => _terrainSystem.SetTerrainSettings(s);
-            Mouse.Move += (_, args) => _awesomiumGui.MouseMove(args);
-            Mouse.ButtonDown += (_, args) => _awesomiumGui.MouseDown(args);
-            Mouse.ButtonUp += (_, args) => _awesomiumGui.MouseUp(args);
-            KeyDown += (_, args) => _awesomiumGui.KeyDown(args);
-            KeyUp += (_, args) => _awesomiumGui.KeyUp(args);
-            KeyPress += (_, args) => _awesomiumGui.KeyPress(args);
         }
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
@@ -128,11 +126,6 @@ namespace CjClutter.OpenGl.Gui
 
             ProcessKeyboardInput();
         }
-
-
-        private Texture _texture;
-        private AwesomiumGui _awesomiumGui;
-        private TerrainSystem _terrainSystem;
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
