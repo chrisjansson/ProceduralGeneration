@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Threading;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.CoordinateSystems;
 using CjClutter.OpenGl.EntityComponent;
@@ -10,7 +9,6 @@ using CjClutter.OpenGl.Input.Mouse;
 using CjClutter.OpenGl.Noise;
 using CjClutter.OpenGl.OpenGl;
 using CjClutter.OpenGl.OpenGl.Shaders;
-using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -79,28 +77,11 @@ namespace CjClutter.OpenGl.Gui
             _keyboardInputObservable.SubscribeKey(KeyCombination.Esc, CombinationDirection.Down, Exit);
             _keyboardInputObservable.SubscribeKey(KeyCombination.P, CombinationDirection.Down, () => _camera.Projection = ProjectionMode.Perspective);
             _keyboardInputObservable.SubscribeKey(KeyCombination.O, CombinationDirection.Down, () => _camera.Projection = ProjectionMode.Orthographic);
-            //_keyboardInputObservable.SubscribeKey(KeyCombination.Tilde, CombinationDirection.Down, () => _menu.IsEnabled = !_menu.IsEnabled);
 
-            //Inputs for "menu"
             _entityManager = new EntityManager();
             _terrainSystem = new TerrainSystem(FractalBrownianMotionSettings.Default);
             _renderSystem = new RenderSystem(_camera);
             _inputSystem = new InputSystem(_keyboardInputProcessor, _camera);
-
-            //var terrainGenerator = new TerrainGenerator(FractalBrownianMotionSettings.Default);
-            //var staticMeshes = terrainGenerator.Generate();
-            //foreach (var staticMesh in staticMeshes)
-            //{
-            //    var name = Guid.NewGuid().ToString();
-            //    var entity = new Entity(name);
-            //    _entityManager.Add(entity);
-            //    _entityManager.AddComponentToEntity(entity, staticMesh);
-
-            //    if (staticMeshes.IndexOf(staticMesh) % 3 == 0)
-            //    {
-            //        _entityManager.AddComponentToEntity(entity, new NormalComponent());
-            //    }
-            //}
 
             const int numberOfChunksX = 10;
             const int numberOfChunksY = 10;
