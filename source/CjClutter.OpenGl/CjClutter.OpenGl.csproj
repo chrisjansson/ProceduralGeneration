@@ -118,6 +118,7 @@
     <Compile Include="Gui\RenderableMesh.cs" />
     <Compile Include="Gui\Renderer.cs" />
     <Compile Include="Gui\ResourceAllocator.cs" />
+    <Compile Include="Gui\Texture.cs" />
     <Compile Include="Input\Keboard\KeyArgActionPair.cs" />
     <Compile Include="Input\Keboard\CombinationDirection.cs" />
     <Compile Include="KeyCombination.cs" />
