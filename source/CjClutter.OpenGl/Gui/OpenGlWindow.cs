@@ -27,9 +27,7 @@ namespace CjClutter.OpenGl.Gui
         private readonly KeyboardInputProcessor _keyboardInputProcessor = new KeyboardInputProcessor();
         private readonly KeyboardInputObservable _keyboardInputObservable;
         private readonly OpentkTrackballCameraControls _opentkTrackballCameraControls;
-        private readonly Hud _hud;
         private readonly Renderer _renderer;
-        private readonly Menu _menu;
         private readonly ICamera _camera;
         private EntityManager _entityManager;
         private RenderSystem _renderSystem;
@@ -62,7 +60,6 @@ namespace CjClutter.OpenGl.Gui
             _opentkTrackballCameraControls = new OpentkTrackballCameraControls(_mouseInputProcessor, trackballCamera);
 
             _renderer = new Renderer();
-            _hud = new Hud(this);
             _awesomiumGui = new AwesomiumGui();
             //_menu = new Menu(this, _scene);
             //_menu.GenerationSettingsControl.SetSettings(new FractalBrownianMotionSettings(6, 0.5, 0.6));
@@ -133,7 +130,6 @@ namespace CjClutter.OpenGl.Gui
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
             _awesomiumGui.Stop();
-            _hud.Close();
         }
 
         private void ToggleFullScren()
@@ -154,9 +150,7 @@ namespace CjClutter.OpenGl.Gui
             _camera.Width = Width;
             _camera.Height = Height;
             _renderer.Resize(Width, Height);
-            _hud.Resize(Width, Height);
             _awesomiumGui.Resize(Width, Height);
-            //_menu.Resize(Width, Height);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)

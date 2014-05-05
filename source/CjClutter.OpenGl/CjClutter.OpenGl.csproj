@@ -80,12 +80,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\FluentAssertions.1.7.1.1\Lib\net40\FluentAssertions.dll</HintPath>
     </Reference>
-    <Reference Include="Gwen">
-      <HintPath>..\..\includes\Gwen.dll</HintPath>
-    </Reference>
-    <Reference Include="Gwen.Renderer.OpenTK">
-      <HintPath>..\..\includes\Gwen.Renderer.OpenTK.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.0.12054\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -121,16 +115,9 @@
     <Compile Include="EntityComponent\StaticMesh.cs" />
     <Compile Include="EntityComponent\TerrainSystem.cs" />
     <Compile Include="Gui\AwesomiumGui.cs" />
-    <Compile Include="Gui\DockWithBackground.cs" />
-    <Compile Include="Gui\GenerationSettingsControl.cs" />
-    <Compile Include="Gui\GwenGuiBase.cs" />
-    <Compile Include="Gui\GwenInputTranslator.cs" />
-    <Compile Include="Gui\Menu.cs" />
-    <Compile Include="Gui\PropertyRowContainer.cs" />
     <Compile Include="Gui\RenderableMesh.cs" />
     <Compile Include="Gui\Renderer.cs" />
     <Compile Include="Gui\ResourceAllocator.cs" />
-    <Compile Include="Gui\SpecialProperties.cs" />
     <Compile Include="Input\Keboard\KeyArgActionPair.cs" />
     <Compile Include="Input\Keboard\CombinationDirection.cs" />
     <Compile Include="KeyCombination.cs" />
@@ -190,7 +177,6 @@
     <Compile Include="SceneGraph\ChunkNoiseGenerator.cs" />
     <Compile Include="SceneGraph\ColorCycle.cs" />
     <Compile Include="SceneGraph\Face3.cs" />
-    <Compile Include="Gui\Hud.cs" />
     <Compile Include="SceneGraph\Mesh.cs" />
     <Compile Include="SceneGraph\MeshResources.cs" />
     <Compile Include="SceneGraph\Scene.cs" />
@@ -205,11 +191,6 @@
       <Project>{FF713732-F7A4-40C8-B136-8EAA52A443FD}</Project>
       <Name>CjClutter.Commons</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="DefaultSkin.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

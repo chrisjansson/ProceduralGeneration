@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using CjClutter.OpenGl.Noise;
 using CjClutter.OpenGl.OpenGl.VertexTypes;
-using Gwen;
 using OpenTK;
 using System.Linq;
 
