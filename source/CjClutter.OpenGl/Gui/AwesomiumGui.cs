@@ -30,7 +30,8 @@ namespace CjClutter.OpenGl.Gui
         private readonly OpenTkToAwesomiumKeyMapper _keyMapper = new OpenTkToAwesomiumKeyMapper();
         private readonly OpenGlWindow _inputSource;
         private WebView _webView;
-        public readonly ConcurrentQueue<Frame> _frames = new ConcurrentQueue<Frame>();
+
+        
         private Thread _thread;
         private JSObject _viewModel;
 
@@ -40,6 +41,27 @@ namespace CjClutter.OpenGl.Gui
         {
             _inputSource = openGlWindow;
             SettingsChanged += _ => { };
+        }
+
+        public bool IsDirty;
+
+        private Frame _frame;
+        public Frame Frame
+        {
+            get
+            {
+                lock (this)
+                {
+                    return _frame;    
+                }
+            }
+            set
+            {
+                lock (this)
+                {
+                    _frame = value;    
+                }
+            }
         }
 
         private bool _isEnabled;
@@ -144,7 +166,8 @@ namespace CjClutter.OpenGl.Gui
         {
             var bytes = new byte[surface.RowSpan * surface.Height];
             Marshal.Copy(surface.Buffer, bytes, 0, bytes.Length);
-            _frames.Enqueue(new Frame(bytes, surface.Width, surface.Height));
+            IsDirty = true;
+            Frame = new Frame(bytes, surface.Width, surface.Height);
         }
 
         private void KeyPress(object sender, KeyPressEventArgs args)

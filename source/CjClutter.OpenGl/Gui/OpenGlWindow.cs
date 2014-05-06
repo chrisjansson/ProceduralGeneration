@@ -143,20 +143,13 @@ namespace CjClutter.OpenGl.Gui
             _terrainSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
             _renderSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
 
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-            GL.Clear(ClearBufferMask.DepthBufferBit);
-
-            if (!_awesomiumGui._frames.IsEmpty)
+            if (_awesomiumGui.IsDirty)
             {
-                Frame frame = null;
-                _awesomiumGui._frames.TryDequeue(out frame);
-                _texture.Upload(frame);
+                _texture.Upload(_awesomiumGui.Frame);
             }
 
-            _texture.Render();
-
-            GL.Disable(EnableCap.Blend);
+            if (_awesomiumGui.IsEnabled)
+                _texture.Render();
 
             SwapBuffers();
         }

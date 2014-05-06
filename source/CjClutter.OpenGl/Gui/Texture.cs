@@ -59,11 +59,17 @@ namespace CjClutter.OpenGl.Gui
 
         public void Render()
         {
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+
             _guiRenderProgram.Bind();
             _vertexArrayObject.Bind();
             GL.DrawElements(BeginMode.Triangles, 6, DrawElementsType.UnsignedInt, 0);
             _vertexArrayObject.Unbind();
             _guiRenderProgram.Unbind();
+
+            GL.Disable(EnableCap.Blend);
         }
 
         public void Upload(Frame frame)
