@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -31,7 +30,7 @@ namespace CjClutter.OpenGl.Gui
         private readonly OpenGlWindow _inputSource;
         private WebView _webView;
 
-        
+
         private Thread _thread;
         private JSObject _viewModel;
 
@@ -52,14 +51,14 @@ namespace CjClutter.OpenGl.Gui
             {
                 lock (this)
                 {
-                    return _frame;    
+                    return _frame;
                 }
             }
             set
             {
                 lock (this)
                 {
-                    _frame = value;    
+                    _frame = value;
                 }
             }
         }
@@ -139,7 +138,7 @@ namespace CjClutter.OpenGl.Gui
             viewModel.octaves = FractalBrownianMotionSettings.Default.Octaves;
             viewModel.frequency = FractalBrownianMotionSettings.Default.Frequency;
             viewModel.amplitude = FractalBrownianMotionSettings.Default.Amplitude;
-            viewModel.apply = (JavascriptAsynchMethodEventHandler) Apply;
+            viewModel.apply = (JavascriptAsynchMethodEventHandler)Apply;
             _webView.ExecuteJavascript("echo();");
         }
 
@@ -229,9 +228,24 @@ namespace CjClutter.OpenGl.Gui
         {
             WebCore.QueueWork(_webView, () =>
             {
-                _webView.InjectMouseDown(Awesomium.Core.MouseButton.Left);
-                _webView.FocusView();
+                if (IsCoordinateInGui(mouseButtonEventArgs.X, mouseButtonEventArgs.Y))
+                {
+                    _webView.InjectMouseDown(Awesomium.Core.MouseButton.Left);
+                    _webView.FocusView();
+                }
+                else
+                {
+                    _webView.UnfocusView();
+                }
+
             });
+        }
+
+        public bool IsCoordinateInGui(int x, int y)
+        {
+            var surface = ((BitmapSurface)_webView.Surface);
+            var alphaAtPoint = surface.GetAlphaAtPoint(x, y);
+            return alphaAtPoint != 0;
         }
 
         private void MouseUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
