@@ -32,39 +32,39 @@ namespace CjClutter.OpenGl.EntityComponent
 
             if (_keyboardInputProcessor.IsButtonDown(Key.W))
             {
-                var result = Vector3d.Multiply(forward, delta);
+                var result = Vector3d.Multiply(new Vector3d(forward.X, 0, forward.Z), delta);
                 _camera.Target += result;
                 _camera.Position += result;
             }
             if (_keyboardInputProcessor.IsButtonDown(Key.S))
             {
-                var result = Vector3d.Multiply(-forward, delta);
+                var result = Vector3d.Multiply(new Vector3d(-forward.X, 0, -forward.Z), delta);
                 _camera.Target += result;
                 _camera.Position += result;
             }
             if (_keyboardInputProcessor.IsButtonDown(Key.D))
             {
-                var result = Vector3d.Multiply(right, delta);
+                var result = Vector3d.Multiply(new Vector3d(right.X, 0, right.Z), delta);
                 _camera.Target += result;
                 _camera.Position += result;
             }
             if (_keyboardInputProcessor.IsButtonDown(Key.A))
             {
-                var result = Vector3d.Multiply(-right, delta);
+                var result = Vector3d.Multiply(new Vector3d(-right.X, 0, -right.Z), delta);
                 _camera.Target += result;
                 _camera.Position += result;
             }
 
             if (_keyboardInputProcessor.IsButtonDown(Key.E))
             {
-                var rotation = Matrix4d.Rotate(forward, delta);
-                _camera.Up = Vector3d.Transform(_camera.Up, rotation);
+                var rotation = Matrix4d.Rotate(new Vector3d(0, 1, 0), -delta);
+                _camera.Position = _camera.Target + Vector3d.Transform(_camera.Position - _camera.Target, rotation);
             }
 
             if (_keyboardInputProcessor.IsButtonDown(Key.Q))
             {
-                var rotation = Matrix4d.Rotate(forward, -delta);
-                _camera.Up = Vector3d.Transform(_camera.Up, rotation);
+                var rotation = Matrix4d.Rotate(new Vector3d(0, 1, 0), delta);
+                _camera.Position = _camera.Target + Vector3d.Transform(_camera.Position - _camera.Target, rotation);
             }
 
             _lastUpdate = elapsedTime;
