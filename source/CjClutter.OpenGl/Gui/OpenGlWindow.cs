@@ -3,7 +3,6 @@ using System.Diagnostics;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.CoordinateSystems;
 using CjClutter.OpenGl.EntityComponent;
-using CjClutter.OpenGl.Input;
 using CjClutter.OpenGl.Input.Keboard;
 using CjClutter.OpenGl.Input.Mouse;
 using CjClutter.OpenGl.Noise;
@@ -22,7 +21,6 @@ namespace CjClutter.OpenGl.Gui
         private readonly MouseInputObservable _mouseInputObservable;
         private readonly KeyboardInputProcessor _keyboardInputProcessor = new KeyboardInputProcessor();
         private readonly KeyboardInputObservable _keyboardInputObservable;
-        private readonly OpentkTrackballCameraControls _opentkTrackballCameraControls;
         private readonly Renderer _renderer;
         private readonly ICamera _camera;
         private EntityManager _entityManager;
@@ -51,10 +49,7 @@ namespace CjClutter.OpenGl.Gui
 
             _keyboardInputObservable = new KeyboardInputObservable(_keyboardInputProcessor);
 
-            var trackballCameraRotationCalculator = new TrackballCameraRotationCalculator();
             _camera = new LookAtCamera();
-            var trackballCamera = new TrackballCamera(_camera, trackballCameraRotationCalculator);
-            _opentkTrackballCameraControls = new OpentkTrackballCameraControls(_mouseInputProcessor, trackballCamera);
 
             _renderer = new Renderer();
             _awesomiumGui = new AwesomiumGui(this);
@@ -179,9 +174,6 @@ namespace CjClutter.OpenGl.Gui
 
             _mouseInputProcessor.Update(mouseState);
             _mouseInputObservable.ProcessMouseButtons();
-
-
-            _opentkTrackballCameraControls.Update();
         }
 
         public TimeSpan ElapsedTime
