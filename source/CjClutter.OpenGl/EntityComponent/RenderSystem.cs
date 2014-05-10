@@ -92,6 +92,8 @@ namespace CjClutter.OpenGl.EntityComponent
                     oldResources.Delete();
 
                     _allocatedResources[component] = _resourceAllocator.AllocateResourceFor(component.Mesh);
+
+                    component.IsDirty = false;
                 }
             }
 
