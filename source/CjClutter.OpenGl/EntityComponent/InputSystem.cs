@@ -20,7 +20,7 @@ namespace CjClutter.OpenGl.EntityComponent
 
         public void Update(double elapsedTime, EntityManager entityManager)
         {
-            var delta = elapsedTime - _lastUpdate;
+            var delta = (elapsedTime - _lastUpdate)  * 5;
 
             var forward = _camera.Target - _camera.Position;
             forward.Normalize();
@@ -57,14 +57,24 @@ namespace CjClutter.OpenGl.EntityComponent
 
             if (_keyboardInputProcessor.IsButtonDown(Key.E))
             {
-                var rotation = Matrix4d.Rotate(new Vector3d(0, 1, 0), -delta);
+                var rotation = Matrix4d.Rotate(new Vector3d(0, 1, 0), -delta * 0.2);
                 _camera.Position = _camera.Target + Vector3d.Transform(_camera.Position - _camera.Target, rotation);
             }
 
             if (_keyboardInputProcessor.IsButtonDown(Key.Q))
             {
-                var rotation = Matrix4d.Rotate(new Vector3d(0, 1, 0), delta);
+                var rotation = Matrix4d.Rotate(new Vector3d(0, 1, 0), delta * 0.2);
                 _camera.Position = _camera.Target + Vector3d.Transform(_camera.Position - _camera.Target, rotation);
+            }
+
+            if (_keyboardInputProcessor.IsButtonDown(Key.LShift))
+            {
+                _camera.Position += Vector3d.Multiply(new Vector3d(0, 1, 0), delta);
+            }
+
+            if (_keyboardInputProcessor.IsButtonDown(Key.LControl))
+            {
+                _camera.Position += Vector3d.Multiply(new Vector3d(0, 1, 0), -delta);
             }
 
             _lastUpdate = elapsedTime;
