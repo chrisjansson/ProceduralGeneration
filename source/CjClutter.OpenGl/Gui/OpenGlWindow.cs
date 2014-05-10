@@ -141,6 +141,7 @@ namespace CjClutter.OpenGl.Gui
             if (_awesomiumGui.IsDirty)
             {
                 _texture.Upload(_awesomiumGui.Frame);
+                _awesomiumGui.IsDirty = false;
             }
 
             if (_awesomiumGui.IsEnabled)
