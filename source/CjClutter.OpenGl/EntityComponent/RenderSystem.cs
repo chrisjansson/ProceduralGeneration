@@ -13,7 +13,7 @@ namespace CjClutter.OpenGl.EntityComponent
     {
         private readonly ResourceAllocator _resourceAllocator;
         private readonly Dictionary<StaticMesh, RenderableMesh> _allocatedResources = new Dictionary<StaticMesh, RenderableMesh>();
-        private readonly SimpleRenderProgram _simpleRenderProgram;
+        private readonly SimpleMaterial _simpleMaterial;
         private readonly ICamera _camera;
         private readonly NormalDebugProgram _normalDebugProgram;
 
@@ -21,8 +21,8 @@ namespace CjClutter.OpenGl.EntityComponent
         {
             _camera = camera;
             _resourceAllocator = new ResourceAllocator(new OpenGlResourceFactory());
-            _simpleRenderProgram = new SimpleRenderProgram();
-            _simpleRenderProgram.Create();
+            _simpleMaterial = new SimpleMaterial();
+            _simpleMaterial.Create();
             _normalDebugProgram = new NormalDebugProgram();
             _normalDebugProgram.Create();
         }
@@ -37,9 +37,9 @@ namespace CjClutter.OpenGl.EntityComponent
             GL.Enable(EnableCap.CullFace);
             GL.FrontFace(FrontFaceDirection.Cw);
 
-            _simpleRenderProgram.Bind();
-            _simpleRenderProgram.ProjectionMatrix.Set(_camera.ComputeProjectionMatrix().ToMatrix4());
-            _simpleRenderProgram.ViewMatrix.Set(_camera.ComputeCameraMatrix().ToMatrix4());
+            _simpleMaterial.Bind();
+            _simpleMaterial.ProjectionMatrix.Set(_camera.ComputeProjectionMatrix().ToMatrix4());
+            _simpleMaterial.ViewMatrix.Set(_camera.ComputeCameraMatrix().ToMatrix4());
             //meshResources.RenderProgram.WindowScale.Set(_windowScale);
 
             foreach (var entity in entityManager.GetEntitiesWithComponent<StaticMesh>())
@@ -49,14 +49,14 @@ namespace CjClutter.OpenGl.EntityComponent
 
                 resources.VertexArrayObject.Bind();
                 
-                _simpleRenderProgram.ModelMatrix.Set(component.ModelMatrix);
-                _simpleRenderProgram.Color.Set(component.Color);
+                _simpleMaterial.ModelMatrix.Set(component.ModelMatrix);
+                _simpleMaterial.Color.Set(component.Color);
 
                 GL.DrawElements(BeginMode.Triangles, component.Mesh.Faces.Length * 3, DrawElementsType.UnsignedInt, 0);
 
                 resources.VertexArrayObject.Unbind();
             }
-            _simpleRenderProgram.Unbind();
+            _simpleMaterial.Unbind();
 
             _normalDebugProgram.Bind();
             _normalDebugProgram.ProjectionMatrix.Set(_camera.ComputeProjectionMatrix().ToMatrix4());

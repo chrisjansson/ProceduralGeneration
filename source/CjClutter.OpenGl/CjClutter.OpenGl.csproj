@@ -132,6 +132,7 @@
     <Compile Include="OpenGl\IOpenGlResourceFactory.cs" />
     <Compile Include="OpenGl\Shaders\GuiRenderProgram.cs" />
     <Compile Include="OpenGl\Shaders\NormalDebugProgram.cs" />
+    <Compile Include="OpenGl\Shaders\SimpleMaterial.cs" />
     <Compile Include="OpenGl\Uniform.cs" />
     <Compile Include="OpenGl\IBindable.cs" />
     <Compile Include="OpenGl\IBufferDataType.cs" />
