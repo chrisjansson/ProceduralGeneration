@@ -23,11 +23,11 @@ namespace CjClutter.OpenGl.SceneGraph
             {
                 for (var j = 0; j <= TerrainHeight; j++)
                 {
-                    var xin = i/(double) TerrainWidth;
-                    var yin = j/(double) TerrainHeight;
-                    var y = 0.2 * _noiseGenerator.Noise(xin, yin);
+                    var x = i/(double) TerrainWidth;
+                    var z = j/(double) TerrainHeight;
+                    var heigt = 0.2 * _noiseGenerator.Noise(x, z);
 
-                    var position = new Vector3((float)xin, (float)y, (float)yin);
+                    var position = new Vector3((float)x, (float)heigt, (float)z);
                     var vertex = new Vertex3V3N { Position = position };
                     vertices.Add(vertex);
                 }
