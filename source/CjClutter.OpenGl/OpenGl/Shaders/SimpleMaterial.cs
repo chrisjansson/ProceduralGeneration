@@ -14,6 +14,7 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
         public Uniform<Matrix4> ViewMatrix { get; private set; }
         public Uniform<Matrix4> ModelMatrix { get; private set; }
         public Uniform<Vector4> Color { get; private set; }
+        public Uniform<Vector3> LightDirection { get; private set; }
 
         public SimpleMaterial()
         {
@@ -40,6 +41,7 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
             ViewMatrix = Program.GetUniform<Matrix4>("ViewMatrix");
             ModelMatrix = Program.GetUniform<Matrix4>("ModelMatrix");
             Color = Program.GetUniform<Vector4>("Color");
+            LightDirection = Program.GetUniform<Vector3>("LightPosition");
         }
 
         public void Delete()
@@ -72,6 +74,7 @@ uniform mat4 ProjectionMatrix;
 uniform mat4 ViewMatrix;
 uniform mat4 ModelMatrix;
 uniform vec4 Color;
+uniform vec3 LightPosition;
 
 out VertexData
 {
@@ -81,9 +84,9 @@ out VertexData
 void main()
 {
     gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * position;
-
+    vec3 dirToLight = normalize((ViewMatrix * vec4(LightPosition, 1)).xyz - (ViewMatrix * ModelMatrix * position).xyz);
     vec3 normCamSpace = (ViewMatrix * ModelMatrix * vec4(normal.x, normal.y, normal.z, 0)).xyz;
-    float incidence = dot(normCamSpace, normalize((ViewMatrix * vec4(4, 1, 0, 0)).xyz));
+    float incidence = dot(normCamSpace, dirToLight);
     incidence = clamp(incidence, 0, 1);
     vertex.color = Color * incidence + vec4(0.2, 0.2, 0.2, 1.0);
 }

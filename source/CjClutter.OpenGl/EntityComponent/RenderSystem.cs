@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.Gui;
 using CjClutter.OpenGl.OpenGl;
 using CjClutter.OpenGl.OpenGl.Shaders;
 using CjClutter.OpenGl.OpenTk;
+using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
@@ -38,9 +40,10 @@ namespace CjClutter.OpenGl.EntityComponent
             GL.FrontFace(FrontFaceDirection.Cw);
 
             _simpleMaterial.Bind();
+
+            _simpleMaterial.LightDirection.Set(new Vector3((float)(Math.Cos(elapsedTime) * 5), 2, (float)Math.Sin(elapsedTime) * 5));
             _simpleMaterial.ProjectionMatrix.Set(_camera.ComputeProjectionMatrix().ToMatrix4());
             _simpleMaterial.ViewMatrix.Set(_camera.ComputeCameraMatrix().ToMatrix4());
-            //meshResources.RenderProgram.WindowScale.Set(_windowScale);
 
             foreach (var entity in entityManager.GetEntitiesWithComponent<StaticMesh>())
             {
