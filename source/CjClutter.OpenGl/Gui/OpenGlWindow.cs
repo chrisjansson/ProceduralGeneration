@@ -29,6 +29,7 @@ namespace CjClutter.OpenGl.Gui
         private Texture _texture;
         private readonly AwesomiumGui _awesomiumGui;
         private TerrainSystem _terrainSystem;
+        private LightMoverSystem _lightMoverSystem;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -71,6 +72,7 @@ namespace CjClutter.OpenGl.Gui
             _terrainSystem = new TerrainSystem(FractalBrownianMotionSettings.Default);
             _renderSystem = new RenderSystem(_camera);
             _inputSystem = new InputSystem(_keyboardInputProcessor, _camera);
+            _lightMoverSystem = new LightMoverSystem();
 
             const int numberOfChunksX = 10;
             const int numberOfChunksY = 10;
@@ -82,8 +84,13 @@ namespace CjClutter.OpenGl.Gui
                     _entityManager.Add(entity);
                     _entityManager.AddComponentToEntity(entity, new ChunkComponent(i, j));
                     _entityManager.AddComponentToEntity(entity, new StaticMesh());
+                    //_entityManager.AddComponentToEntity(entity, new NormalComponent());
                 }
             }
+
+            var light = new Entity(Guid.NewGuid().ToString());
+            _entityManager.Add(light);
+            _entityManager.AddComponentToEntity(light, new PositionalLightComponent { Position = new Vector3d(0, 1, 0) });
 
             _awesomiumGui.Start();
             _awesomiumGui.SettingsChanged += s => _terrainSystem.SetTerrainSettings(s);
@@ -137,6 +144,7 @@ namespace CjClutter.OpenGl.Gui
             _inputSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
             _terrainSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
             _renderSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
+            _lightMoverSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
 
             if (_awesomiumGui.IsDirty)
             {

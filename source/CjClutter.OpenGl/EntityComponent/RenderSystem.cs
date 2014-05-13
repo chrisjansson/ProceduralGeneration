@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.Gui;
 using CjClutter.OpenGl.OpenGl;
@@ -41,7 +42,10 @@ namespace CjClutter.OpenGl.EntityComponent
 
             _simpleMaterial.Bind();
 
-            _simpleMaterial.LightDirection.Set(new Vector3((float)(Math.Cos(elapsedTime) * 5), 2, (float)Math.Sin(elapsedTime) * 5));
+           
+            var light = entityManager.GetEntitiesWithComponent<PositionalLightComponent>().Single();
+            var positionalLightComponent = entityManager.GetComponent<PositionalLightComponent>(light);
+            _simpleMaterial.LightDirection.Set((Vector3) positionalLightComponent.Position);
             _simpleMaterial.ProjectionMatrix.Set(_camera.ComputeProjectionMatrix().ToMatrix4());
             _simpleMaterial.ViewMatrix.Set(_camera.ComputeCameraMatrix().ToMatrix4());
 
