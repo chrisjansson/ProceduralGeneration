@@ -118,7 +118,6 @@
     <Compile Include="EntityComponent\TerrainSystem.cs" />
     <Compile Include="Gui\AwesomiumGui.cs" />
     <Compile Include="Gui\RenderableMesh.cs" />
-    <Compile Include="Gui\Renderer.cs" />
     <Compile Include="Gui\ResourceAllocator.cs" />
     <Compile Include="Gui\Texture.cs" />
     <Compile Include="Input\Keboard\KeyArgActionPair.cs" />
@@ -183,7 +182,6 @@
     <Compile Include="SceneGraph\Face3.cs" />
     <Compile Include="SceneGraph\Mesh.cs" />
     <Compile Include="SceneGraph\MeshResources.cs" />
-    <Compile Include="SceneGraph\Scene.cs" />
     <Compile Include="SceneGraph\HeightMapGenerator.cs" />
     <Compile Include="SceneGraph\TerrainGenerator.cs" />
   </ItemGroup>

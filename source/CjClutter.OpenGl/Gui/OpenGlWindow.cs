@@ -21,7 +21,6 @@ namespace CjClutter.OpenGl.Gui
         private readonly MouseInputObservable _mouseInputObservable;
         private readonly KeyboardInputProcessor _keyboardInputProcessor = new KeyboardInputProcessor();
         private readonly KeyboardInputObservable _keyboardInputObservable;
-        private readonly Renderer _renderer;
         private readonly ICamera _camera;
         private EntityManager _entityManager;
         private RenderSystem _renderSystem;
@@ -52,7 +51,6 @@ namespace CjClutter.OpenGl.Gui
 
             _camera = new LookAtCamera();
 
-            _renderer = new Renderer();
             _awesomiumGui = new AwesomiumGui(this);
         }
 
@@ -118,7 +116,6 @@ namespace CjClutter.OpenGl.Gui
             GL.Viewport(0, 0, Width, Height);
             _camera.Width = Width;
             _camera.Height = Height;
-            _renderer.Resize(Width, Height);
             _awesomiumGui.Resize(Width, Height);
         }
 
