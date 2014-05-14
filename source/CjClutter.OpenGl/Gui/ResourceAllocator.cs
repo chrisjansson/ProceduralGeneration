@@ -55,7 +55,7 @@ namespace CjClutter.OpenGl.Gui
         private VertexBufferObject<uint> CreateElementBuffer(Mesh3V3N mesh)
         {
             //Todo pick index type depending on mesh size
-            if (mesh.Vertices.LongLength > int.MaxValue) throw new NotImplementedException();
+            if (mesh.Vertices.LongLength > uint.MaxValue) throw new NotImplementedException();
 
             var indices = mesh.Faces.SelectMany(x => new[] { (uint)x.V0, (uint)x.V1, (uint)x.V2 }).ToArray();
             var elementBuffer = _resourceFactory.CreateVertexBufferObject<uint>(BufferTarget.ElementArrayBuffer, sizeof(uint));
