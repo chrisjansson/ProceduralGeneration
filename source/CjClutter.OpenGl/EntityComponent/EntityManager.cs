@@ -31,7 +31,7 @@ namespace CjClutter.OpenGl.EntityComponent
 
         public T GetComponent<T>(Entity entity) where T : IEntityComponent
         {
-            return (T) entity.Components.Single(x => x.GetType() == typeof (T));
+            return (T) entity.Components.SingleOrDefault(x => x.GetType() == typeof (T));
         }
     }
 }
