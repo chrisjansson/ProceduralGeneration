@@ -29,7 +29,7 @@ namespace CjClutter.OpenGl.Gui
         private readonly AwesomiumGui _awesomiumGui;
         private TerrainSystem _terrainSystem;
         private LightMoverSystem _lightMoverSystem;
-        private WaterSystem _waterSystem;
+        private OceanSystem _oceanSystem;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -72,7 +72,7 @@ namespace CjClutter.OpenGl.Gui
             _renderSystem = new RenderSystem(_camera);
             _inputSystem = new InputSystem(_keyboardInputProcessor, _camera);
             _lightMoverSystem = new LightMoverSystem();
-            _waterSystem = new WaterSystem();
+            _oceanSystem = new OceanSystem();
 
             const int numberOfChunksX = 10;
             const int numberOfChunksY = 10;
@@ -90,7 +90,7 @@ namespace CjClutter.OpenGl.Gui
 
             var water = new Entity(Guid.NewGuid().ToString());
             _entityManager.Add(water);
-            _entityManager.AddComponentToEntity(water, new WaterComponent(10, 10));
+            _entityManager.AddComponentToEntity(water, new OceanComponent(128, 128));
 
             var light = new Entity(Guid.NewGuid().ToString());
             _entityManager.Add(light);
@@ -146,7 +146,7 @@ namespace CjClutter.OpenGl.Gui
 
             _inputSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
             _terrainSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
-            _waterSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
+            _oceanSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
             _renderSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
             _lightMoverSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
 

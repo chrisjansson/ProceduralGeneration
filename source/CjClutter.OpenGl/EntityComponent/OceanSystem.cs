@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
+using CjClutter.OpenGl.Noise;
 using CjClutter.OpenGl.OpenGl.VertexTypes;
 using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 
 namespace CjClutter.OpenGl.EntityComponent
 {
-    public class WaterComponent : IEntityComponent
+    public class OceanComponent : IEntityComponent
     {
-        public WaterComponent(int width, int height)
+        public OceanComponent(int width, int height)
         {
             Width = width;
             Height = height;
@@ -17,13 +18,15 @@ namespace CjClutter.OpenGl.EntityComponent
         public int Height { get; private set; }
     }
 
-    public class WaterSystem : IEntitySystem
+    public class OceanSystem : IEntitySystem
     {
+        private readonly INoiseGenerator _improvedPerlinNoise = new FractalBrownianMotion(new SimplexNoise(), FractalBrownianMotionSettings.Default);
+
         public void Update(double elapsedTime, EntityManager entityManager)
         {
-            foreach (var water in entityManager.GetEntitiesWithComponent<WaterComponent>())
+            foreach (var water in entityManager.GetEntitiesWithComponent<OceanComponent>())
             {
-                var waterComponent = entityManager.GetComponent<WaterComponent>(water);
+                var waterComponent = entityManager.GetComponent<OceanComponent>(water);
                 var waterMesh = entityManager.GetComponent<StaticMesh>(water);
                 if (waterMesh == null)
                 {
@@ -32,21 +35,33 @@ namespace CjClutter.OpenGl.EntityComponent
                     mesh3V3N.CalculateNormals();
                     waterMesh.Update(mesh3V3N);
                     waterMesh.Color = new Vector4(0f, 0f, 1f, 0f);
-                    waterMesh.ModelMatrix = Matrix4.Identity;
+                    waterMesh.ModelMatrix = Matrix4.CreateTranslation(5, 0, -5);
                     entityManager.AddComponentToEntity(water, waterMesh);
                 }
+
+                for (var i = 0; i < waterMesh.Mesh.Vertices.Length; i++)
+                {
+                    var position = waterMesh.Mesh.Vertices[i].Position;
+                    var height = (float)_improvedPerlinNoise.Noise(position.X, position.Z, elapsedTime / 10) / 10;
+                    waterMesh.Mesh.Vertices[i] = new Vertex3V3N
+                    {
+                        Position = new Vector3(position.X, height, position.Z)
+                    };
+                }
+                waterMesh.Mesh.CalculateNormals();
+                waterMesh.Update(waterMesh.Mesh);
             }
         }
 
-        private static Mesh3V3N CreateMesh(WaterComponent waterComponent)
+        private static Mesh3V3N CreateMesh(OceanComponent oceanComponent)
         {
             var vertices = new List<Vertex3V3N>();
-            for (var i = 0; i <= waterComponent.Width; i++)
+            for (var i = 0; i <= oceanComponent.Width; i++)
             {
-                for (var j = 0; j <= waterComponent.Height; j++)
+                for (var j = 0; j <= oceanComponent.Height; j++)
                 {
-                    var xin = i / (double)waterComponent.Width * 10;
-                    var yin = j / (double)waterComponent.Height * 10;
+                    var xin = i / (double)oceanComponent.Width * 10;
+                    var yin = j / (double)oceanComponent.Height * 10;
 
                     var position = new Vector3((float)xin, 0, (float)yin);
                     var vertex = new Vertex3V3N { Position = position };
@@ -55,11 +70,11 @@ namespace CjClutter.OpenGl.EntityComponent
             }
 
             var faces = new List<Face3>();
-            for (var i = 0; i < waterComponent.Width; i++)
+            for (var i = 0; i < oceanComponent.Width; i++)
             {
-                for (var j = 0; j < waterComponent.Height; j++)
+                for (var j = 0; j < oceanComponent.Height; j++)
                 {
-                    var verticesInColumn = (waterComponent.Height + 1);
+                    var verticesInColumn = (oceanComponent.Height + 1);
                     var v0 = i * verticesInColumn + j;
                     var v1 = (i + 1) * verticesInColumn + j;
                     var v2 = (i + 1) * verticesInColumn + j + 1;

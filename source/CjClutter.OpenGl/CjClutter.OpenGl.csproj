@@ -116,7 +116,7 @@
     <Compile Include="EntityComponent\PositionalLightComponent.cs" />
     <Compile Include="EntityComponent\StaticMesh.cs" />
     <Compile Include="EntityComponent\TerrainSystem.cs" />
-    <Compile Include="EntityComponent\WaterSystem.cs" />
+    <Compile Include="EntityComponent\OceanSystem.cs" />
     <Compile Include="Gui\AwesomiumGui.cs" />
     <Compile Include="Gui\RenderableMesh.cs" />
     <Compile Include="Gui\ResourceAllocator.cs" />
