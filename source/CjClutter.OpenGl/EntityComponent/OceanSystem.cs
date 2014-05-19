@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CjClutter.OpenGl.Noise;
 using CjClutter.OpenGl.OpenGl.VertexTypes;
 using CjClutter.OpenGl.SceneGraph;
@@ -18,6 +19,40 @@ namespace CjClutter.OpenGl.EntityComponent
         public int Height { get; private set; }
     }
 
+    public static class Gerstner
+    {
+        public static Vector3d A(WaveSetting setting, Vector2d position, double time)
+        {
+            var height = CalculateHeight(setting, position, time);
+            var offset = CalculateOffset(setting, position, time);
+
+            return new Vector3d(position.X + offset.X, height, position.Y + offset.Y);
+        }
+
+        private static double CalculateHeight(WaveSetting setting, Vector2d position, double time)
+        {
+            return setting.Amplitude * Math.Sin(Vector2d.Dot(setting.Frequency * setting.Direction, position) + setting.PhaseConstant * time);
+        }
+
+        private static Vector2d CalculateOffset(WaveSetting setting, Vector2d position, double time)
+        {
+            var periodic = Math.Cos(Vector2d.Dot(setting.Frequency * setting.Direction, position) + setting.PhaseConstant * time);
+            var x = setting.Q * setting.Amplitude * setting.Direction.X * periodic;
+            var y = setting.Q * setting.Amplitude * setting.Direction.Y * periodic;
+
+            return new Vector2d(x, y);
+        }
+
+        public class WaveSetting
+        {
+            public double Q;
+            public double Amplitude;
+            public double Frequency;
+            public double PhaseConstant;
+            public Vector2d Direction;
+        }
+    }
+
     public class OceanSystem : IEntitySystem
     {
         private readonly INoiseGenerator _improvedPerlinNoise = new FractalBrownianMotion(new SimplexNoise(), FractalBrownianMotionSettings.Default);
@@ -30,22 +65,33 @@ namespace CjClutter.OpenGl.EntityComponent
                 var waterMesh = entityManager.GetComponent<StaticMesh>(water);
                 if (waterMesh == null)
                 {
-                    waterMesh = new StaticMesh();
-                    var mesh3V3N = CreateMesh(waterComponent);
-                    mesh3V3N.CalculateNormals();
-                    waterMesh.Update(mesh3V3N);
-                    waterMesh.Color = new Vector4(0f, 0f, 1f, 0f);
-                    waterMesh.ModelMatrix = Matrix4.CreateTranslation(5, 0, -5);
+                    waterMesh = new StaticMesh
+                    {
+                        Color = new Vector4(0f, 0f, 1f, 0f),
+                        ModelMatrix = Matrix4.CreateTranslation(5, 0, -5)
+                    };
                     entityManager.AddComponentToEntity(water, waterMesh);
                 }
 
+                var waveSetting = new Gerstner.WaveSetting
+                {
+                    Amplitude = 0.2,
+                    Direction = new Vector2d(0.2, 0.4),
+                    Frequency = 10,
+                    PhaseConstant = 1,
+                    Q = 1
+                };
+
+                var mesh = CreateMesh(waterComponent);
+                waterMesh.Update(mesh);
                 for (var i = 0; i < waterMesh.Mesh.Vertices.Length; i++)
                 {
                     var position = waterMesh.Mesh.Vertices[i].Position;
-                    var height = (float)_improvedPerlinNoise.Noise(position.X, position.Z, elapsedTime / 10) / 10;
+                    var vector3D = Gerstner.A(waveSetting, new Vector2d(position.X, position.Z), elapsedTime);
+
                     waterMesh.Mesh.Vertices[i] = new Vertex3V3N
                     {
-                        Position = new Vector3(position.X, height, position.Z)
+                        Position = (Vector3) vector3D
                     };
                 }
                 waterMesh.Mesh.CalculateNormals();
