@@ -74,19 +74,19 @@ namespace CjClutter.OpenGl.Gui
             _lightMoverSystem = new LightMoverSystem();
             _oceanSystem = new OceanSystem();
 
-            const int numberOfChunksX = 10;
-            const int numberOfChunksY = 10;
-            for (var i = 0; i < numberOfChunksX; i++)
-            {
-                for (var j = 0; j < numberOfChunksY; j++)
-                {
-                    var entity = new Entity(Guid.NewGuid().ToString());
-                    _entityManager.Add(entity);
-                    _entityManager.AddComponentToEntity(entity, new ChunkComponent(i, j));
-                    _entityManager.AddComponentToEntity(entity, new StaticMesh());
-                    //_entityManager.AddComponentToEntity(entity, new NormalComponent());
-                }
-            }
+            //const int numberOfChunksX = 10;
+            //const int numberOfChunksY = 10;
+            //for (var i = 0; i < numberOfChunksX; i++)
+            //{
+            //    for (var j = 0; j < numberOfChunksY; j++)
+            //    {
+            //        var entity = new Entity(Guid.NewGuid().ToString());
+            //        _entityManager.Add(entity);
+            //        _entityManager.AddComponentToEntity(entity, new ChunkComponent(i, j));
+            //        _entityManager.AddComponentToEntity(entity, new StaticMesh());
+            //        //_entityManager.AddComponentToEntity(entity, new NormalComponent());
+            //    }
+            //}
 
             var water = new Entity(Guid.NewGuid().ToString());
             _entityManager.Add(water);
