@@ -84,7 +84,8 @@ out VertexData
 void main()
 {
     gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * position;
-    vec3 dirToLight = normalize((ViewMatrix * vec4(LightPosition, 1)).xyz - (ViewMatrix * ModelMatrix * position).xyz);
+    //vec3 dirToLight = normalize((ViewMatrix * vec4(LightPosition, 1)).xyz - (ViewMatrix * ModelMatrix * position).xyz);
+    vec3 dirToLight = normalize((ViewMatrix * vec4(0.5, 0.2, 0, 0)).xyz);
     vec3 normCamSpace = (ViewMatrix * ModelMatrix * vec4(normal.x, normal.y, normal.z, 0)).xyz;
     float incidence = dot(normCamSpace, dirToLight);
     incidence = clamp(incidence, 0, 1);

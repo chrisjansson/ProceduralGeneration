@@ -59,14 +59,54 @@ namespace CjClutter.OpenGl.EntityComponent
         }
     }
 
+    public class Gerstner2
+    {
+        public class Settings
+        {
+            public Vector2d Direction { get; set; }
+            public double WaveLength { get; set; }
+            public double Steepness { get; set; }
+            public double Frequency { get; set; }
+            public double Phase { get; set; }
+        }
+
+
+        public static Vector3d CalculateWave(Vector2d position, double time, Settings[] settings)
+        {
+            var sum = new Vector3d();
+            for (var i = 0; i < settings.Length; i++)
+            {
+                sum += CalculateWave(position, time, settings[i]);
+            }
+
+            return new Vector3d(position.X, 0, position.Y) - new Vector3d(sum.X, -sum.Y, sum.Z);
+        }
+
+        public static Vector3d CalculateWave(Vector2d position, double time, Settings settings)
+        {
+            var magnitude = (Math.PI * 2) / settings.WaveLength;
+            var k = settings.Direction * magnitude;
+            var amplitude = settings.Steepness / magnitude;
+            var frequency = Math.Sqrt(9.82 * magnitude);
+            var phase = settings.Phase;
+
+            var offset = (k / magnitude) * amplitude * Math.Sin(Vector2d.Dot(k, position) - frequency * time + phase);
+            var height = amplitude * Math.Cos(Vector2d.Dot(k, position) - frequency * time + phase);
+            return new Vector3d(offset.X, height, offset.Y);
+        }
+    }
+
     public class OceanSystem : IEntitySystem
     {
         private readonly INoiseGenerator _improvedPerlinNoise = new FractalBrownianMotion(new SimplexNoise(), FractalBrownianMotionSettings.Default);
-        private List<Gerstner.WaveSetting> _waveSettings;
+        private Gerstner2.Settings[] _waveSettings;
 
         public OceanSystem()
         {
-            _waveSettings = CreateWaves(Math.PI * 0.3, 5, 0.01, 0.7);
+            var windSpeed = 2;
+            var waveHeight = 0.21 * windSpeed * windSpeed / 9.82;
+            var waveLength = (waveHeight * Math.PI * 2) / 0.9;
+            _waveSettings = CreateWaves(Math.PI * 0.3, waveLength, 0.002, 0.2).ToArray();
         }
 
         public void Update(double elapsedTime, EntityManager entityManager)
@@ -113,12 +153,41 @@ namespace CjClutter.OpenGl.EntityComponent
                 //    Q = 0.5
                 //};
 
+
+
+
+                //var wave1 = new Gerstner2.Settings()
+                //{
+                //    Steepness = 0.4,
+                //    Direction = GetDirection(Math.PI / 3),
+                //    WaveLength = waveLength,
+                //    Phase = 0,
+                //};
+
+
+                //var wave2 = new Gerstner2.Settings()
+                //{
+                //    Steepness = 0.4,
+                //    Direction = GetDirection(Math.PI / 3 + 0.2),
+                //    WaveLength = waveLength / 2,
+                //    Phase = 1,
+                //};
+
+
+                //var wave3 = new Gerstner2.Settings()
+                //{
+                //    Steepness = 0.4,
+                //    Direction = GetDirection(Math.PI / 3 - 0.5),
+                //    WaveLength = waveLength * 1.4,
+                //    Phase = 0.2,
+                //};
+
                 var mesh = CreateMesh(waterComponent);
                 waterMesh.Update(mesh);
                 for (var i = 0; i < waterMesh.Mesh.Vertices.Length; i++)
                 {
                     var position = waterMesh.Mesh.Vertices[i].Position;
-                    var vector3D = Gerstner.A(_waveSettings, new Vector2d(position.X, position.Z), elapsedTime);
+                    var vector3D = Gerstner2.CalculateWave(new Vector2d(position.X, position.Z), elapsedTime, _waveSettings);
 
                     waterMesh.Mesh.Vertices[i] = new Vertex3V3N
                     {
@@ -130,11 +199,11 @@ namespace CjClutter.OpenGl.EntityComponent
             }
         }
 
-        private List<Gerstner.WaveSetting> CreateWaves(double angle, double wavelength, double amplitude, double steepness)
+        private List<Gerstner2.Settings> CreateWaves(double angle, double wavelength, double amplitude, double steepness)
         {
-            var waveSettings = new List<Gerstner.WaveSetting>();
+            var waveSettings = new List<Gerstner2.Settings>();
             var random = new Random(4711);
-            int waves = 20;
+            int waves = 5;
             for (var i = 0; i < waves; i++)
             {
                 var waveLengthFactor = wavelength * 2 - wavelength / 2;
@@ -142,9 +211,9 @@ namespace CjClutter.OpenGl.EntityComponent
                 var nextDouble = random.NextDouble();
                 var waveLength2 = minWaveLength + nextDouble * waveLengthFactor;
 
-                var amplitudeSpan = amplitude*2 - amplitude/2;
-                var minAmplitude = amplitude/2;
-                var amplitude2 = minAmplitude + nextDouble*amplitudeSpan;
+                var amplitudeSpan = amplitude * 2 - amplitude / 2;
+                var minAmplitude = amplitude / 2;
+                var amplitude2 = minAmplitude + nextDouble * amplitudeSpan;
 
                 var frequency = CalculateFrequency(waveLength2);
 
@@ -157,13 +226,13 @@ namespace CjClutter.OpenGl.EntityComponent
 
                 var q = steepness / (frequency * amplitude2 * waves);
 
-                var s = new Gerstner.WaveSetting
+                var s = new Gerstner2.Settings
                 {
-                    Direction = direction,
+                    Direction = direction.Normalized(),
+                    WaveLength = waveLength2,
                     Frequency = frequency,
-                    PhaseConstant = 2,
-                    Q = q,
-                    Amplitude = amplitude2,
+                    Steepness = steepness,
+                    Phase = nextDouble,
                 };
 
                 waveSettings.Add(s);
@@ -175,8 +244,7 @@ namespace CjClutter.OpenGl.EntityComponent
         private static double CalculateFrequency(double waveLength)
         {
             const double g = 9.82;
-            var frequency = Math.Sqrt(g * Math.PI * 2 / waveLength);
-            return frequency;
+            return Math.Sqrt(g * Math.PI * 2 / waveLength);
         }
 
         private static Mesh3V3N CreateMesh(OceanComponent oceanComponent)
