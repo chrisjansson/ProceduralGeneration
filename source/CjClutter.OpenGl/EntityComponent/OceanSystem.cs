@@ -71,15 +71,15 @@ namespace CjClutter.OpenGl.EntityComponent
         }
 
 
-        public static Vector3d CalculateWave(Vector2d position, double time, Settings[] settings)
+        public static Vector3d CalculateWave(Vector3d position, double time, Settings[] settings)
         {
             var sum = new Vector3d();
             for (var i = 0; i < settings.Length; i++)
             {
-                sum += CalculateWave(position, time, settings[i]);
+                sum += CalculateWave(position.Xz, time, settings[i]);
             }
 
-            return new Vector3d(position.X, 0, position.Y) - new Vector3d(sum.X, -sum.Y, sum.Z);
+            return new Vector3d(position.X, position.Y, position.Z) - new Vector3d(sum.X, -sum.Y, sum.Z);
         }
 
         public static Vector3d CalculateWave(Vector2d position, double time, Settings settings)
@@ -120,8 +120,8 @@ namespace CjClutter.OpenGl.EntityComponent
                     waterMesh = new StaticMesh
                     {
                         Color = new Vector4(0f, 0f, 1f, 0f),
-                        ModelMatrix = Matrix4.CreateTranslation(-5, 0, -5)
-                        //ModelMatrix = Matrix4.Identity
+                        //ModelMatrix = Matrix4.CreateTranslation(-5, 0, -5)
+                        ModelMatrix = Matrix4.Identity
                     };
                     entityManager.AddComponentToEntity(water, waterMesh);
                 }
@@ -187,7 +187,7 @@ namespace CjClutter.OpenGl.EntityComponent
                 for (var i = 0; i < waterMesh.Mesh.Vertices.Length; i++)
                 {
                     var position = waterMesh.Mesh.Vertices[i].Position;
-                    var vector3D = Gerstner2.CalculateWave(new Vector2d(position.X, position.Z), elapsedTime, _waveSettings);
+                    var vector3D = Gerstner2.CalculateWave((Vector3d) position, elapsedTime, _waveSettings);
 
                     waterMesh.Mesh.Vertices[i] = new Vertex3V3N
                     {
@@ -257,8 +257,11 @@ namespace CjClutter.OpenGl.EntityComponent
                     var xin = i / (double)oceanComponent.Width * 10;
                     var yin = j / (double)oceanComponent.Height * 10;
 
-                    var position = new Vector3((float)xin, 0, (float)yin);
-                    var vertex = new Vertex3V3N { Position = position };
+                    var position = new Vector3((float)xin -5, 5, (float)yin-5);
+                    var vertex = new Vertex3V3N
+                    {
+                        Position = position.Normalized() * 5
+                    };
                     vertices.Add(vertex);
                 }
             }
