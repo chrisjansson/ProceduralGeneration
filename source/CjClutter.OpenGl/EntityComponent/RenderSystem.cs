@@ -59,7 +59,13 @@ namespace CjClutter.OpenGl.EntityComponent
                 _simpleMaterial.ModelMatrix.Set(component.ModelMatrix);
                 _simpleMaterial.Color.Set(component.Color);
 
+                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+                GL.Disable(EnableCap.CullFace);
+                
                 GL.DrawElements(BeginMode.Triangles, component.Mesh.Faces.Length * 3, DrawElementsType.UnsignedInt, 0);
+
+                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+                GL.Enable(EnableCap.CullFace);
 
                 resources.VertexArrayObject.Unbind();
             }

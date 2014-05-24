@@ -1,5 +1,7 @@
-﻿using CjClutter.OpenGl.Noise;
+﻿using System.Drawing.Drawing2D;
+using CjClutter.OpenGl.Noise;
 using CjClutter.OpenGl.SceneGraph;
+using OpenTK;
 
 namespace CjClutter.OpenGl.EntityComponent
 {
@@ -49,6 +51,37 @@ namespace CjClutter.OpenGl.EntityComponent
             }
 
             _settingsChanged = false;
+        }
+    }
+
+    public class CubeMeshComponent : IEntityComponent
+    {
+        public Matrix4 Transform { get; set; }
+
+        public CubeMeshComponent(Matrix4 transform)
+        {
+            Transform = transform;
+        }
+    }
+
+    public class CubeMeshSystem : IEntitySystem
+    {
+        public void Update(double elapsedTime, EntityManager entityManager)
+        {
+            foreach (var entity in entityManager.GetEntitiesWithComponent<CubeMeshComponent>())
+            {
+                var mesh = entityManager.GetComponent<StaticMesh>(entity);
+                if (mesh == null)
+                {
+                    var component = entityManager.GetComponent<CubeMeshComponent>(entity);    
+                    mesh = new StaticMesh();
+                    mesh.ModelMatrix = component.Transform;
+                    mesh.Color = new Vector4(0f, 0f, 1f, 1f);
+                    mesh.Update(GridCreator.CreateXZ(25, 25));
+                    
+                    entityManager.AddComponentToEntity(entity, mesh);
+                }
+            }
         }
     }
 }
