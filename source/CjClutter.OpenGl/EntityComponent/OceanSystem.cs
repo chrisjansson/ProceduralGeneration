@@ -187,7 +187,7 @@ namespace CjClutter.OpenGl.EntityComponent
                 for (var i = 0; i < waterMesh.Mesh.Vertices.Length; i++)
                 {
                     var position = waterMesh.Mesh.Vertices[i].Position;
-                    var vector3D = Gerstner2.CalculateWave((Vector3d) position, elapsedTime, _waveSettings);
+                    var vector3D = Gerstner2.CalculateWave((Vector3d)position, elapsedTime, _waveSettings);
 
                     waterMesh.Mesh.Vertices[i] = new Vertex3V3N
                     {
@@ -249,43 +249,20 @@ namespace CjClutter.OpenGl.EntityComponent
 
         private static Mesh3V3N CreateMesh(OceanComponent oceanComponent)
         {
-            var vertices = new List<Vertex3V3N>();
-            for (var i = 0; i <= oceanComponent.Width; i++)
-            {
-                for (var j = 0; j <= oceanComponent.Height; j++)
+            var mesh = GridCreator.CreateXZ(oceanComponent.Width, oceanComponent.Height);
+            var matrix5 = Matrix4.CreateScale(10) * Matrix4.CreateTranslation(0, 5, 0);
+
+            var vertices = mesh.Vertices.Select(x =>
+
+                new Vertex3V3N
                 {
-                    var xin = i / (double)oceanComponent.Width * 10;
-                    var yin = j / (double)oceanComponent.Height * 10;
-
-                    var position = new Vector3((float)xin -5, 5, (float)yin-5);
-                    var vertex = new Vertex3V3N
-                    {
-                        Position = position.Normalized() * 5
-                    };
-                    vertices.Add(vertex);
+                    Normal = x.Normal,
+                    Position = Vector3.Transform(x.Position, matrix5).Normalized() * 5,
                 }
-            }
 
-            var faces = new List<Face3>();
-            for (var i = 0; i < oceanComponent.Width; i++)
-            {
-                for (var j = 0; j < oceanComponent.Height; j++)
-                {
-                    var verticesInColumn = (oceanComponent.Height + 1);
-                    var v0 = i * verticesInColumn + j;
-                    var v1 = (i + 1) * verticesInColumn + j;
-                    var v2 = (i + 1) * verticesInColumn + j + 1;
-                    var v3 = i * verticesInColumn + j + 1;
+                );
 
-                    var f0 = new Face3 { V0 = v0, V1 = v1, V2 = v2 };
-                    var f1 = new Face3 { V0 = v0, V1 = v2, V2 = v3 };
-
-                    faces.Add(f0);
-                    faces.Add(f1);
-                }
-            }
-
-            return new Mesh3V3N(vertices, faces);
+            return new Mesh3V3N(vertices, mesh.Faces);
         }
     }
 }

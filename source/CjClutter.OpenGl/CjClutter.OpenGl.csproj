@@ -108,6 +108,7 @@
     <Compile Include="CoordinateSystems\IInterfaceSize.cs" />
     <Compile Include="EntityComponent\Entity.cs" />
     <Compile Include="EntityComponent\EntityManager.cs" />
+    <Compile Include="EntityComponent\GridCreator.cs" />
     <Compile Include="EntityComponent\IEntityComponent.cs" />
     <Compile Include="EntityComponent\IEntitySystem.cs" />
     <Compile Include="EntityComponent\InputSystem.cs" />
