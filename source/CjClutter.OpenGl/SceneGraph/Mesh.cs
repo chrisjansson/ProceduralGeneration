@@ -54,5 +54,16 @@ namespace CjClutter.OpenGl.SceneGraph
                 _vertices[index].Normal.Normalize();
             }
         }
+
+        public Mesh3V3N Transformed(Matrix4 transform)
+        {
+            return new Mesh3V3N(
+                Vertices.Select(x => new Vertex3V3N
+                {
+                    Position = Vector3.Transform(x.Position, transform),
+                    Normal = Vector3.TransformNormal(x.Normal, transform)
+                }),
+                _faces);
+        }
     }
 }

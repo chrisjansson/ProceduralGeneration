@@ -1,11 +1,14 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.CoordinateSystems;
 using CjClutter.OpenGl.EntityComponent;
 using CjClutter.OpenGl.Input.Keboard;
 using CjClutter.OpenGl.Input.Mouse;
 using CjClutter.OpenGl.Noise;
+using CjClutter.OpenGl.OpenGl.VertexTypes;
+using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -31,6 +34,7 @@ namespace CjClutter.OpenGl.Gui
         private LightMoverSystem _lightMoverSystem;
         private OceanSystem _oceanSystem;
         private CubeMeshSystem _cubeMeshSystem;
+        private ChunkedLODSystem _chunkedLODSystem;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -90,40 +94,23 @@ namespace CjClutter.OpenGl.Gui
             //    }
             //}
 
-            var entity = new Entity(Guid.NewGuid().ToString());
-            _entityManager.Add(entity);
-            _entityManager.AddComponentToEntity(entity, new CubeMeshComponent(Matrix4.CreateTranslation(0f, 0.5f, 0f)));
-
-            entity = new Entity(Guid.NewGuid().ToString());
-            _entityManager.Add(entity);
-            _entityManager.AddComponentToEntity(entity, new CubeMeshComponent(Matrix4.Mult(Matrix4.CreateRotationX((float)Math.PI), Matrix4.CreateTranslation(0f, -0.5f, 0f))));
-
-            entity = new Entity(Guid.NewGuid().ToString());
-            _entityManager.Add(entity);
-            _entityManager.AddComponentToEntity(entity, new CubeMeshComponent(Matrix4.Mult(Matrix4.CreateRotationZ((float)(Math.PI / 2)), Matrix4.CreateTranslation(-0.5f, 0f, 0f))));
-
-            entity = new Entity(Guid.NewGuid().ToString());
-            _entityManager.Add(entity);
-            _entityManager.AddComponentToEntity(entity, new CubeMeshComponent(Matrix4.Mult(Matrix4.CreateRotationZ((float)(-Math.PI / 2)), Matrix4.CreateTranslation(0.5f, 0f, 0f))));
-
-            entity = new Entity(Guid.NewGuid().ToString());
-            _entityManager.Add(entity);
-            _entityManager.AddComponentToEntity(entity, new CubeMeshComponent(Matrix4.Mult(Matrix4.CreateRotationX((float)(-Math.PI / 2)), Matrix4.CreateTranslation(0, 0f, -0.5f))));
-            
-            entity = new Entity(Guid.NewGuid().ToString());
-            _entityManager.Add(entity);
-            _entityManager.AddComponentToEntity(entity, new CubeMeshComponent(Matrix4.Mult(Matrix4.CreateRotationX((float)(Math.PI / 2)), Matrix4.CreateTranslation(0, 0f, 0.5f))));
-
-            //var water = new Entity(Guid.NewGuid().ToString());
-            //_entityManager.Add(water);
-            //_entityManager.AddComponentToEntity(water, new OceanComponent(128, 128));
-
             var light = new Entity(Guid.NewGuid().ToString());
             _entityManager.Add(light);
             _entityManager.AddComponentToEntity(light, new PositionalLightComponent { Position = new Vector3d(0, 1, 0) });
 
             _awesomiumGui.Start();
             _awesomiumGui.SettingsChanged += s => _terrainSystem.SetTerrainSettings(s);
+            _chunkedLODSystem = new ChunkedLODSystem();
+        }
+
+        private Mesh3V3N NormalizeMesh(Mesh3V3N transformed)
+        {
+            return new Mesh3V3N(
+                transformed.Vertices.Select(x => new Vertex3V3N
+                {
+                    Position = x.Position.Normalized(),
+                    Normal = x.Normal
+                }), transformed.Faces).Transformed(Matrix4.CreateScale(5, 5, 5));
         }
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
@@ -172,8 +159,9 @@ namespace CjClutter.OpenGl.Gui
 
             _inputSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
             _cubeMeshSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
+            _chunkedLODSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
             _terrainSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
-            _oceanSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
+            _oceanSystem.Update(ElapsedTime.TotalSeconds / 10, _entityManager);
             _renderSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
             _lightMoverSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
 

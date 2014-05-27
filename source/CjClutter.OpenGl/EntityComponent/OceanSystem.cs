@@ -10,14 +10,12 @@ namespace CjClutter.OpenGl.EntityComponent
 {
     public class OceanComponent : IEntityComponent
     {
-        public OceanComponent(int width, int height)
-        {
-            Width = width;
-            Height = height;
-        }
+        public Mesh3V3N Mesh { get; set; }
 
-        public int Width { get; private set; }
-        public int Height { get; private set; }
+        public OceanComponent(Mesh3V3N mesh)
+        {
+            Mesh = mesh;
+        }
     }
 
     public static class Gerstner
@@ -120,67 +118,10 @@ namespace CjClutter.OpenGl.EntityComponent
                     waterMesh = new StaticMesh
                     {
                         Color = new Vector4(0f, 0f, 1f, 0f),
-                        //ModelMatrix = Matrix4.CreateTranslation(-5, 0, -5)
                         ModelMatrix = Matrix4.Identity
                     };
                     entityManager.AddComponentToEntity(water, waterMesh);
                 }
-
-                //var waveSetting0 = new Gerstner.WaveSetting
-                //{
-                //    Amplitude = 0.2,
-                //    Direction = new Vector2d(0.2, 0.4),
-                //    Frequency = CalculateFrequency(10),
-                //    PhaseConstant = 1,
-                //    Q = 0.5
-                //};
-
-                //var waveSetting1 = new Gerstner.WaveSetting
-                //{
-                //    Amplitude = 0.1,
-                //    Direction = new Vector2d(0.25, 0.5),
-                //    Frequency = CalculateFrequency(2),
-                //    PhaseConstant = 1,
-                //    Q = 0.5
-                //};
-
-                //var waveSetting2 = new Gerstner.WaveSetting
-                //{
-                //    Amplitude = 0.05,
-                //    Direction = new Vector2d(0.1, 0.7),
-                //    Frequency = CalculateFrequency(0.25),
-                //    PhaseConstant = 1,
-                //    Q = 0.5
-                //};
-
-
-
-
-                //var wave1 = new Gerstner2.Settings()
-                //{
-                //    Steepness = 0.4,
-                //    Direction = GetDirection(Math.PI / 3),
-                //    WaveLength = waveLength,
-                //    Phase = 0,
-                //};
-
-
-                //var wave2 = new Gerstner2.Settings()
-                //{
-                //    Steepness = 0.4,
-                //    Direction = GetDirection(Math.PI / 3 + 0.2),
-                //    WaveLength = waveLength / 2,
-                //    Phase = 1,
-                //};
-
-
-                //var wave3 = new Gerstner2.Settings()
-                //{
-                //    Steepness = 0.4,
-                //    Direction = GetDirection(Math.PI / 3 - 0.5),
-                //    WaveLength = waveLength * 1.4,
-                //    Phase = 0.2,
-                //};
 
                 var mesh = CreateMesh(waterComponent);
                 waterMesh.Update(mesh);
@@ -249,20 +190,8 @@ namespace CjClutter.OpenGl.EntityComponent
 
         private static Mesh3V3N CreateMesh(OceanComponent oceanComponent)
         {
-            var mesh = GridCreator.CreateXZ(oceanComponent.Width, oceanComponent.Height);
-            var matrix5 = Matrix4.CreateScale(10) * Matrix4.CreateTranslation(0, 5, 0);
-
-            var vertices = mesh.Vertices.Select(x =>
-
-                new Vertex3V3N
-                {
-                    Normal = x.Normal,
-                    Position = Vector3.Transform(x.Position, matrix5).Normalized() * 5,
-                }
-
-                );
-
-            return new Mesh3V3N(vertices, mesh.Faces);
+            
+            return new Mesh3V3N(oceanComponent.Mesh.Vertices, oceanComponent.Mesh.Faces);
         }
     }
 }

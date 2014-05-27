@@ -106,6 +106,7 @@
     <Compile Include="CoordinateSystems\GuiToRelativeCoordinateTransformer.cs" />
     <Compile Include="CoordinateSystems\IGuiToRelativeCoordinateTransformer.cs" />
     <Compile Include="CoordinateSystems\IInterfaceSize.cs" />
+    <Compile Include="EntityComponent\ChunkedLODSystem.cs" />
     <Compile Include="EntityComponent\Entity.cs" />
     <Compile Include="EntityComponent\EntityManager.cs" />
     <Compile Include="EntityComponent\GridCreator.cs" />
