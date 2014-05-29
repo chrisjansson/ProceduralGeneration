@@ -94,4 +94,21 @@ namespace CjClutter.OpenGl.EntityComponent
         public Box2 Bounds { get; private set; }
         public Node[] Leafs { get; private set; }
     }
+
+    public struct Box3d
+    {
+        public Box3d(Vector3d min, Vector3d max) : this()
+        {
+            Min = min;
+            Max = max;
+        }
+
+        public Vector3d Min { get; private set; }
+        public Vector3d Max { get; private set; }
+
+        public Vector3d Center
+        {
+            get { return (Max + Min)/2; }
+        }
+    }
 }
