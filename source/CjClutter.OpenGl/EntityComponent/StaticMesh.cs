@@ -9,6 +9,7 @@ namespace CjClutter.OpenGl.EntityComponent
         public bool IsDirty { get; set; }
         public Vector4 Color { get; set; }
         public Matrix4 ModelMatrix { get; set; }
+        public bool IsVisible { get; set; }
 
         public void Update(Mesh3V3N mesh)
         {

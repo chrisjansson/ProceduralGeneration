@@ -100,7 +100,7 @@ namespace CjClutter.OpenGl.Gui
 
             _awesomiumGui.Start();
             _awesomiumGui.SettingsChanged += s => _terrainSystem.SetTerrainSettings(s);
-            _chunkedLODSystem = new ChunkedLODSystem();
+            _chunkedLODSystem = new ChunkedLODSystem(_camera);
         }
 
         private Mesh3V3N NormalizeMesh(Mesh3V3N transformed)

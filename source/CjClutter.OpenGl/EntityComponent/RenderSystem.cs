@@ -52,6 +52,9 @@ namespace CjClutter.OpenGl.EntityComponent
             foreach (var entity in entityManager.GetEntitiesWithComponent<StaticMesh>())
             {
                 var component = entityManager.GetComponent<StaticMesh>(entity);
+                if(!component.IsVisible)
+                    continue;
+
                 var resources = EnsureResources(component);
 
                 resources.VertexArrayObject.Bind();
