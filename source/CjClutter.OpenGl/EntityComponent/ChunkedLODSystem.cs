@@ -1,5 +1,4 @@
 ﻿using System;
-using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 
 namespace CjClutter.OpenGl.EntityComponent
@@ -8,27 +7,27 @@ namespace CjClutter.OpenGl.EntityComponent
     {
         public ChunkedLODSystem()
         {
-            _root = GetNode(new Box2(new Vector2(-0.5f, -0.5f), new Vector2(0.5f, 0.5f)), 5);
+            _root = GetNode(new Box3d(new Vector3d(-0.5f, 0, -0.5f), new Vector3d(0.5f, 0, 0.5f)), 5);
         }
 
-        private Node GetNode(Box2 bounds, int level)
+        private Node GetNode(Box3d bounds, int level)
         {
             if (level == 0)
             {
                 return new Node(bounds, new Node[] { });
             }
 
-            var centerHeight = bounds.Top + bounds.Height / 2;
-            var centerWidth = bounds.Left + bounds.Width / 2;
-            var center = new Vector2(centerWidth, centerHeight);
+            var min = bounds.Min;
+            var max = bounds.Max;
+            var center = bounds.Center;
 
             return new Node(bounds,
                 new[]
                 {
-                    GetNode(new Box2(new Vector2(bounds.Left, bounds.Top), center), level -1),
-                    GetNode(new Box2(new Vector2(centerWidth, bounds.Top), new Vector2(bounds.Right, centerHeight)), level -1),
-                    GetNode(new Box2(new Vector2(bounds.Left, centerHeight), new Vector2(centerWidth, bounds.Bottom)), level -1),
-                    GetNode(new Box2(center, new Vector2(bounds.Right, bounds.Bottom)), level -1)
+                    GetNode(new Box3d(bounds.Min, center), level -1),
+                    GetNode(new Box3d(new Vector3d(center.X, 0, min.Z), new Vector3d(max.X, 0, center.Z)), level -1),
+                    GetNode(new Box3d(new Vector3d(min.X, 0, center.Z), new Vector3d(center.X, 0, max.Z)), level - 1),
+                    GetNode(new Box3d(center, max), level - 1)
                 });
         }
 
@@ -62,20 +61,16 @@ namespace CjClutter.OpenGl.EntityComponent
                 return;
             }
 
-            var centerHeight = root.Bounds.Top + root.Bounds.Height / 2;
-            var centerWidth = root.Bounds.Left + root.Bounds.Width / 2;
-            var center = new Vector2(centerWidth, centerHeight);
-
             var mesh = GridCreator.CreateXZ(10, 10);
-            var staticMesh = new StaticMesh()
+            var staticMesh = new StaticMesh
             {
                 Color = new Vector4(0f, 0f, 1f, 1f),
                 ModelMatrix = Matrix4.Identity,
 
             };
 
-            //staticMesh.Update(mesh.Transformed(Matrix4.Mult(Matrix4.CreateTranslation(new Vector3(center.X, 0, center.Y)), Matrix4.CreateScale(0.5f, 0.5f, 0.5f))));
-            staticMesh.Update(mesh.Transformed(Matrix4.CreateScale(root.Bounds.Width, root.Bounds.Height, root.Bounds.Width) * Matrix4.CreateTranslation(new Vector3(center.X, 0, center.Y))));
+            var size = root.Bounds.Max - root.Bounds.Min;  
+            staticMesh.Update(mesh.Transformed(Matrix4.CreateScale((float) size.X, 1, (float) size.Z) * Matrix4.CreateTranslation((Vector3) root.Bounds.Center)));
 
             var entity = new Entity(Guid.NewGuid().ToString());
             entityManager.Add(entity);
@@ -85,19 +80,20 @@ namespace CjClutter.OpenGl.EntityComponent
 
     public class Node
     {
-        public Node(Box2 bounds, Node[] leafNodes)
+        public Node(Box3d bounds, Node[] leafNodes)
         {
             Bounds = bounds;
             Leafs = leafNodes;
         }
 
-        public Box2 Bounds { get; private set; }
+        public Box3d Bounds { get; private set; }
         public Node[] Leafs { get; private set; }
     }
 
     public struct Box3d
     {
-        public Box3d(Vector3d min, Vector3d max) : this()
+        public Box3d(Vector3d min, Vector3d max)
+            : this()
         {
             Min = min;
             Max = max;
@@ -108,7 +104,7 @@ namespace CjClutter.OpenGl.EntityComponent
 
         public Vector3d Center
         {
-            get { return (Max + Min)/2; }
+            get { return (Max + Min) / 2; }
         }
     }
 }
