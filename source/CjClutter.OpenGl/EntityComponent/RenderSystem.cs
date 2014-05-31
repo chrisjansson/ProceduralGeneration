@@ -55,6 +55,8 @@ namespace CjClutter.OpenGl.EntityComponent
                 if(!component.IsVisible)
                     continue;
 
+                component.IsVisible = false;
+
                 var resources = EnsureResources(component);
 
                 resources.VertexArrayObject.Bind();

@@ -1,5 +1,8 @@
 ﻿using System;
 using CjClutter.OpenGl.Camera;
+using CjClutter.OpenGl.Noise;
+using CjClutter.OpenGl.OpenGl.VertexTypes;
+using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 
 namespace CjClutter.OpenGl.EntityComponent
@@ -21,7 +24,20 @@ namespace CjClutter.OpenGl.EntityComponent
             };
 
             var size = bounds.Max - bounds.Min;
-            staticMesh.Update(mesh.Transformed(Matrix4.CreateScale((float)size.X, 1, (float)size.Z) * Matrix4.CreateTranslation((Vector3)bounds.Center)));
+            var mesh3V3N = mesh.Transformed(Matrix4.CreateScale((float)size.X, 1, (float)size.Z) * Matrix4.CreateTranslation((Vector3)bounds.Center));
+            var improvedPerlinNoise = new ImprovedPerlinNoise(4711);
+            for (int i = 0; i < mesh3V3N.Vertices.Length; i++)
+            {
+                var vertex = mesh3V3N.Vertices[i];
+                var height = improvedPerlinNoise.Noise(vertex.Position.X, vertex.Position.Z)  * 0.2;
+                mesh3V3N.Vertices[i] = new Vertex3V3N
+                {
+                    Normal = new Vector3(0, 1, 0),
+                    Position = new Vector3(vertex.Position.X, (float) height, vertex.Position.Z)
+                };
+            }
+
+            staticMesh.Update(mesh3V3N);
 
             var entity = new Entity(Guid.NewGuid().ToString());
             entityManager.Add(entity);
@@ -58,7 +74,7 @@ namespace CjClutter.OpenGl.EntityComponent
                 _first = false;
             }
 
-            Clear(_root, entityManager);
+            //Clear(_root, entityManager);
 
             var k = _camera.Width/(2*Math.Tan((Math.PI/4)/2));
             Draw(_root, k, entityManager, 0);
@@ -72,7 +88,7 @@ namespace CjClutter.OpenGl.EntityComponent
             var distance  = Vector3d.Transform(root.Bounds.Center, matrix).Length;
             var rho = error/distance*d;
 
-            var threshhold = 1000;
+            var threshhold = 1500;
             if (rho <= threshhold || root.Leafs.Length == 0)
             {
                 var mesh = entityManager.GetComponent<StaticMesh>(root.Entity);
