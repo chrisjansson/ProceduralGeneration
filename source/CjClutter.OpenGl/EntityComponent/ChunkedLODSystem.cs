@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.Design.Serialization;
 using CjClutter.OpenGl.Camera;
 using OpenTK;
 
@@ -68,11 +67,13 @@ namespace CjClutter.OpenGl.EntityComponent
         private void Draw(Node root, double d, EntityManager entityManager, int i)
         {
             var error = Math.Pow(2, 6 - i);
-            var distance = (root.Bounds.Center - _camera.Position).Length;
+            
+            var matrix = _camera.ComputeCameraMatrix()*_camera.ComputeProjectionMatrix();
+            var distance  = Vector3d.Transform(root.Bounds.Center, matrix).Length;
             var rho = error/distance*d;
 
-            var threshhold = 2500;
-            if (rho <= threshhold)
+            var threshhold = 1000;
+            if (rho <= threshhold || root.Leafs.Length == 0)
             {
                 var mesh = entityManager.GetComponent<StaticMesh>(root.Entity);
                 mesh.IsVisible = true;
