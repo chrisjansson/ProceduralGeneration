@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using CjClutter.OpenGl.Camera;
@@ -26,15 +27,9 @@ namespace CjClutter.OpenGl.Gui
         private readonly KeyboardInputObservable _keyboardInputObservable;
         private readonly ICamera _camera;
         private EntityManager _entityManager;
-        private RenderSystem _renderSystem;
-        private RtsCameraSystem _rtsCameraSystem;
         private Texture _texture;
         private readonly AwesomiumGui _awesomiumGui;
-        private TerrainSystem _terrainSystem;
-        private LightMoverSystem _lightMoverSystem;
-        private OceanSystem _oceanSystem;
-        private CubeMeshSystem _cubeMeshSystem;
-        private ChunkedLODSystem _chunkedLODSystem;
+        private List<IEntitySystem> _systems;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -73,34 +68,26 @@ namespace CjClutter.OpenGl.Gui
             _keyboardInputObservable.SubscribeKey(KeyCombination.Tilde, CombinationDirection.Down, () => _awesomiumGui.IsEnabled = !_awesomiumGui.IsEnabled);
 
             _entityManager = new EntityManager();
-            _terrainSystem = new TerrainSystem(FractalBrownianMotionSettings.Default);
-            _renderSystem = new RenderSystem(_camera);
-            _rtsCameraSystem = new RtsCameraSystem(_keyboardInputProcessor, _camera);
-            _lightMoverSystem = new LightMoverSystem();
-            _oceanSystem = new OceanSystem();
-            _cubeMeshSystem = new CubeMeshSystem();
 
-            //const int numberOfChunksX = 10;
-            //const int numberOfChunksY = 10;
-            //for (var i = 0; i < numberOfChunksX; i++)
-            //{
-            //    for (var j = 0; j < numberOfChunksY; j++)
-            //    {
-            //        var entity = new Entity(Guid.NewGuid().ToString());
-            //        _entityManager.Add(entity);
-            //        _entityManager.AddComponentToEntity(entity, new ChunkComponent(i, j));
-            //        _entityManager.AddComponentToEntity(entity, new StaticMesh());
-            //        //_entityManager.AddComponentToEntity(entity, new NormalComponent());
-            //    }
-            //}
+            _systems = new List<IEntitySystem>
+            {
+                new TerrainSystem(FractalBrownianMotionSettings.Default),
+                new RtsCameraSystem(_keyboardInputProcessor, _camera),
+                new LightMoverSystem(),
+                new OceanSystem(),
+                new CubeMeshSystem(),
+                new ChunkedLODSystem(_camera),
+                new RenderSystem(_camera),
+            };
+
+
 
             var light = new Entity(Guid.NewGuid().ToString());
             _entityManager.Add(light);
             _entityManager.AddComponentToEntity(light, new PositionalLightComponent { Position = new Vector3d(0, 1, 0) });
 
             _awesomiumGui.Start();
-            _awesomiumGui.SettingsChanged += s => _terrainSystem.SetTerrainSettings(s);
-            _chunkedLODSystem = new ChunkedLODSystem(_camera);
+            //_awesomiumGui.SettingsChanged += s => _terrainSystem.SetTerrainSettings(s);
         }
 
         private Mesh3V3N NormalizeMesh(Mesh3V3N transformed)
@@ -157,14 +144,10 @@ namespace CjClutter.OpenGl.Gui
 
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
-            _rtsCameraSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
-            _cubeMeshSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
-            _chunkedLODSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
-            _terrainSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
-            _oceanSystem.Update(ElapsedTime.TotalSeconds / 10, _entityManager);
-            _renderSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
-            _lightMoverSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
-
+            foreach (var system in _systems)
+            {
+                system.Update(ElapsedTime.TotalSeconds, _entityManager);
+            }
 
             if (_awesomiumGui.IsDirty)
             {
