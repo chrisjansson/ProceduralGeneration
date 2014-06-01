@@ -20,13 +20,13 @@ namespace CjClutter.OpenGl.EntityComponent
 
         public void Update(double elapsedTime, EntityManager entityManager)
         {
-            var speedExponent = Math.Log10(_camera.Position.Y);
-
+            var speedExponent = Math.Max(0.5, Math.Log10(Math.Abs(_camera.Position.Y)));
             var delta = (elapsedTime - _lastUpdate) * Math.Pow(10, speedExponent);
 
             var forward = (_camera.Target - _camera.Position).Normalized();
             var up = _camera.Up.Normalized();
             var right = Vector3d.Cross(forward, up).Normalized();
+            up = Vector3d.Cross(right, forward).Normalized();
 
             var direction = new Vector3d(0, 0, 0);
             bool keyDown = false;
@@ -52,12 +52,12 @@ namespace CjClutter.OpenGl.EntityComponent
             }
             if (_keyboardInputProcessor.IsButtonDown(Key.LShift))
             {
-                direction += new Vector3d(0, 1, 0);
+                direction += up;
                 keyDown = true;
             }
             if (_keyboardInputProcessor.IsButtonDown(Key.LControl))
             {
-                direction += new Vector3d(0, -1, 0);
+                direction += -up;
                 keyDown = true;
             }
 
@@ -66,7 +66,6 @@ namespace CjClutter.OpenGl.EntityComponent
                 var result = Vector3d.Multiply(direction.Normalized(), delta);
                 _camera.Target += result;
                 _camera.Position += result;
-
             }
 
             _lastUpdate = elapsedTime;
