@@ -80,8 +80,6 @@ namespace CjClutter.OpenGl.Gui
                 new RenderSystem(_camera),
             };
 
-
-
             var light = new Entity(Guid.NewGuid().ToString());
             _entityManager.Add(light);
             _entityManager.AddComponentToEntity(light, new PositionalLightComponent { Position = new Vector3d(0, 1, 0) });
