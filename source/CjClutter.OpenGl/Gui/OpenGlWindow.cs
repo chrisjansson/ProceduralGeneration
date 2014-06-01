@@ -27,7 +27,7 @@ namespace CjClutter.OpenGl.Gui
         private readonly ICamera _camera;
         private EntityManager _entityManager;
         private RenderSystem _renderSystem;
-        private InputSystem _inputSystem;
+        private RtsCameraSystem _rtsCameraSystem;
         private Texture _texture;
         private readonly AwesomiumGui _awesomiumGui;
         private TerrainSystem _terrainSystem;
@@ -75,7 +75,7 @@ namespace CjClutter.OpenGl.Gui
             _entityManager = new EntityManager();
             _terrainSystem = new TerrainSystem(FractalBrownianMotionSettings.Default);
             _renderSystem = new RenderSystem(_camera);
-            _inputSystem = new InputSystem(_keyboardInputProcessor, _camera);
+            _rtsCameraSystem = new RtsCameraSystem(_keyboardInputProcessor, _camera);
             _lightMoverSystem = new LightMoverSystem();
             _oceanSystem = new OceanSystem();
             _cubeMeshSystem = new CubeMeshSystem();
@@ -157,7 +157,7 @@ namespace CjClutter.OpenGl.Gui
 
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
-            _inputSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
+            _rtsCameraSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
             _cubeMeshSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
             _chunkedLODSystem.Update(ElapsedTime.TotalSeconds, _entityManager);
             _terrainSystem.Update(ElapsedTime.TotalSeconds, _entityManager);

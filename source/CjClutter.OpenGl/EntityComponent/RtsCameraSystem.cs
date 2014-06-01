@@ -5,11 +5,11 @@ using OpenTK.Input;
 
 namespace CjClutter.OpenGl.EntityComponent
 {
-    public class InputSystem : IEntitySystem
+    public class RtsCameraSystem : IEntitySystem
     {
         private readonly KeyboardInputProcessor _keyboardInputProcessor;
 
-        public InputSystem(KeyboardInputProcessor keyboardInputProcessor, ICamera camera)
+        public RtsCameraSystem(KeyboardInputProcessor keyboardInputProcessor, ICamera camera)
         {
             _camera = camera;
             _keyboardInputProcessor = keyboardInputProcessor;
