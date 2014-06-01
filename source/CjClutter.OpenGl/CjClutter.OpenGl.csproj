@@ -109,6 +109,7 @@
     <Compile Include="EntityComponent\ChunkedLODSystem.cs" />
     <Compile Include="EntityComponent\Entity.cs" />
     <Compile Include="EntityComponent\EntityManager.cs" />
+    <Compile Include="EntityComponent\FreeCameraSystem.cs" />
     <Compile Include="EntityComponent\GridCreator.cs" />
     <Compile Include="EntityComponent\IEntityComponent.cs" />
     <Compile Include="EntityComponent\IEntitySystem.cs" />

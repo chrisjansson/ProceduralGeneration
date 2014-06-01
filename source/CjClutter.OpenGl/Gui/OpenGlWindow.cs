@@ -72,7 +72,7 @@ namespace CjClutter.OpenGl.Gui
             _systems = new List<IEntitySystem>
             {
                 new TerrainSystem(FractalBrownianMotionSettings.Default),
-                new RtsCameraSystem(_keyboardInputProcessor, _camera),
+                new FreeCameraSystem(_keyboardInputProcessor, _camera),
                 new LightMoverSystem(),
                 new OceanSystem(),
                 new CubeMeshSystem(),

@@ -46,8 +46,8 @@ namespace CjClutter.OpenGl.Camera
         public static readonly ProjectionMode Orthographic = new OrthographicProjection();
         public static readonly ProjectionMode Perspective = new PerspectiveProjection();
 
-        public const int NearPlane = 1;
-        public const int FarPlane = 100;
+        public const double NearPlane = 0.001;
+        public const double FarPlane = 100;
 
         public abstract Matrix4d ComputeProjectionMatrix(double width, double height);
 
