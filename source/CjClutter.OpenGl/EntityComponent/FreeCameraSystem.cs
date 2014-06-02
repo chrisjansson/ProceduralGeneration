@@ -12,7 +12,7 @@ namespace CjClutter.OpenGl.EntityComponent
         private readonly KeyboardInputProcessor _keyboardInputProcessor;
         private readonly ICamera _camera;
         private double _lastUpdate;
-        private MouseInputProcessor _mouseInputProcessor;
+        private readonly MouseInputProcessor _mouseInputProcessor;
 
         public FreeCameraSystem(KeyboardInputProcessor keyboardInputProcessor, MouseInputProcessor mouseInputProcessor, ICamera camera)
         {
@@ -26,31 +26,28 @@ namespace CjClutter.OpenGl.EntityComponent
             var speedExponent = Math.Max(0.5, Math.Log10(Math.Abs(_camera.Position.Y)));
             var delta = (elapsedTime - _lastUpdate) * Math.Pow(10, speedExponent);
 
-            var forward = (_camera.Target - _camera.Position).Normalized();
-            var up = _camera.Up.Normalized();
-            var right = Vector3d.Cross(forward, up).Normalized();
-            up = Vector3d.Cross(right, forward).Normalized();
+            var up = Vector3d.Cross(_camera.Right, _camera.Forward).Normalized();
 
             var direction = new Vector3d(0, 0, 0);
             bool keyDown = false;
             if (_keyboardInputProcessor.IsButtonDown(Key.W))
             {
-                direction += forward;
+                direction += _camera.Forward;
                 keyDown = true;
             }
             if (_keyboardInputProcessor.IsButtonDown(Key.S))
             {
-                direction += -forward;
+                direction += -_camera.Forward;
                 keyDown = true;
             }
             if (_keyboardInputProcessor.IsButtonDown(Key.D))
             {
-                direction += right;
+                direction += _camera.Right;
                 keyDown = true;
             }
             if (_keyboardInputProcessor.IsButtonDown(Key.A))
             {
-                direction += -right;
+                direction += -_camera.Right;
                 keyDown = true;
             }
             if (_keyboardInputProcessor.IsButtonDown(Key.LShift))
@@ -72,9 +69,8 @@ namespace CjClutter.OpenGl.EntityComponent
             }
 
             var relativeMousePositionDelta = _mouseInputProcessor.GetMousePositionDelta();
-
-            var rotation = Matrix4d.CreateFromAxisAngle(up, -relativeMousePositionDelta.X / 500.0) * Matrix4d.CreateFromAxisAngle(right, -relativeMousePositionDelta.Y / 500.0);
-            var rotated = Vector3d.Transform(forward, rotation);
+            var rotation = Matrix4d.CreateFromAxisAngle(up, -relativeMousePositionDelta.X / 500.0) * Matrix4d.CreateFromAxisAngle(_camera.Right, -relativeMousePositionDelta.Y / 500.0);
+            var rotated = Vector3d.Transform(_camera.Forward, rotation);
             _camera.Target = _camera.Position + rotated;
 
             _lastUpdate = elapsedTime;

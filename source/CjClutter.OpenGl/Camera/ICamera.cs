@@ -10,6 +10,8 @@ namespace CjClutter.OpenGl.Camera
         ProjectionMode Projection { get; set; }
         double Width { get; set; }
         double Height { get; set; }
+        Vector3d Forward { get; }
+        Vector3d Right { get; }
 
         Matrix4d ComputeCameraMatrix();
         Matrix4d ComputeProjectionMatrix();

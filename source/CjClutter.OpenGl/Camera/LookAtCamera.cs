@@ -36,6 +36,23 @@ namespace CjClutter.OpenGl.Camera
         {
             return Projection.ComputeProjectionMatrix(Width, Height);
         }
+
+        public Vector3d Forward
+        {
+            get
+            {
+                return (Target - Position).Normalized();
+            }
+        }
+
+        public Vector3d Right
+        {
+            get
+            {
+                var up = Up.Normalized();
+                return Vector3d.Cross(Forward, up).Normalized();
+            }
+        }
     }
 
     //The coordinate system is right handed by default following old OpenGL conventions
