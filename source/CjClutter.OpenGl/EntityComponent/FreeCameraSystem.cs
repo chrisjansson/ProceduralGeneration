@@ -1,6 +1,7 @@
 ﻿using System;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.Input.Keboard;
+using CjClutter.OpenGl.Input.Mouse;
 using OpenTK;
 using OpenTK.Input;
 
@@ -8,12 +9,14 @@ namespace CjClutter.OpenGl.EntityComponent
 {
     public class FreeCameraSystem : IEntitySystem
     {
-        private KeyboardInputProcessor _keyboardInputProcessor;
-        private ICamera _camera;
+        private readonly KeyboardInputProcessor _keyboardInputProcessor;
+        private readonly ICamera _camera;
         private double _lastUpdate;
+        private MouseInputProcessor _mouseInputProcessor;
 
-        public FreeCameraSystem(KeyboardInputProcessor keyboardInputProcessor, ICamera camera)
+        public FreeCameraSystem(KeyboardInputProcessor keyboardInputProcessor, MouseInputProcessor mouseInputProcessor, ICamera camera)
         {
+            _mouseInputProcessor = mouseInputProcessor;
             _camera = camera;
             _keyboardInputProcessor = keyboardInputProcessor;
         }
@@ -67,6 +70,12 @@ namespace CjClutter.OpenGl.EntityComponent
                 _camera.Target += result;
                 _camera.Position += result;
             }
+
+            var relativeMousePositionDelta = _mouseInputProcessor.GetMousePositionDelta();
+
+            var rotation = Matrix4d.CreateFromAxisAngle(up, -relativeMousePositionDelta.X / 500.0) * Matrix4d.CreateFromAxisAngle(right, -relativeMousePositionDelta.Y / 500.0);
+            var rotated = Vector3d.Transform(forward, rotation);
+            _camera.Target = _camera.Position + rotated;
 
             _lastUpdate = elapsedTime;
         }
