@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.CoordinateSystems;
 using CjClutter.OpenGl.EntityComponent;
 using CjClutter.OpenGl.Input.Keboard;
 using CjClutter.OpenGl.Input.Mouse;
 using CjClutter.OpenGl.Noise;
-using CjClutter.OpenGl.OpenGl.VertexTypes;
-using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -30,6 +27,8 @@ namespace CjClutter.OpenGl.Gui
         private Texture _texture;
         private readonly AwesomiumGui _awesomiumGui;
         private List<IEntitySystem> _systems;
+        private LookAtCamera _lodCamera;
+        private bool _synchronizeCameras = true;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -51,6 +50,7 @@ namespace CjClutter.OpenGl.Gui
             _keyboardInputObservable = new KeyboardInputObservable(_keyboardInputProcessor);
 
             _camera = new LookAtCamera();
+            _lodCamera = new LookAtCamera();
 
             _awesomiumGui = new AwesomiumGui(this);
         }
@@ -66,6 +66,7 @@ namespace CjClutter.OpenGl.Gui
             _keyboardInputObservable.SubscribeKey(KeyCombination.P, CombinationDirection.Down, () => _camera.Projection = ProjectionMode.Perspective);
             _keyboardInputObservable.SubscribeKey(KeyCombination.O, CombinationDirection.Down, () => _camera.Projection = ProjectionMode.Orthographic);
             _keyboardInputObservable.SubscribeKey(KeyCombination.Tilde, CombinationDirection.Down, () => _awesomiumGui.IsEnabled = !_awesomiumGui.IsEnabled);
+            _keyboardInputObservable.SubscribeKey(KeyCombination.F, CombinationDirection.Down, () => _synchronizeCameras = !_synchronizeCameras);
 
             _entityManager = new EntityManager();
 
@@ -76,7 +77,7 @@ namespace CjClutter.OpenGl.Gui
                 new LightMoverSystem(),
                 new OceanSystem(),
                 new CubeMeshSystem(),
-                new ChunkedLODSystem(_camera),
+                new ChunkedLODSystem(_lodCamera),
                 new RenderSystem(_camera),
             };
 
@@ -86,16 +87,6 @@ namespace CjClutter.OpenGl.Gui
 
             _awesomiumGui.Start();
             //_awesomiumGui.SettingsChanged += s => _terrainSystem.SetTerrainSettings(s);
-        }
-
-        private Mesh3V3N NormalizeMesh(Mesh3V3N transformed)
-        {
-            return new Mesh3V3N(
-                transformed.Vertices.Select(x => new Vertex3V3N
-                {
-                    Position = x.Position.Normalized(),
-                    Normal = x.Normal
-                }), transformed.Faces).Transformed(Matrix4.CreateScale(5, 5, 5));
         }
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
@@ -132,6 +123,15 @@ namespace CjClutter.OpenGl.Gui
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
+            if (_synchronizeCameras)
+            {
+                _lodCamera.Position = _camera.Position;
+                _lodCamera.Target = _camera.Target;
+                _lodCamera.Up = _camera.Up;
+                _lodCamera.Width = _camera.Width;
+                _lodCamera.Height = _camera.Height;
+            }
+
             if (_texture == null)
             {
                 _texture = new Texture();
