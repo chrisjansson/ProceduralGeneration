@@ -45,7 +45,7 @@ namespace CjClutter.OpenGl.EntityComponent
 
             if (level == 0)
             {
-                return new Node(bounds, new Node[] { }, entity);
+                return new Node(bounds, new Node[] { }, entity, 1);
             }
 
             var min = bounds.Min;
@@ -59,7 +59,7 @@ namespace CjClutter.OpenGl.EntityComponent
                     CreateNode(new Box3d(new Vector3d(center.X, 0, min.Z), new Vector3d(max.X, 0, center.Z)), level -1, entityManager),
                     CreateNode(new Box3d(new Vector3d(min.X, 0, center.Z), new Vector3d(center.X, 0, max.Z)), level - 1, entityManager),
                     CreateNode(new Box3d(center, max), level - 1, entityManager)
-                }, entity);
+                }, entity, Math.Pow(2, level));
         }
 
         private bool _first = true;
@@ -70,25 +70,25 @@ namespace CjClutter.OpenGl.EntityComponent
         {
             if (_first)
             {
-                _root = CreateNode(new Box3d(new Vector3d(-10f, 0, -10f), new Vector3d(10f, 0, 10f)), 6, entityManager);
+                _root = CreateNode(new Box3d(new Vector3d(-100, 0, -100f), new Vector3d(100f, 0, 100f)), 6, entityManager);
                 _first = false;
             }
 
             //Clear(_root, entityManager);
 
-            var k = _camera.Width/(2*Math.Tan((Math.PI/4)/2));
+            double fov = (Math.PI/4) * (_camera.Width / _camera.Height);
+            var k = _camera.Width/(Math.Tan(fov/2));
             Draw(_root, k, entityManager, 0);
         }
 
-        private void Draw(Node root, double d, EntityManager entityManager, int i)
+        private void Draw(Node root, double k, EntityManager entityManager, int i)
         {
-            var error = Math.Pow(2, 6 - i);
+            var error = root.GeometricError;//Math.Pow(2, 6 - i);
             
-            var matrix = _camera.ComputeCameraMatrix()*_camera.ComputeProjectionMatrix();
-            var distance  = Vector3d.Transform(root.Bounds.Center, matrix).Length;
-            var rho = error/distance*d;
+            var distance = (root.Bounds.Center - _camera.Position).Length;
+            var rho = (error/distance)*k;
 
-            var threshhold = 1500;
+            var threshhold = 100;
             if (rho <= threshhold || root.Leafs.Length == 0)
             {
                 var mesh = entityManager.GetComponent<StaticMesh>(root.Entity);
@@ -98,32 +98,23 @@ namespace CjClutter.OpenGl.EntityComponent
 
             for (int j = 0; j < root.Leafs.Length; j++)
             {
-                Draw(root.Leafs[j], d, entityManager, i + 1);    
-            }
-        }
-
-        private void Clear(Node node, EntityManager entityManager)
-        {
-            var mesh = entityManager.GetComponent<StaticMesh>(node.Entity);
-            mesh.IsVisible = false;
-
-            for (int i = 0; i < node.Leafs.Length; i++)
-            {
-                Clear(node.Leafs[i], entityManager);
+                Draw(root.Leafs[j], k, entityManager, i + 1);    
             }
         }
     }
 
     public class Node
     {
-        public Node(Box3d bounds, Node[] leafNodes, Entity entity)
+        public Node(Box3d bounds, Node[] leafNodes, Entity entity, double geometricError)
         {
             Entity = entity;
+            GeometricError = geometricError;
             Bounds = bounds;
             Leafs = leafNodes;
         }
 
         public Entity Entity { get; private set; }
+        public double GeometricError { get; private set; }
         public Box3d Bounds { get; private set; }
         public Node[] Leafs { get; private set; }
     }
