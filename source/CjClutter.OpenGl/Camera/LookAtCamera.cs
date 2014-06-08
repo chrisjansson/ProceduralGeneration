@@ -34,7 +34,12 @@ namespace CjClutter.OpenGl.Camera
 
         public Matrix4d ComputeProjectionMatrix()
         {
-            return Projection.ComputeProjectionMatrix(Width, Height);
+            return Projection.ComputeProjectionMatrix(this);
+        }
+
+        public double HorizontalFieldOfView
+        {
+            get { return Math.PI/2; }
         }
 
         public Vector3d Forward
@@ -66,17 +71,15 @@ namespace CjClutter.OpenGl.Camera
         public const double NearPlane = 0.001;
         public const double FarPlane = 100;
 
-        public abstract Matrix4d ComputeProjectionMatrix(double width, double height);
+        public abstract Matrix4d ComputeProjectionMatrix(ICamera camera);
 
         private class PerspectiveProjection : ProjectionMode
         {
-            private const double FieldOfView = Math.PI / 4;
-
-            public override Matrix4d ComputeProjectionMatrix(double width, double height)
+            public override Matrix4d ComputeProjectionMatrix(ICamera camera)
             {
-                var aspectRatio = width / height;
+                var aspectRatio = camera.Width / camera.Height;
 
-                return Matrix4d.CreatePerspectiveFieldOfView(FieldOfView, aspectRatio, NearPlane, FarPlane);
+                return Matrix4d.CreatePerspectiveFieldOfView(camera.HorizontalFieldOfView / aspectRatio, aspectRatio, NearPlane, FarPlane);
             }
         }
 
@@ -85,7 +88,7 @@ namespace CjClutter.OpenGl.Camera
             private const double CameraWidth = 2;
             private const double CameraHeight = 2;
 
-            public override Matrix4d ComputeProjectionMatrix(double width, double height)
+            public override Matrix4d ComputeProjectionMatrix(ICamera camera)
             {
                 return Matrix4d.CreateOrthographic(CameraWidth, CameraHeight, NearPlane, FarPlane);
             }

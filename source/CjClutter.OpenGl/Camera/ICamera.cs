@@ -10,6 +10,7 @@ namespace CjClutter.OpenGl.Camera
         ProjectionMode Projection { get; set; }
         double Width { get; set; }
         double Height { get; set; }
+        double HorizontalFieldOfView { get; }
         Vector3d Forward { get; }
         Vector3d Right { get; }
 

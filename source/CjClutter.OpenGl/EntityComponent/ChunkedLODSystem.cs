@@ -74,10 +74,7 @@ namespace CjClutter.OpenGl.EntityComponent
                 _first = false;
             }
 
-            //Clear(_root, entityManager);
-
-            double fov = (Math.PI/4) * (_camera.Width / _camera.Height);
-            var k = _camera.Width/(Math.Tan(fov/2));
+            var k = _camera.Width/(Math.Tan(_camera.HorizontalFieldOfView/2));
             Draw(_root, k, entityManager, 0);
         }
 
