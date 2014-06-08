@@ -8,6 +8,9 @@ namespace CjClutter.OpenGl.EntityComponent
 {
     public class ChunkedLODSystem : IEntitySystem
     {
+        private readonly ICamera _camera;
+        private Node _root;
+
         public ChunkedLODSystem(ICamera camera)
         {
             _camera = camera;
@@ -61,26 +64,20 @@ namespace CjClutter.OpenGl.EntityComponent
                 }, entity, Math.Pow(2, level));
         }
 
-        private bool _first = true;
-        private Node _root;
-        private ICamera _camera;
-
         public void Update(double elapsedTime, EntityManager entityManager)
         {
-            if (_first)
+            if (_root == null)
             {
                 _root = CreateNode(new Box3d(new Vector3d(-100, 0, -100f), new Vector3d(100f, 0, 100f)), 6, entityManager);
-                _first = false;
             }
 
             var k = _camera.Width / (Math.Tan(_camera.HorizontalFieldOfView / 2));
-            Draw(_root, k, entityManager, 0);
+            ComputeLod(_root, k, entityManager);
         }
 
-        private void Draw(Node root, double k, EntityManager entityManager, int i)
+        private void ComputeLod(Node root, double k, EntityManager entityManager)
         {
-            var error = root.GeometricError;//Math.Pow(2, 6 - i);
-
+            var error = root.GeometricError;
             var distance = (root.Bounds.Center - _camera.Position).Length;
             var rho = (error / distance) * k;
 
@@ -89,12 +86,13 @@ namespace CjClutter.OpenGl.EntityComponent
             {
                 var mesh = entityManager.GetComponent<StaticMesh>(root.Entity);
                 mesh.IsVisible = true;
-                return;
             }
-
-            for (int j = 0; j < root.Leafs.Length; j++)
+            else
             {
-                Draw(root.Leafs[j], k, entityManager, i + 1);
+                for (int j = 0; j < root.Leafs.Length; j++)
+                {
+                    ComputeLod(root.Leafs[j], k, entityManager);
+                }
             }
         }
     }
