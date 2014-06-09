@@ -98,7 +98,8 @@ namespace CjClutter.OpenGl.EntityComponent
                 NormalizePlane(far),
             };
 
-            var radius = (root.Bounds.Max - root.Bounds.Min).X;
+            var side = (root.Bounds.Max - root.Bounds.Min).X;
+            var radius = Math.Sqrt(side*side + side*side);
 
             for (int i = 0; i < 6; i++)
             {
