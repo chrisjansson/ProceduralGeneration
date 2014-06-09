@@ -2,6 +2,7 @@
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.Noise;
 using CjClutter.OpenGl.OpenGl.VertexTypes;
+using CjClutter.OpenGl.OpenTk;
 using OpenTK;
 
 namespace CjClutter.OpenGl.EntityComponent
@@ -77,6 +78,36 @@ namespace CjClutter.OpenGl.EntityComponent
 
         private void ComputeLod(Node root, double k, EntityManager entityManager)
         {
+            var mesh = entityManager.GetComponent<StaticMesh>(root.Entity);
+            var matrix = _camera.ComputeCameraMatrix().ToMatrix4() * _camera.ComputeProjectionMatrix().ToMatrix4();
+
+            var left = matrix.Column3 + matrix.Column0;
+            var right = matrix.Column3 - matrix.Column0;
+            var bottom = matrix.Column3 + matrix.Column1;
+            var top = matrix.Column3 - matrix.Column1;
+            var near = matrix.Column3 + matrix.Column2;
+            var far = matrix.Column3 - matrix.Column2;
+
+            var frustumPlantes = new[]
+            {
+                NormalizePlane(left),
+                NormalizePlane(right),
+                NormalizePlane(bottom),
+                NormalizePlane(top),
+                NormalizePlane(near),
+                NormalizePlane(far),
+            };
+
+            var radius = (root.Bounds.Max - root.Bounds.Min).X;
+
+            for (int i = 0; i < 6; i++)
+            {
+                if (PlaneDistance(frustumPlantes[i], (Vector3)root.Bounds.Center) <= -radius)
+                {
+                    return;
+                }
+            }
+
             var error = root.GeometricError;
             var distance = (root.Bounds.Center - _camera.Position).Length;
             var rho = (error / distance) * k;
@@ -84,7 +115,6 @@ namespace CjClutter.OpenGl.EntityComponent
             var threshhold = 100;
             if (rho <= threshhold || root.Leafs.Length == 0)
             {
-                var mesh = entityManager.GetComponent<StaticMesh>(root.Entity);
                 mesh.IsVisible = true;
             }
             else
@@ -94,6 +124,17 @@ namespace CjClutter.OpenGl.EntityComponent
                     ComputeLod(root.Leafs[j], k, entityManager);
                 }
             }
+        }
+
+        private float PlaneDistance(Vector4 plane, Vector3 pt)
+        {
+            return plane.X * pt.X + plane.Y * pt.Y + plane.Z * pt.Z + plane.W;
+        }
+
+        private Vector4 NormalizePlane(Vector4 left)
+        {
+            var magnitude = left.Xyz.Normalized().Length;
+            return left / magnitude;
         }
     }
 
