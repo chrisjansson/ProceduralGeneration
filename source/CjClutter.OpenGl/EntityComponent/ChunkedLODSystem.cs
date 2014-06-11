@@ -79,31 +79,15 @@ namespace CjClutter.OpenGl.EntityComponent
         private void ComputeLod(Node root, double k, EntityManager entityManager)
         {
             var mesh = entityManager.GetComponent<StaticMesh>(root.Entity);
-            var matrix = _camera.ComputeCameraMatrix().ToMatrix4() * _camera.ComputeProjectionMatrix().ToMatrix4();
 
-            var left = matrix.Column3 + matrix.Column0;
-            var right = matrix.Column3 - matrix.Column0;
-            var bottom = matrix.Column3 + matrix.Column1;
-            var top = matrix.Column3 - matrix.Column1;
-            var near = matrix.Column3 + matrix.Column2;
-            var far = matrix.Column3 - matrix.Column2;
-
-            var frustumPlantes = new[]
-            {
-                NormalizePlane(left),
-                NormalizePlane(right),
-                NormalizePlane(bottom),
-                NormalizePlane(top),
-                NormalizePlane(near),
-                NormalizePlane(far),
-            };
+            var frustumPlanes = FrustumPlaneExtractor.ExtractRowMajor(_camera);
 
             var side = (root.Bounds.Max - root.Bounds.Min).X;
             var radius = Math.Sqrt(side*side + side*side);
 
             for (int i = 0; i < 6; i++)
             {
-                if (PlaneDistance(frustumPlantes[i], (Vector3)root.Bounds.Center) <= -radius)
+                if (PlaneDistance(frustumPlanes[i], root.Bounds.Center) <= -radius)
                 {
                     return;
                 }
@@ -127,7 +111,7 @@ namespace CjClutter.OpenGl.EntityComponent
             }
         }
 
-        private float PlaneDistance(Vector4 plane, Vector3 pt)
+        private double PlaneDistance(Vector4d plane, Vector3d pt)
         {
             return plane.X * pt.X + plane.Y * pt.Y + plane.Z * pt.Z + plane.W;
         }

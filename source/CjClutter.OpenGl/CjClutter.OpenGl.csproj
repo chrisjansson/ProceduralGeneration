@@ -97,6 +97,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Camera\FrustumPlaneExtractor.cs" />
     <Compile Include="Camera\ICamera.cs" />
     <Compile Include="Camera\ITrackballCamera.cs" />
     <Compile Include="Camera\ITrackballCameraRotationCalculator.cs" />
