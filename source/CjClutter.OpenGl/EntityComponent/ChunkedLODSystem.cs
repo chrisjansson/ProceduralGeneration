@@ -2,7 +2,6 @@
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.Noise;
 using CjClutter.OpenGl.OpenGl.VertexTypes;
-using CjClutter.OpenGl.OpenTk;
 using OpenTK;
 
 namespace CjClutter.OpenGl.EntityComponent
@@ -11,6 +10,7 @@ namespace CjClutter.OpenGl.EntityComponent
     {
         private readonly ICamera _camera;
         private Node _root;
+        private Vector4d[] _frustumPlanes;
 
         public ChunkedLODSystem(ICamera camera)
         {
@@ -72,6 +72,7 @@ namespace CjClutter.OpenGl.EntityComponent
                 _root = CreateNode(new Box3d(new Vector3d(-100, 0, -100f), new Vector3d(100f, 0, 100f)), 6, entityManager);
             }
 
+            _frustumPlanes = FrustumPlaneExtractor.ExtractRowMajor(_camera);
             var k = _camera.Width / (Math.Tan(_camera.HorizontalFieldOfView / 2));
             ComputeLod(_root, k, entityManager);
         }
@@ -80,14 +81,12 @@ namespace CjClutter.OpenGl.EntityComponent
         {
             var mesh = entityManager.GetComponent<StaticMesh>(root.Entity);
 
-            var frustumPlanes = FrustumPlaneExtractor.ExtractRowMajor(_camera);
-
             var side = (root.Bounds.Max - root.Bounds.Min).X;
             var radius = Math.Sqrt(side*side + side*side);
 
             for (int i = 0; i < 6; i++)
             {
-                if (PlaneDistance(frustumPlanes[i], root.Bounds.Center) <= -radius)
+                if (PlaneDistance(_frustumPlanes[i], root.Bounds.Center) <= -radius)
                 {
                     return;
                 }
@@ -114,12 +113,6 @@ namespace CjClutter.OpenGl.EntityComponent
         private double PlaneDistance(Vector4d plane, Vector3d pt)
         {
             return plane.X * pt.X + plane.Y * pt.Y + plane.Z * pt.Z + plane.W;
-        }
-
-        private Vector4 NormalizePlane(Vector4 left)
-        {
-            var magnitude = left.Xyz.Normalized().Length;
-            return left / magnitude;
         }
     }
 
