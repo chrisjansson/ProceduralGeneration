@@ -131,6 +131,7 @@
     <Compile Include="KeyCombination.cs" />
     <Compile Include="KeyDictionary.cs" />
     <Compile Include="EntityComponent\RenderSystem.cs" />
+    <Compile Include="Noise\DiamondSquare.cs" />
     <Compile Include="OpenGl\DebugShader.cs" />
     <Compile Include="OpenGl\Diagnostics\DebugProgram.cs" />
     <Compile Include="OpenGl\Diagnostics\ConsoleLogger.cs" />
