@@ -1,16 +1,30 @@
 ﻿namespace CjClutter.OpenGl.Noise
 {
+    public interface IHeightOffsetGenerator
+    {
+        double GetHeightOffset(double sideLength);
+    }
+
     public class DiamondSquare
     {
-        public double[] Generate(double h0, double h1, double h2, double h3, int levels)
+        private readonly IHeightOffsetGenerator _heightOffsetGenerator;
+
+        public DiamondSquare(IHeightOffsetGenerator heightOffsetGenerator)
+        {
+            _heightOffsetGenerator = heightOffsetGenerator;
+        }
+
+        public double[] Generate(double h0, double h1, double h2, double h3, int levels, double quadLength)
         {
             var old = new[] { h0, h1, h2, h3 };
             var result = old;
 
             var rowVertices = 2; //2^levels + 1
+            var tempSideLength = quadLength;
             for (var i = 0; i < levels; i++)
             {
-                result = Subdivide(old, rowVertices);
+                tempSideLength /= 2;
+                result = Subdivide(old, rowVertices, tempSideLength);
                 old = result;
                 rowVertices = (rowVertices - 1)*2 + 1;
             }
@@ -18,7 +32,7 @@
             return result;
         }
 
-        private double[] Subdivide(double[] old, int rowVertices)
+        private double[] Subdivide(double[] old, int rowVertices, double sideLength)
         {
             var newRowVertices = (rowVertices - 1) * 2 + 1;
             var newValues = new double[newRowVertices * newRowVertices];
@@ -64,7 +78,8 @@
                     var next = (row + 1) * newRowVertices + column;
 
                     var value = (newValues[previous] + newValues[next] + newValues[index - 1] + newValues[index + 1]) / 4;
-                    newValues[index] = value;
+                    var offset = _heightOffsetGenerator.GetHeightOffset(sideLength);
+                    newValues[index] = value + offset;
                 }
             }
 
