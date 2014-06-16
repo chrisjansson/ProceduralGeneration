@@ -7,10 +7,12 @@
             var old = new[] { h0, h1, h2, h3 };
             var result = old;
 
-            var rowVertices = 2;
+            var rowVertices = 2; //2^levels + 1
             for (var i = 0; i < levels; i++)
             {
                 result = Subdivide(old, rowVertices);
+                old = result;
+                rowVertices = (rowVertices - 1)*2 + 1;
             }
 
             return result;
