@@ -25,11 +25,11 @@ namespace CjClutter.OpenGl.Noise
         }
     }
 
-    public class DiamondSquare
+    public class MidpointDisplacement
     {
         private readonly IHeightOffsetGenerator _heightOffsetGenerator;
 
-        public DiamondSquare(IHeightOffsetGenerator heightOffsetGenerator)
+        public MidpointDisplacement(IHeightOffsetGenerator heightOffsetGenerator)
         {
             _heightOffsetGenerator = heightOffsetGenerator;
         }

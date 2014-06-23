@@ -16,16 +16,16 @@ namespace ObjLoader.Test
         }
     }
 
-    public class DiamondSquareTests
+    public class MidpointDisplacementTests
     {
-        private DiamondSquare _sut;
+        private MidpointDisplacement _sut;
         private FakeHeightOffsetGenerator _fakeHeightOffsetGenerator;
 
         [SetUp]
         public void Setup()
         {
             _fakeHeightOffsetGenerator = new FakeHeightOffsetGenerator();
-            _sut = new DiamondSquare(_fakeHeightOffsetGenerator);
+            _sut = new MidpointDisplacement(_fakeHeightOffsetGenerator);
         }
 
         [Test]
