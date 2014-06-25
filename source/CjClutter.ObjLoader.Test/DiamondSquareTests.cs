@@ -41,12 +41,14 @@ namespace ObjLoader.Test
 
             var result = diamondSquare.Create(0, 1, 4, 8, 1);
 
-            result.Should().BeEquivalentTo(new[]
+            result.Should().ContainInOrder(new[]
             {
                 0,      1.0625,      1,
-                1.85,   3.25,   3.0625,
+                1,8125,   3.25,   3.0625,
                 4,      3.8125,      8
             });
+
+
         }
 
         [Test]

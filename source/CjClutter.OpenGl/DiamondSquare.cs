@@ -27,6 +27,10 @@ namespace CjClutter.OpenGl
             if (iterations != 0)
             {
                 Diamond(left, top, right, bottom);
+
+                var distance = (right - left)/2;
+
+                Set(left, bottom - distance, (Get(left, top) + Get(left, bottom) + Get(left + distance, top + distance) + Get(left - distance, top + distance)) / 4);
             }
 
             return _values;
@@ -34,8 +38,8 @@ namespace CjClutter.OpenGl
 
         private void Diamond(int left, int top, int right, int bottom)
         {
-            var x = (top - left) / 2;
-            var y = (right - left) / 2;
+            var x = (right - left) / 2;
+            var y = (bottom - top) / 2;
 
             var average = (Get(left, top) + Get(right, top) + Get(left, bottom) + Get(right, bottom))/4;
             Set(x, y, average);
@@ -43,12 +47,15 @@ namespace CjClutter.OpenGl
 
         private double Get(int x, int y)
         {
+            if (x < 0 || x >= _sideLength || y < 0 || y >= _sideLength)
+                return 0;
+
             return _values[y * _sideLength + x];
         }
 
         private void Set(int x, int y, double value)
         {
-            _values[y*_sideLength + 4] = value;
+            _values[y*_sideLength + x] = value;
         }
     }
 }
