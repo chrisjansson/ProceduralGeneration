@@ -30,10 +30,18 @@ namespace CjClutter.OpenGl
 
                 var distance = (right - left)/2;
 
-                Set(left, bottom - distance, (Get(left, top) + Get(left, bottom) + Get(left + distance, top + distance) + Get(left - distance, top + distance)) / 4);
+                Square(left, bottom - distance, distance);
+                Square(right, bottom - distance, distance);
+                Square(right - distance, top, distance);
+                Square(right - distance, bottom, distance);
             }
 
             return _values;
+        }
+
+        private void Square(int x, int y, int distance)
+        {
+            Set(x, y, (Get(x - distance, y) + Get(x + distance, y) + Get(x, y + distance) + Get(x, y - distance)) / 4);
         }
 
         private void Diamond(int left, int top, int right, int bottom)
