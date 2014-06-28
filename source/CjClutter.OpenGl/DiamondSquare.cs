@@ -19,20 +19,35 @@ namespace CjClutter.OpenGl
             _values[size - _sideLength] = p2;
             _values[size - 1] = p3;
 
-            var left = 0;
-            var top = 0;
-            var right = _sideLength - 1;
-            var bottom = _sideLength - 1;
-
             for (var distance = (_sideLength - 1) / 2; distance >= 1; distance /= 2)
             {
-                //Diamond(left, top, right, bottom);
-                Diamond(left + distance, top + distance, distance);
+                for (var x = distance; x < _sideLength - 1; x += distance * 2)
+                {
+                    for (var y = distance; y < _sideLength - 1; y += distance * 2)
+                    {
+                        Diamond(x, y, distance);
+                    }
 
-                Square(left, bottom - distance, distance);
-                Square(right, bottom - distance, distance);
-                Square(right - distance, top, distance);
-                Square(right - distance, bottom, distance);
+                }
+
+                //Column square corners
+                for (var x = distance; x < _sideLength; x += distance * 2)
+                {
+                    for (var y = 0; y < _sideLength; y += distance * 2)
+                    {
+                        Square(x, y, distance);
+                    }
+                }
+
+                //Row square corners
+                for (var x = 0; x < _sideLength; x += distance * 2)
+                {
+                    for (var y = distance; y < _sideLength; y += distance * 2)
+                    {
+                        Square(x, y, distance);
+                    }
+                }
+
             }
 
             return _values;
@@ -46,15 +61,6 @@ namespace CjClutter.OpenGl
         private void Diamond(int x, int y, int distance)
         {
             var average = (Get(x + distance, y + distance) + Get(x + distance, y - distance) + Get(x - distance, y + distance) + Get(x - distance, y - distance)) / 4;
-            Set(x, y, average);
-        }
-
-        private void Diamond(int left, int top, int right, int bottom)
-        {
-            var x = (right - left) / 2;
-            var y = (bottom - top) / 2;
-
-            var average = (Get(left, top) + Get(right, top) + Get(left, bottom) + Get(right, bottom)) / 4;
             Set(x, y, average);
         }
 
