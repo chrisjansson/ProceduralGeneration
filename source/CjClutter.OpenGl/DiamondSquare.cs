@@ -1,13 +1,26 @@
 ﻿using System;
+using CjClutter.OpenGl.Noise;
 
 namespace CjClutter.OpenGl
 {
+    public interface IDiamondSquareHeightOffsetGenerator
+    {
+        double Get(int x, int y, double sideLength);
+    }
+
     public class DiamondSquare
     {
         private double[] _values;
         private int _sideLength;
+        private double _length;
+        private IDiamondSquareHeightOffsetGenerator _heightOffsetGenerator;
 
-        public double[] Create(double p0, double p1, double p2, double p3, int iterations)
+        public DiamondSquare(IDiamondSquareHeightOffsetGenerator heightOffsetGenerator)
+        {
+            _heightOffsetGenerator = heightOffsetGenerator;
+        }
+
+        public double[] Create(double p0, double p1, double p2, double p3, int iterations, double sideLength)
         {
             _sideLength = (int)Math.Pow(2, iterations) + 1;
             var size = _sideLength * _sideLength;
@@ -19,6 +32,7 @@ namespace CjClutter.OpenGl
             _values[size - _sideLength] = p2;
             _values[size - 1] = p3;
 
+            _length = sideLength;
             for (var distance = (_sideLength - 1) / 2; distance >= 1; distance /= 2)
             {
                 for (var x = distance; x < _sideLength - 1; x += distance * 2)
@@ -48,7 +62,9 @@ namespace CjClutter.OpenGl
                     }
                 }
 
+                _length /= 2;
             }
+
 
             return _values;
         }
@@ -67,14 +83,14 @@ namespace CjClutter.OpenGl
         private double Get(int x, int y)
         {
             if (x < 0 || x >= _sideLength || y < 0 || y >= _sideLength)
-                return 0;
+                return _heightOffsetGenerator.Get(x, y, _length);
 
             return _values[y * _sideLength + x];
         }
 
         private void Set(int x, int y, double value)
         {
-            _values[y * _sideLength + x] = value;
+            _values[y * _sideLength + x] = value + _heightOffsetGenerator.Get(x, y, _length);
         }
     }
 }
