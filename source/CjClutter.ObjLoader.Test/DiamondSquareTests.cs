@@ -70,9 +70,9 @@ namespace ObjLoader.Test
 
             result.Should().ContainInOrder(new[]
             {
-                0,      1.625,  1,
-                2.625,  3.5,    3.125,
-                4,      4.325,  8
+                0,      2.375,  1,
+                3.375,  3.5,    3.875,
+                4,      6.125,  8
             });
         }
 
