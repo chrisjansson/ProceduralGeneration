@@ -1,11 +1,27 @@
 ﻿using System;
-using CjClutter.OpenGl.Noise;
 
 namespace CjClutter.OpenGl
 {
     public interface IDiamondSquareHeightOffsetGenerator
     {
         double Get(int x, int y, double sideLength);
+    }
+
+    public class DiamondSquareHeightOffsetGenerator : IDiamondSquareHeightOffsetGenerator
+    {
+        private Random _random;
+        private double _roughness;
+
+        public DiamondSquareHeightOffsetGenerator(int seed, double roughness)
+        {
+            _roughness = roughness;
+            _random = new Random(seed);
+        }
+
+        public double Get(int x, int y, double sideLength)
+        {
+            return (_random.NextDouble() - 0.5)*2*sideLength*_roughness;
+        }
     }
 
     public class DiamondSquare
