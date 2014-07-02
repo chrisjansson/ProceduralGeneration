@@ -1,4 +1,5 @@
 ﻿using System;
+using CjClutter.OpenGl.Noise;
 
 namespace CjClutter.OpenGl
 {
@@ -9,18 +10,23 @@ namespace CjClutter.OpenGl
 
     public class DiamondSquareHeightOffsetGenerator : IDiamondSquareHeightOffsetGenerator
     {
-        private Random _random;
-        private double _roughness;
+        private readonly ImprovedPerlinNoise _improvedPerlinNoise;
+        private readonly Random _random;
+        private readonly double _roughness;
 
         public DiamondSquareHeightOffsetGenerator(int seed, double roughness)
         {
             _roughness = roughness;
+            _improvedPerlinNoise = new ImprovedPerlinNoise(seed);
             _random = new Random(seed);
         }
 
         public double Get(int x, int y, double sideLength)
         {
-            return (_random.NextDouble() - 0.5)*2*sideLength*_roughness;
+            if (x <= 0 || x >= 256 || y <= 0 || y >= 256)
+                return _improvedPerlinNoise.Noise(x / 256.0, y / 256.0);
+
+            return (_random.NextDouble() - 0.5) * 2 * sideLength * _roughness;
         }
     }
 
@@ -29,7 +35,7 @@ namespace CjClutter.OpenGl
         private double[] _values;
         private int _sideLength;
         private double _length;
-        private IDiamondSquareHeightOffsetGenerator _heightOffsetGenerator;
+        private readonly IDiamondSquareHeightOffsetGenerator _heightOffsetGenerator;
 
         public DiamondSquare(IDiamondSquareHeightOffsetGenerator heightOffsetGenerator)
         {
