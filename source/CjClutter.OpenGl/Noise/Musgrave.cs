@@ -23,55 +23,56 @@ namespace CjClutter.OpenGl.Noise
 
         private double Noise3(Vector point)
         {
-            var improvedPerlinNoise = new ImprovedPerlinNoise();
+            var improvedPerlinNoise = new ImprovedPerlinNoise(4711);
             return improvedPerlinNoise.Noise(point.X, point.Y, point.Z);
         }
 
-        public double fBm(Vector point, double H, double lacunarity, double octaves)
-        {
+        //public double fBm(Vector point, double H, double lacunarity, double octaves)
+        //{
 
-            double value, frequency, remainder;
-            bool first = true; //static
-            double[] exponent_array = new double[] { }; //static
+        //    double value, frequency, remainder;
+        //    bool first = true; //static
+        //    double[] exponent_array = new double[] { }; //static
 
-            /* precompute and store spectral weights */
-            if (first)
-            {
-                /* seize required memory for exponent_array */
-                exponent_array = new double[(int)(octaves + 1)];
-                frequency = 1.0;
-                for (i = 0; i <= octaves; i++)
-                {
-                    /* compute weight for each frequency */
-                    exponent_array[i] = Math.Pow(frequency, -H);
-                    frequency *= lacunarity;
-                }
-                first = false;
-            }
+        //    /* precompute and store spectral weights */
+        //    if (first)
+        //    {
+        //        /* seize required memory for exponent_array */
+        //        exponent_array = new double[(int)(octaves + 1)];
+        //        frequency = 1.0;
+        //        for (i = 0; i <= octaves; i++)
+        //        {
+        //            /* compute weight for each frequency */
+        //            exponent_array[i] = Math.Pow(frequency, -H);
+        //            frequency *= lacunarity;
+        //        }
+        //        first = false;
+        //    }
 
-            value = 0.0;            /* initialize vars to proper values */
-            frequency = 1.0;
+        //    value = 0.0;            /* initialize vars to proper values */
+        //    frequency = 1.0;
 
-            /* inner loop of spectral construction */
-            int i;
-            for (i = 0; i < octaves; i++)
-            {
-                value += Noise3(point) * exponent_array[i];
-                point.X *= lacunarity;
-                point.Y *= lacunarity;
-                point.Z *= lacunarity;
-            } /* for */
+        //    /* inner loop of spectral construction */
+        //    int i;
+        //    for (i = 0; i < octaves; i++)
+        //    {
+        //        value += Noise3(point) * exponent_array[i];
+        //        point.X *= lacunarity;
+        //        point.Y *= lacunarity;
+        //        point.Z *= lacunarity;
+        //    } /* for */
 
-            remainder = octaves - (int)octaves;
-            if (remainder > 0)      /* add in ``octaves''  remainder */
-                /* ``i''  and spatial freq. are preset in loop above */
-                value += remainder * Noise3(point) * exponent_array[i];
+        //    remainder = octaves - (int)octaves;
+        //    if (remainder > 0)      /* add in ``octaves''  remainder */
+        //        /* ``i''  and spatial freq. are preset in loop above */
+        //        value += remainder * Noise3(point) * exponent_array[i];
 
-            return (value);
+        //    return (value);
 
-        }
+        //}
 
         #region multifractal
+
         ///*
         // * Procedural multifractal evaluated at "point"; 
         // * returns value stored in "value".
@@ -126,9 +127,11 @@ namespace CjClutter.OpenGl.Noise
         //      return value;
 
         //} /* multifractal() */
+
         #endregion
 
         #region VLNoise3
+
         ///* "Variable Lacunarity Noise"  -or- VLNoise3()
         // * A distorted variety of Perlin noise.
         // *
@@ -156,9 +159,11 @@ namespace CjClutter.OpenGl.Noise
         //        return Noise3( point );         /* distorted-domain noise */
 
         //} /* VLNoise3() */
+
         #endregion
 
         #region Hetero_Terrain
+
         ///*
         // * Heterogeneous procedural terrain function: stats by altitude method.
         // * Evaluated at "point"; returns value stored in "value".
@@ -233,6 +238,7 @@ namespace CjClutter.OpenGl.Noise
         #endregion
 
         #region hybrid
+
         ///* Hybrid additive/multiplicative multifractal terrain model.
         // *
         // * Copyright 1994 F. Kenton Musgrave 
@@ -304,6 +310,7 @@ namespace CjClutter.OpenGl.Noise
         //} /* HybridMultifractal() */
 
         #endregion
+
         /* Ridged multifractal terrain model.
          *
          * Copyright 1994 F. Kenton Musgrave 
@@ -314,6 +321,72 @@ namespace CjClutter.OpenGl.Noise
          *      offset:      1.0
          *      gain:        2.0
          */
+
+        public class RidgedMultiFractal
+        {
+            private readonly double[] _exponentArray;
+            private INoiseGenerator _noise;
+            private int _octaves;
+            private double _lacunarity;
+
+            public RidgedMultiFractal(int octaves, double lacunarity, double H)
+            {
+                _lacunarity = lacunarity;
+                _octaves = octaves;
+                _noise = new SimplexNoise();
+                _exponentArray = new double[octaves + 1];
+                var frequency = 1.0;
+                for (var i = 0; i <= octaves; i++)
+                {
+                    /* compute weight for each frequency */
+                    _exponentArray[i] = Math.Pow(frequency, -H);
+                    frequency *= lacunarity;
+                }
+            }
+
+            public double Noise(Vector point, double offset, double gain)
+            {
+                /* get first octave */
+                var signal = Noise3(point);
+                /* get absolute value of signal (this creates the ridges) */
+                if (signal < 0.0) signal = -signal;
+                /* invert and translate (note that "offset" should be ~= 1.0) */
+                signal = offset - signal;
+                /* square the signal, to increase "sharpness" of ridges */
+                signal *= signal;
+                /* assign initial values */
+                var result = signal;
+
+                var weight = 1.0;
+                for (var i = 1; i < _octaves; i++)
+                {
+                    /* increase the frequency */
+                    point.X *= _lacunarity;
+                    point.Y *= _lacunarity;
+                    point.Z *= _lacunarity;
+
+                    /* weight successive contributions by previous signal */
+                    weight = signal * gain;
+                    if (weight > 1.0) weight = 1.0;
+                    if (weight < 0.0) weight = 0.0;
+                    signal = Noise3(point);
+                    if (signal < 0.0) signal = -signal;
+                    signal = offset - signal;
+                    signal *= signal;
+                    /* weight the contribution */
+                    signal *= weight;
+                    result += signal * _exponentArray[i];
+                }
+
+                return (result);
+            }
+
+            private double Noise3(Vector vector)
+            {
+                return _noise.Noise(vector.X, vector.Y, vector.Z);
+            }
+        }
+
         public double RidgedMultifractal(Vector point, double H, double lacunarity, double octaves, double offset, double gain)
         {
             double result, frequency, signal;
