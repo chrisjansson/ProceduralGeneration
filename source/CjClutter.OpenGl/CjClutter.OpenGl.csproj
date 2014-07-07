@@ -132,6 +132,7 @@
     <Compile Include="KeyCombination.cs" />
     <Compile Include="KeyDictionary.cs" />
     <Compile Include="EntityComponent\RenderSystem.cs" />
+    <Compile Include="Noise\HybridMultiFractal.cs" />
     <Compile Include="Noise\MidpointDisplacement.cs" />
     <Compile Include="Noise\Musgrave.cs" />
     <Compile Include="Noise\RidgedMultiFractal.cs" />
