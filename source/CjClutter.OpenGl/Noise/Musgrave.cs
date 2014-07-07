@@ -311,81 +311,9 @@ namespace CjClutter.OpenGl.Noise
 
         #endregion
 
-        /* Ridged multifractal terrain model.
-         *
-         * Copyright 1994 F. Kenton Musgrave 
-         *
-         * Some good parameter values to start with:
-         *
-         *      H:           1.0
-         *      offset:      1.0
-         *      gain:        2.0
-         */
 
-        public class RidgedMultiFractal
-        {
-            private readonly double[] _exponentArray;
-            private INoiseGenerator _noise;
-            private int _octaves;
-            private double _lacunarity;
 
-            public RidgedMultiFractal(int octaves, double lacunarity, double H)
-            {
-                _lacunarity = lacunarity;
-                _octaves = octaves;
-                _noise = new SimplexNoise();
-                _exponentArray = new double[octaves + 1];
-                var frequency = 1.0;
-                for (var i = 0; i <= octaves; i++)
-                {
-                    /* compute weight for each frequency */
-                    _exponentArray[i] = Math.Pow(frequency, -H);
-                    frequency *= lacunarity;
-                }
-            }
 
-            public double Noise(Vector point, double offset, double gain)
-            {
-                /* get first octave */
-                var signal = Noise3(point);
-                /* get absolute value of signal (this creates the ridges) */
-                if (signal < 0.0) signal = -signal;
-                /* invert and translate (note that "offset" should be ~= 1.0) */
-                signal = offset - signal;
-                /* square the signal, to increase "sharpness" of ridges */
-                signal *= signal;
-                /* assign initial values */
-                var result = signal;
-
-                var weight = 1.0;
-                for (var i = 1; i < _octaves; i++)
-                {
-                    /* increase the frequency */
-                    point.X *= _lacunarity;
-                    point.Y *= _lacunarity;
-                    point.Z *= _lacunarity;
-
-                    /* weight successive contributions by previous signal */
-                    weight = signal * gain;
-                    if (weight > 1.0) weight = 1.0;
-                    if (weight < 0.0) weight = 0.0;
-                    signal = Noise3(point);
-                    if (signal < 0.0) signal = -signal;
-                    signal = offset - signal;
-                    signal *= signal;
-                    /* weight the contribution */
-                    signal *= weight;
-                    result += signal * _exponentArray[i];
-                }
-
-                return (result);
-            }
-
-            private double Noise3(Vector vector)
-            {
-                return _noise.Noise(vector.X, vector.Y, vector.Z);
-            }
-        }
 
         public double RidgedMultifractal(Vector point, double H, double lacunarity, double octaves, double offset, double gain)
         {
@@ -445,4 +373,6 @@ namespace CjClutter.OpenGl.Noise
             return (result);
         }
     }
+
+
 }

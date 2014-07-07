@@ -134,6 +134,7 @@
     <Compile Include="EntityComponent\RenderSystem.cs" />
     <Compile Include="Noise\MidpointDisplacement.cs" />
     <Compile Include="Noise\Musgrave.cs" />
+    <Compile Include="Noise\RidgedMultiFractal.cs" />
     <Compile Include="OpenGl\DebugShader.cs" />
     <Compile Include="OpenGl\Diagnostics\DebugProgram.cs" />
     <Compile Include="OpenGl\Diagnostics\ConsoleLogger.cs" />
