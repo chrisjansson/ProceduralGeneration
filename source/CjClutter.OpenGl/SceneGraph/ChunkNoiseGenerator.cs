@@ -16,7 +16,7 @@ namespace CjClutter.OpenGl.SceneGraph
 
         public double Noise(double x, double y)
         {
-            return _noiseGenerator.Noise(x + _offset.X, y + _offset.Y);
+            return 6 * _noiseGenerator.Noise((x + _offset.X) * 0.05, (y + _offset.Y) * 0.05);
         }
 
         public double Noise(double x, double y, double z)

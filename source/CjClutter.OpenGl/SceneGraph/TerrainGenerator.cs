@@ -11,13 +11,15 @@ namespace CjClutter.OpenGl.SceneGraph
 
         public TerrainGenerator(FractalBrownianMotionSettings settings)
         {
-            _noise = new FractalBrownianMotion(new SimplexNoise(), settings);
+            //_noise = new FractalBrownianMotion(new SimplexNoise(), settings);
+            _noise = new RidgedMultiFractal(new SimplexNoise(), 7, 2.1347);
             _colorCycle = new ColorCycle();
         }
 
         public void GenerateMesh(StaticMesh staticMesh, int x, int y, float numberOfChunksX, float numberOfChunksY)
         {
             var offset = new Vector2(x, y);
+
             var noiseGenerator = new ChunkNoiseGenerator(offset, _noise);
 
             var heightMapGenerator = new HeightMapGenerator(noiseGenerator);

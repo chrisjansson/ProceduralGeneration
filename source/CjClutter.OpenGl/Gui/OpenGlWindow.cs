@@ -77,7 +77,7 @@ namespace CjClutter.OpenGl.Gui
                 new LightMoverSystem(),
                 new OceanSystem(),
                 new CubeMeshSystem(),
-                new ChunkedLODSystem(_lodCamera),
+                //new ChunkedLODSystem(_lodCamera),
                 new RenderSystem(_camera),
             };
 
@@ -85,7 +85,23 @@ namespace CjClutter.OpenGl.Gui
             _entityManager.Add(light);
             _entityManager.AddComponentToEntity(light, new PositionalLightComponent { Position = new Vector3d(0, 1, 0) });
 
+            const int numberOfChunksX = 40;
+            const int numberOfChunksY = 40;
+            for (var i = 0; i < numberOfChunksX; i++)
+            {
+                for (var j = 0; j < numberOfChunksY; j++)
+                {
+                    var entity = new Entity(Guid.NewGuid().ToString());
+                    _entityManager.Add(entity);
+                    _entityManager.AddComponentToEntity(entity, new ChunkComponent(i, j));
+                    _entityManager.AddComponentToEntity(entity, new StaticMesh());
+                }
+            }
+
             _awesomiumGui.Start();
+            //_awesomiumGui.SettingsChanged += s => _terrainSystem.SetTerrainSettings(s);
+
+            //_awesomiumGui.Start();
             //_awesomiumGui.SettingsChanged += s => _terrainSystem.SetTerrainSettings(s);
         }
 
