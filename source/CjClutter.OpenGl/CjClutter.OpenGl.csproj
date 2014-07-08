@@ -194,6 +194,7 @@
     <Compile Include="SceneGraph\Mesh.cs" />
     <Compile Include="SceneGraph\MeshResources.cs" />
     <Compile Include="SceneGraph\HeightMapGenerator.cs" />
+    <Compile Include="Noise\NoiseDecorator.cs" />
     <Compile Include="SceneGraph\TerrainGenerator.cs" />
   </ItemGroup>
   <ItemGroup>

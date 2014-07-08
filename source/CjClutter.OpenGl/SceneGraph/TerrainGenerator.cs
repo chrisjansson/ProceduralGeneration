@@ -4,15 +4,48 @@ using OpenTK;
 
 namespace CjClutter.OpenGl.SceneGraph
 {
+    public class NoiseFactory
+    {
+        public class NoiseParameters
+        {
+            public double Amplitude { get; set; }
+            public double Frequency { get; set; }
+            public int Octaves { get; set; }
+            public double Lacunarity { get; set; }
+            public double H { get; set; }
+            public double Offset { get; set; }
+            public double Gain { get; set; }
+        }
+
+        public abstract class NoiseType
+        {
+            public abstract INoiseGenerator Create(NoiseParameters noiseParameters);
+        }
+
+        public class RidgedMultiFractal : NoiseType
+        {
+            public override INoiseGenerator Create(NoiseParameters noiseParameters)
+            {
+                return new Noise.RidgedMultiFractal(
+                    new SimplexNoise(), 
+                    noiseParameters.Octaves,
+                    noiseParameters.Lacunarity,
+                    noiseParameters.H,
+                    noiseParameters.Offset,
+                    noiseParameters.Gain);
+            }
+        }
+    }
+
     public class TerrainGenerator
     {
         private readonly INoiseGenerator _noise;
         private readonly ColorCycle _colorCycle;
 
-        public TerrainGenerator(FractalBrownianMotionSettings settings)
+        public TerrainGenerator(INoiseGenerator noiseGenerator)
         {
             //_noise = new FractalBrownianMotion(new SimplexNoise(), settings);
-            _noise = new RidgedMultiFractal(new SimplexNoise(), 7, 2.1347);
+            _noise = noiseGenerator;//new RidgedMultiFractal(new SimplexNoise(), 7, 2.1347);
             _colorCycle = new ColorCycle();
         }
 

@@ -1,5 +1,4 @@
-﻿using System.Drawing.Drawing2D;
-using CjClutter.OpenGl.Noise;
+﻿using CjClutter.OpenGl.Noise;
 using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 
@@ -40,7 +39,7 @@ namespace CjClutter.OpenGl.EntityComponent
                 return;
                 
             }
-            var terrainGenerator = new TerrainGenerator(_fractalBrownianMotionSettings);
+            var terrainGenerator = new TerrainGenerator(new ImprovedPerlinNoise());
 
             foreach (var entity in entityManager.GetEntitiesWithComponent<ChunkComponent>())
             {

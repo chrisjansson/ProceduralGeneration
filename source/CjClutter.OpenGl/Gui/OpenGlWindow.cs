@@ -70,9 +70,10 @@ namespace CjClutter.OpenGl.Gui
 
             _entityManager = new EntityManager();
 
+            var terrainSystem = new TerrainSystem(FractalBrownianMotionSettings.Default);
             _systems = new List<IEntitySystem>
             {
-                new TerrainSystem(FractalBrownianMotionSettings.Default),
+                terrainSystem,
                 new FreeCameraSystem(_keyboardInputProcessor, _mouseInputProcessor,_camera),
                 new LightMoverSystem(),
                 new OceanSystem(),
@@ -85,8 +86,8 @@ namespace CjClutter.OpenGl.Gui
             _entityManager.Add(light);
             _entityManager.AddComponentToEntity(light, new PositionalLightComponent { Position = new Vector3d(0, 1, 0) });
 
-            const int numberOfChunksX = 40;
-            const int numberOfChunksY = 40;
+            const int numberOfChunksX = 20;
+            const int numberOfChunksY = 20;
             for (var i = 0; i < numberOfChunksX; i++)
             {
                 for (var j = 0; j < numberOfChunksY; j++)
@@ -99,10 +100,7 @@ namespace CjClutter.OpenGl.Gui
             }
 
             _awesomiumGui.Start();
-            //_awesomiumGui.SettingsChanged += s => _terrainSystem.SetTerrainSettings(s);
-
-            //_awesomiumGui.Start();
-            //_awesomiumGui.SettingsChanged += s => _terrainSystem.SetTerrainSettings(s);
+            _awesomiumGui.SettingsChanged += s => terrainSystem.SetTerrainSettings(s);
         }
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
