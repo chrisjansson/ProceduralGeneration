@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -24,7 +25,7 @@ namespace CjClutter.OpenGl.Gui
         }
     }
 
-    public class AwesomiumGui
+    public class AwesomiumGui<TSettings> where TSettings : new()
     {
         private readonly OpenTkToAwesomiumKeyMapper _keyMapper = new OpenTkToAwesomiumKeyMapper();
         private readonly OpenGlWindow _inputSource;
@@ -64,6 +65,8 @@ namespace CjClutter.OpenGl.Gui
         }
 
         private bool _isEnabled;
+        private JSObject _settings;
+
         public bool IsEnabled
         {
             get { return _isEnabled; }
@@ -133,24 +136,50 @@ namespace CjClutter.OpenGl.Gui
         {
             _webView.DocumentReady -= WebViewOnDocumentReady;
 
-            _viewModel = _webView.ExecuteJavascriptWithResult("viewModel");
+            _viewModel = _webView.CreateGlobalJavascriptObject("viewModel");
+            _settings = _webView.CreateGlobalJavascriptObject("viewModel.settings");
+            WriteTo(_settings, new TSettings());
+
             dynamic viewModel = _viewModel;
-            viewModel.octaves = FractalBrownianMotionSettings.Default.Octaves;
-            viewModel.frequency = FractalBrownianMotionSettings.Default.Frequency;
-            viewModel.amplitude = FractalBrownianMotionSettings.Default.Amplitude;
             viewModel.apply = (JavascriptAsynchMethodEventHandler)Apply;
             _webView.ExecuteJavascript("echo();");
         }
 
+        private void WriteTo(JSObject target, TSettings source)
+        {
+            foreach (var property in typeof(TSettings).GetProperties())
+            {
+                var value = property.GetValue(source, null);
+                target[property.Name] = Convert(value);
+            }
+        }
+
+        private JSValue Convert(object o)
+        {
+            var type = o.GetType();
+            if (type == typeof(int))
+            {
+                return new JSValue((int)o);
+            }
+            if (type == typeof(double))
+            {
+                return new JSValue((double)o);
+            }
+
+            throw new NotImplementedException();
+        }
+
         private void Apply(object sender, JavascriptMethodEventArgs e)
         {
-            dynamic viewModel = _viewModel;
-            var octaves = int.Parse(viewModel.octaves, CultureInfo.InvariantCulture);
-            var amplitude = double.Parse(viewModel.amplitude, CultureInfo.InvariantCulture);
-            var frequency = double.Parse(viewModel.frequency, CultureInfo.InvariantCulture);
+            var settings = new TSettings();
 
-            var fractalBrownianMotionSettings = new FractalBrownianMotionSettings(octaves, amplitude, frequency);
-            SettingsChanged(fractalBrownianMotionSettings);
+            foreach (var property in typeof(TSettings).GetProperties())
+            {
+                var value = ((JSObject)_viewModel["settings"])[property.Name];
+                var typeConverter = new TypeConverter();
+                var result = typeConverter.ConvertTo(value, property.PropertyType);
+                property.SetValue(settings, result, null);
+            }
         }
 
         private void WebViewOnLoadingFrameComplete(object sender, FrameEventArgs frameEventArgs)
@@ -262,31 +291,39 @@ namespace CjClutter.OpenGl.Gui
 <html>
     <head>
         <script type='text/javascript'>
-            var viewModel = {
-                frequency : 1.0,
-                amplitude: 2.0,
-                octaves: 3.0,
-            };
 
             var echo = function() {
-                document.getElementById('frequency').value = viewModel.frequency;
-                document.getElementById('amplitude').value = viewModel.amplitude;
-                document.getElementById('octaves').value = viewModel.octaves;
+                var element = document.getElementById('attributes');
+                while(element.firstChild){
+                    element.removeChild(element.firstChild)
+                }
+
+                for(var key in viewModel.settings) {
+                    var div = document.createElement('div');
+                    var label = document.createElement('Label');
+                    label.innerHTML = key + ': ';
+                    var input = document.createElement('input');
+                    input.setAttribute('id', key)
+                    input.value = viewModel.settings[key];
+                    div.appendChild(label);
+                    div.appendChild(input);
+                    element.appendChild(div);
+                }
             }
 
             var applyValues = function() {
-                viewModel.frequency = document.getElementById('frequency').value;
-                viewModel.amplitude = document.getElementById('amplitude').value;
-                viewModel.octaves = document.getElementById('octaves').value;
+		        for(var key in viewModel.settings){
+                  var element = document.getElementById(key);
+                  viewModel.settings[key] = element.value;
+                }
                 viewModel.apply();
-            };         
+              };
         </script>
     </head>
     <body style='margin: 0px'>
         <div style='width: 100%;background: red'>
-            Octaves: <input id='octaves' /><br>
-            Amplitude: <input id='amplitude' /><br>
-            Frequency: <input id='frequency' /><br>
+            <div id='attributes'>
+            </div>
             <input type='button' value='Apply' onclick='applyValues()'></input>
         </div>
     </body>

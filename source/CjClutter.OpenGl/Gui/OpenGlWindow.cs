@@ -7,6 +7,7 @@ using CjClutter.OpenGl.EntityComponent;
 using CjClutter.OpenGl.Input.Keboard;
 using CjClutter.OpenGl.Input.Mouse;
 using CjClutter.OpenGl.Noise;
+using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -25,7 +26,7 @@ namespace CjClutter.OpenGl.Gui
         private readonly ICamera _camera;
         private EntityManager _entityManager;
         private Texture _texture;
-        private readonly AwesomiumGui _awesomiumGui;
+        private readonly AwesomiumGui<NoiseFactory.NoiseParameters> _awesomiumGui;
         private List<IEntitySystem> _systems;
         private LookAtCamera _lodCamera;
         private bool _synchronizeCameras = true;
@@ -52,7 +53,7 @@ namespace CjClutter.OpenGl.Gui
             _camera = new LookAtCamera();
             _lodCamera = new LookAtCamera();
 
-            _awesomiumGui = new AwesomiumGui(this);
+            _awesomiumGui = new AwesomiumGui<NoiseFactory.NoiseParameters>(this);
         }
 
         protected override void OnLoad(EventArgs e)
