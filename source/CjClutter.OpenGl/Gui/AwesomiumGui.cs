@@ -35,7 +35,7 @@ namespace CjClutter.OpenGl.Gui
         private Thread _thread;
         private JSObject _viewModel;
 
-        public event Action<FractalBrownianMotionSettings> SettingsChanged;
+        public event Action<TSettings> SettingsChanged;
 
         public AwesomiumGui(OpenGlWindow openGlWindow)
         {
@@ -138,14 +138,15 @@ namespace CjClutter.OpenGl.Gui
 
             _viewModel = _webView.CreateGlobalJavascriptObject("viewModel");
             _settings = _webView.CreateGlobalJavascriptObject("viewModel.settings");
-            WriteTo(_settings, new TSettings());
+            BindTo(_settings, new TSettings());
 
-            dynamic viewModel = _viewModel;
-            viewModel.apply = (JavascriptAsynchMethodEventHandler)Apply;
+            _viewModel.Bind("apply", false, Apply);
+            //dynamic viewModel = _viewModel;
+            //viewModel.apply = (JavascriptAsynchMethodEventHandler)Apply;
             _webView.ExecuteJavascript("echo();");
         }
 
-        private void WriteTo(JSObject target, TSettings source)
+        private void BindTo(JSObject target, TSettings source)
         {
             foreach (var property in typeof(TSettings).GetProperties())
             {
@@ -154,16 +155,16 @@ namespace CjClutter.OpenGl.Gui
             }
         }
 
-        private JSValue Convert(object o)
+        private JSValue Convert(object source)
         {
-            var type = o.GetType();
+            var type = source.GetType();
             if (type == typeof(int))
             {
-                return new JSValue((int)o);
+                return new JSValue((int)source);
             }
             if (type == typeof(double))
             {
-                return new JSValue((double)o);
+                return new JSValue((double)source);
             }
 
             throw new NotImplementedException();
@@ -175,11 +176,12 @@ namespace CjClutter.OpenGl.Gui
 
             foreach (var property in typeof(TSettings).GetProperties())
             {
-                var value = ((JSObject)_viewModel["settings"])[property.Name];
-                var typeConverter = new TypeConverter();
-                var result = typeConverter.ConvertTo(value, property.PropertyType);
+                var value = _settings[property.Name];
+                var result = System.Convert.ChangeType((string) value, property.PropertyType);
                 property.SetValue(settings, result, null);
             }
+
+            SettingsChanged(settings);
         }
 
         private void WebViewOnLoadingFrameComplete(object sender, FrameEventArgs frameEventArgs)

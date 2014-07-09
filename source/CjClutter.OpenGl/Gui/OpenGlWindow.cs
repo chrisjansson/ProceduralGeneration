@@ -101,7 +101,7 @@ namespace CjClutter.OpenGl.Gui
             }
 
             _awesomiumGui.Start();
-            _awesomiumGui.SettingsChanged += s => terrainSystem.SetTerrainSettings(s);
+            //_awesomiumGui.SettingsChanged += s => terrainSystem.SetTerrainSettings(s);
         }
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
