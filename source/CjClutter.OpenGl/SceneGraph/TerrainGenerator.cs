@@ -8,6 +8,17 @@ namespace CjClutter.OpenGl.SceneGraph
     {
         public class NoiseParameters
         {
+            public NoiseParameters()
+            {
+                Amplitude = 6;
+                Frequency = 0.025;
+                Octaves = 7;
+                H = 1;
+                Lacunarity = 2.1347;
+                Offset = 1;
+                Gain = 2;
+            }
+
             public double Amplitude { get; set; }
             public double Frequency { get; set; }
             public int Octaves { get; set; }

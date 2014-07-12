@@ -18,18 +18,18 @@ namespace CjClutter.OpenGl.EntityComponent
 
     public class TerrainSystem : IEntitySystem
     {
-        private FractalBrownianMotionSettings _fractalBrownianMotionSettings = FractalBrownianMotionSettings.Default;
         private bool _settingsChanged = true;
+        private INoiseGenerator _noiseGenerator;
 
         public TerrainSystem(FractalBrownianMotionSettings terrainSettings)
         {
-            _fractalBrownianMotionSettings = terrainSettings;
+            _noiseGenerator = new ImprovedPerlinNoise();
         }
 
-        public void SetTerrainSettings(FractalBrownianMotionSettings terrainSettings)
+        public void SetTerrainSettings(INoiseGenerator noiseGenerator)
         {
+            _noiseGenerator = noiseGenerator;
             _settingsChanged = true;
-            _fractalBrownianMotionSettings = terrainSettings;
         }
 
         public void Update(double elapsedTime, EntityManager entityManager)
@@ -39,7 +39,7 @@ namespace CjClutter.OpenGl.EntityComponent
                 return;
                 
             }
-            var terrainGenerator = new TerrainGenerator(new ImprovedPerlinNoise());
+            var terrainGenerator = new TerrainGenerator(_noiseGenerator);
 
             foreach (var entity in entityManager.GetEntitiesWithComponent<ChunkComponent>())
             {

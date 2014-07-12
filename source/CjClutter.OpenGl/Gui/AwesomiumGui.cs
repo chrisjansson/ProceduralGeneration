@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Awesomium.Core;
 using CjClutter.OpenGl.Noise;
+using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 using OpenTK.Input;
 using FrameEventArgs = Awesomium.Core.FrameEventArgs;
@@ -25,7 +26,7 @@ namespace CjClutter.OpenGl.Gui
         }
     }
 
-    public class AwesomiumGui<TSettings> where TSettings : new()
+    public class AwesomiumGui
     {
         private readonly OpenTkToAwesomiumKeyMapper _keyMapper = new OpenTkToAwesomiumKeyMapper();
         private readonly OpenGlWindow _inputSource;
@@ -35,12 +36,12 @@ namespace CjClutter.OpenGl.Gui
         private Thread _thread;
         private JSObject _viewModel;
 
-        public event Action<TSettings> SettingsChanged;
+        public event Action SettingsChanged;
 
         public AwesomiumGui(OpenGlWindow openGlWindow)
         {
             _inputSource = openGlWindow;
-            SettingsChanged += _ => { };
+            SettingsChanged += () => { };
         }
 
         public bool IsDirty;
@@ -135,20 +136,25 @@ namespace CjClutter.OpenGl.Gui
         private void WebViewOnDocumentReady(object sender, UrlEventArgs urlEventArgs)
         {
             _webView.DocumentReady -= WebViewOnDocumentReady;
-
+            
             _viewModel = _webView.CreateGlobalJavascriptObject("viewModel");
             _settings = _webView.CreateGlobalJavascriptObject("viewModel.settings");
-            BindTo(_settings, new TSettings());
-
             _viewModel.Bind("apply", false, Apply);
-            //dynamic viewModel = _viewModel;
-            //viewModel.apply = (JavascriptAsynchMethodEventHandler)Apply;
-            _webView.ExecuteJavascript("echo();");
+            Set(new NoiseFactory.NoiseParameters());
         }
 
-        private void BindTo(JSObject target, TSettings source)
+        public void Set(object settings)
         {
-            foreach (var property in typeof(TSettings).GetProperties())
+            WebCore.QueueWork(_webView, () =>
+            {
+                BindTo(_settings, settings);
+                _webView.ExecuteJavascript("echo();");
+            });
+        }
+
+        private void BindTo(JSObject target, object source)
+        {
+            foreach (var property in source.GetType().GetProperties())
             {
                 var value = property.GetValue(source, null);
                 target[property.Name] = Convert(value);
@@ -172,16 +178,25 @@ namespace CjClutter.OpenGl.Gui
 
         private void Apply(object sender, JavascriptMethodEventArgs e)
         {
+
+
+            SettingsChanged();
+        }
+
+        public TSettings GetAs<TSettings>() where TSettings : new()
+        {
             var settings = new TSettings();
-
-            foreach (var property in typeof(TSettings).GetProperties())
+            WebCore.QueueWork(_webView, () =>
             {
-                var value = _settings[property.Name];
-                var result = System.Convert.ChangeType((string) value, property.PropertyType);
-                property.SetValue(settings, result, null);
-            }
+                foreach (var property in typeof(TSettings).GetProperties())
+                {
+                    var value = _settings[property.Name];
+                    var result = System.Convert.ChangeType((string)value, property.PropertyType, CultureInfo.InvariantCulture);
+                    property.SetValue(settings, result, null);
+                }
+            });
 
-            SettingsChanged(settings);
+            return settings;
         }
 
         private void WebViewOnLoadingFrameComplete(object sender, FrameEventArgs frameEventArgs)
