@@ -1,10 +1,8 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Awesomium.Core;
-using CjClutter.OpenGl.Noise;
 using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 using OpenTK.Input;
@@ -26,7 +24,46 @@ namespace CjClutter.OpenGl.Gui
         }
     }
 
-    public class AwesomiumGui
+    public class SettingsGui : AwesomiumGui
+    {
+        private JSObject _settings;
+
+        public SettingsGui(OpenGlWindow openGlWindow) : base(openGlWindow)
+        {
+            SettingsChanged += () => { };
+        }
+
+        public event Action SettingsChanged;
+
+        protected override void OnDocumentReady()
+        {
+            var viewModel = CreateJsObject("viewModel");
+            viewModel.Bind("apply", false, Apply);
+            _settings = CreateJsObject("viewModel.settings");
+            Set(new NoiseFactory.NoiseParameters());
+        }
+
+        public void Set(object settings)
+        {
+            Run(() =>
+            {
+                BindTo(_settings, settings);
+                ExecuteJs("echo()");
+            });
+        }
+
+        private void Apply(object sender, JavascriptMethodEventArgs e)
+        {
+            SettingsChanged();
+        }
+
+        public T GetSettings<T>() where T : new()
+        {
+            return GetAs<T>(_settings);
+        }
+    }
+
+    public abstract class AwesomiumGui
     {
         private readonly OpenTkToAwesomiumKeyMapper _keyMapper = new OpenTkToAwesomiumKeyMapper();
         private readonly OpenGlWindow _inputSource;
@@ -34,14 +71,15 @@ namespace CjClutter.OpenGl.Gui
 
 
         private Thread _thread;
-        private JSObject _viewModel;
 
-        public event Action SettingsChanged;
-
-        public AwesomiumGui(OpenGlWindow openGlWindow)
+        protected AwesomiumGui(OpenGlWindow openGlWindow)
         {
             _inputSource = openGlWindow;
-            SettingsChanged += () => { };
+        }
+
+        protected void ExecuteJs(string js)
+        {
+            _webView.ExecuteJavascript(js);
         }
 
         public bool IsDirty;
@@ -66,8 +104,6 @@ namespace CjClutter.OpenGl.Gui
         }
 
         private bool _isEnabled;
-        private JSObject _settings;
-
         public bool IsEnabled
         {
             get { return _isEnabled; }
@@ -84,6 +120,11 @@ namespace CjClutter.OpenGl.Gui
                 }
                 _isEnabled = value;
             }
+        }
+
+        protected void Run(Action action)
+        {
+            WebCore.QueueWork(_webView, action);
         }
 
         private void Enable()
@@ -136,23 +177,19 @@ namespace CjClutter.OpenGl.Gui
         private void WebViewOnDocumentReady(object sender, UrlEventArgs urlEventArgs)
         {
             _webView.DocumentReady -= WebViewOnDocumentReady;
-            
-            _viewModel = _webView.CreateGlobalJavascriptObject("viewModel");
-            _settings = _webView.CreateGlobalJavascriptObject("viewModel.settings");
-            _viewModel.Bind("apply", false, Apply);
-            Set(new NoiseFactory.NoiseParameters());
+            OnDocumentReady();
+    
         }
 
-        public void Set(object settings)
+        protected JSObject CreateJsObject(string objectName)
         {
-            WebCore.QueueWork(_webView, () =>
-            {
-                BindTo(_settings, settings);
-                _webView.ExecuteJavascript("echo();");
-            });
+            return _webView.CreateGlobalJavascriptObject(objectName);
         }
 
-        private void BindTo(JSObject target, object source)
+        protected abstract void OnDocumentReady();
+
+
+        protected void BindTo(JSObject target, object source)
         {
             foreach (var property in source.GetType().GetProperties())
             {
@@ -176,21 +213,15 @@ namespace CjClutter.OpenGl.Gui
             throw new NotImplementedException();
         }
 
-        private void Apply(object sender, JavascriptMethodEventArgs e)
+
+        protected T GetAs<T>(JSObject source) where T : new()
         {
-
-
-            SettingsChanged();
-        }
-
-        public TSettings GetAs<TSettings>() where TSettings : new()
-        {
-            var settings = new TSettings();
+            var settings = new T();
             WebCore.QueueWork(_webView, () =>
             {
-                foreach (var property in typeof(TSettings).GetProperties())
+                foreach (var property in typeof(T).GetProperties())
                 {
-                    var value = _settings[property.Name];
+                    var value = source[property.Name];
                     var result = System.Convert.ChangeType((string)value, property.PropertyType, CultureInfo.InvariantCulture);
                     property.SetValue(settings, result, null);
                 }

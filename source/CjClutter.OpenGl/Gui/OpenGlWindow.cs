@@ -26,7 +26,7 @@ namespace CjClutter.OpenGl.Gui
         private readonly ICamera _camera;
         private EntityManager _entityManager;
         private Texture _texture;
-        private readonly AwesomiumGui _awesomiumGui;
+        private readonly SettingsGui _awesomiumGui;
         private List<IEntitySystem> _systems;
         private LookAtCamera _lodCamera;
         private bool _synchronizeCameras = true;
@@ -53,7 +53,7 @@ namespace CjClutter.OpenGl.Gui
             _camera = new LookAtCamera();
             _lodCamera = new LookAtCamera();
 
-            _awesomiumGui = new AwesomiumGui(this);
+            _awesomiumGui = new SettingsGui(this);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -101,10 +101,9 @@ namespace CjClutter.OpenGl.Gui
             }
 
             _awesomiumGui.Start();
-            //_awesomiumGui.Set(new NoiseFactory.NoiseParameters());
             _awesomiumGui.SettingsChanged += () =>
             {
-                var settings = _awesomiumGui.GetAs<NoiseFactory.NoiseParameters>();
+                var settings = _awesomiumGui.GetSettings<NoiseFactory.NoiseParameters>();
                 terrainSystem.SetTerrainSettings(new NoiseFactory.RidgedMultiFractal().Create(settings));
             };
         }
