@@ -80,9 +80,9 @@ namespace CjClutter.OpenGl.Gui
             }
         }
 
-        protected void Run(Action action)
+        protected void Run(Action<WebView> action)
         {
-            WebCore.QueueWork(_webView, action);
+            WebCore.QueueWork(_webView, () => action(_webView));
         }
 
         private void Enable()
@@ -297,19 +297,19 @@ namespace CjClutter.OpenGl.Gui
     <head>
         <script type='text/javascript'>
 
-            echo : function() {
+            var echo = function() {
                 var element = document.getElementById('attributes');    
                 while(element.firstChild){
                     element.removeChild(element.firstChild)
                 }
 
-                for(var key in viewModel.settings) {
+                for(var key in viewModel) {
                     var div = document.createElement('div');
                     var label = document.createElement('Label');
                     label.innerHTML = key + ': ';
                     var input = document.createElement('input');
                     input.setAttribute('id', key)
-                    input.value = viewModel.settings[key];
+                    input.value = viewModel[key];
                     div.appendChild(label);
                     div.appendChild(input);
                     element.appendChild(div);
@@ -317,9 +317,9 @@ namespace CjClutter.OpenGl.Gui
             };
 
             var applyValues = function() {
-		        for(var key in viewModel.settings){
+		        for(var key in viewModel){
                   var element = document.getElementById(key);
-                  viewModel.settings[key] = element.value;
+                  viewModel[key] = element.value;
                 }
                 communicator.apply();
               };

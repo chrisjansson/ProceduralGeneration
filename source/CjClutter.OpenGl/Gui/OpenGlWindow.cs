@@ -101,9 +101,11 @@ namespace CjClutter.OpenGl.Gui
             }
 
             _awesomiumGui.Start();
-            _awesomiumGui.SettingsChanged += () =>
+            var settingsViewModel = new SettingsViewModel(new NoiseFactory.NoiseParameters());
+            _awesomiumGui.SetDataContext(settingsViewModel);
+            settingsViewModel.SettingsChanged += () =>
             {
-                var settings = _awesomiumGui.GetSettings<NoiseFactory.NoiseParameters>();
+                var settings = settingsViewModel.Assemble();
                 terrainSystem.SetTerrainSettings(new NoiseFactory.RidgedMultiFractal().Create(settings));
             };
         }

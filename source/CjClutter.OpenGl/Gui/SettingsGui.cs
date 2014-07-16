@@ -14,10 +14,7 @@ namespace CjClutter.OpenGl.Gui
         public SettingsGui(OpenGlWindow openGlWindow)
             : base(openGlWindow)
         {
-            SettingsChanged += () => { };
         }
-
-        public event Action SettingsChanged;
 
         protected override void OnDocumentReady()
         {
@@ -29,12 +26,20 @@ namespace CjClutter.OpenGl.Gui
         public void SetDataContext(object viewModel)
         {
             _dataContext = viewModel;
-            Run(() =>
+            Run(x =>
             {
-                ClearViewModel();
-
-                BindTo(_viewModel, viewModel);
+                if (!x.IsDocumentReady && _viewModel == null)
+                    x.DocumentReady += (sender, args) => RefreshViewModel();
+                else
+                    RefreshViewModel();
             });
+        }
+
+        private void RefreshViewModel()
+        {
+            ClearViewModel();
+            BindTo(_viewModel, _dataContext);
+            ExecuteJs("echo();");
         }
 
         private void ClearViewModel()
@@ -47,7 +52,7 @@ namespace CjClutter.OpenGl.Gui
 
         private void Apply(object sender, JavascriptMethodEventArgs e)
         {
-            var type = _viewModel.GetType();
+            var type = _dataContext.GetType();
             var properties = type.GetProperties();
             foreach (var propertyName in _viewModel.GetPropertyNames())
             {
@@ -57,12 +62,6 @@ namespace CjClutter.OpenGl.Gui
                 var result = Convert.ChangeType((string)propertyValue, propertyType, CultureInfo.InvariantCulture);
                 property.SetValue(_dataContext, result, null);
             }
-        }
-
-        public T GetSettings<T>() where T : new()
-        {
-            //return GetAs<T>(_settings);
-            return new T();
         }
     }
 }
