@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Awesomium.Core;
-using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 using OpenTK.Input;
 using FrameEventArgs = Awesomium.Core.FrameEventArgs;
@@ -24,52 +23,11 @@ namespace CjClutter.OpenGl.Gui
         }
     }
 
-    public class SettingsGui : AwesomiumGui
-    {
-        private JSObject _settings;
-
-        public SettingsGui(OpenGlWindow openGlWindow) : base(openGlWindow)
-        {
-            SettingsChanged += () => { };
-        }
-
-        public event Action SettingsChanged;
-
-        protected override void OnDocumentReady()
-        {
-            var viewModel = CreateJsObject("viewModel");
-            viewModel.Bind("apply", false, Apply);
-            _settings = CreateJsObject("viewModel.settings");
-            Set(new NoiseFactory.NoiseParameters());
-        }
-
-        public void Set(object settings)
-        {
-            Run(() =>
-            {
-                BindTo(_settings, settings);
-                ExecuteJs("echo()");
-            });
-        }
-
-        private void Apply(object sender, JavascriptMethodEventArgs e)
-        {
-            SettingsChanged();
-        }
-
-        public T GetSettings<T>() where T : new()
-        {
-            return GetAs<T>(_settings);
-        }
-    }
-
     public abstract class AwesomiumGui
     {
         private readonly OpenTkToAwesomiumKeyMapper _keyMapper = new OpenTkToAwesomiumKeyMapper();
         private readonly OpenGlWindow _inputSource;
         private WebView _webView;
-
-
         private Thread _thread;
 
         protected AwesomiumGui(OpenGlWindow openGlWindow)
@@ -178,7 +136,6 @@ namespace CjClutter.OpenGl.Gui
         {
             _webView.DocumentReady -= WebViewOnDocumentReady;
             OnDocumentReady();
-    
         }
 
         protected JSObject CreateJsObject(string objectName)
@@ -340,8 +297,8 @@ namespace CjClutter.OpenGl.Gui
     <head>
         <script type='text/javascript'>
 
-            var echo = function() {
-                var element = document.getElementById('attributes');
+            echo : function() {
+                var element = document.getElementById('attributes');    
                 while(element.firstChild){
                     element.removeChild(element.firstChild)
                 }
@@ -357,14 +314,14 @@ namespace CjClutter.OpenGl.Gui
                     div.appendChild(input);
                     element.appendChild(div);
                 }
-            }
+            };
 
             var applyValues = function() {
 		        for(var key in viewModel.settings){
                   var element = document.getElementById(key);
                   viewModel.settings[key] = element.value;
                 }
-                viewModel.apply();
+                communicator.apply();
               };
         </script>
     </head>
