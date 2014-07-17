@@ -1,41 +1,54 @@
 <html>
-    <head>
-        <script type='text/javascript'>
-
-            var echo = function() {
-                var element = document.getElementById('attributes');
-                while(element.firstChild){
-                    element.removeChild(element.firstChild)
-                }
-
-                for(var key in viewModel) {
-                    var div = document.createElement('div');
-                    var label = document.createElement('Label');
-                    label.innerHTML = key + ': ';
-                    var input = document.createElement('input');
-                    input.setAttribute('id', key)
-                    input.value = viewModel[key];
-                    div.appendChild(label);
-                    div.appendChild(input);
-                    element.appendChild(div);
-                }
-            };
-
-            var applyValues = function() {
-                for(var key in viewModel){
-                    var element = document.getElementById(key);
-                    viewModel[key] = element.value;
-                }
-                communicator.apply();
-            };
-        </script>
-    </head>
-    <body style='margin: 0px'>
-        <img src="footer.png" width="100" height="100"/>
-        <div style='width: 100%;background: red'>
-            <div id='attributes'>
-            </div>
-            <input type='button' value='Apply' onclick='applyValues()'></input>
+<head>
+</head>
+<body style='margin: 0px'>
+    <div style='width: 100%;background: red'>
+        <div id='attributesElement'>
         </div>
-    </body>
+        <input type='button' value='Apply' onclick='applyValues()' />
+    </div>
+</body>
+<script id="entry-template" type="text/x-handlebars-template">
+    <div>
+        <label>{{propertyName}}: </label>
+        <input id="{{propertyName}}" value="{{propertyValue}}" />
+    </div>
+</script>
+<script type="text/javascript" src="jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="handlebars-v1.3.0.js"></script>
+<script type='text/javascript'>
+    var viewModel = {
+        apa: "HEllo",
+    };
+
+    var echo = function () {
+        var source = $("#entry-template").html();
+        var template = Handlebars.compile(source);
+
+        var element = document.getElementById("attributesElement");
+        while(element.firstChild) {
+            element.removeChild(element.firstChild);
+        }
+
+        for (var key in viewModel) {
+            var context = {
+                propertyName: key,
+                propertyValue: viewModel[key]
+            };
+            var html = template(context);
+            var div = document.createElement('div');
+            div.innerHTML = html;
+            element.appendChild(div);
+        }
+    };
+
+    var applyValues = function () {
+        for (var key in viewModel) {
+            var element = document.getElementById(key);
+            viewModel[key] = element.value;
+        }
+        communicator.apply();
+    };
+    echo();
+</script>
 </html>
