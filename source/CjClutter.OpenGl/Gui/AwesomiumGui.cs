@@ -125,6 +125,7 @@ namespace CjClutter.OpenGl.Gui
             WebCore.Initialize(WebConfig.Default);
 
             _webView = WebCore.CreateWebView(1024, 768);
+            _webView.ConsoleMessage += (sender, args) => Console.WriteLine(args.Message);
             _webView.WebSession.AddDataSource("myhost", new DirectoryDataSource(Path.Combine(Environment.CurrentDirectory, "gui", "views")));
             
             while (!_webView.IsLive) { }
