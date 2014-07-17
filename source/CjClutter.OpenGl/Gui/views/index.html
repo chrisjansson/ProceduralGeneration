@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <script type='text/javascript'>
+
+            var echo = function() {
+                var element = document.getElementById('attributes');
+                while(element.firstChild){
+                    element.removeChild(element.firstChild)
+                }
+
+                for(var key in viewModel) {
+                    var div = document.createElement('div');
+                    var label = document.createElement('Label');
+                    label.innerHTML = key + ': ';
+                    var input = document.createElement('input');
+                    input.setAttribute('id', key)
+                    input.value = viewModel[key];
+                    div.appendChild(label);
+                    div.appendChild(input);
+                    element.appendChild(div);
+                }
+            };
+
+            var applyValues = function() {
+                for(var key in viewModel){
+                    var element = document.getElementById(key);
+                    viewModel[key] = element.value;
+                }
+                communicator.apply();
+            };
+        </script>
+    </head>
+    <body style='margin: 0px'>
+        <img src="footer.png" width="100" height="100"/>
+        <div style='width: 100%;background: red'>
+            <div id='attributes'>
+            </div>
+            <input type='button' value='Apply' onclick='applyValues()'></input>
+        </div>
+    </body>
+</html>

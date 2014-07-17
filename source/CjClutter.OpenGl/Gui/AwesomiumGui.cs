@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Awesomium.Core;
+using Awesomium.Core.Data;
 using OpenTK;
 using OpenTK.Input;
 using FrameEventArgs = Awesomium.Core.FrameEventArgs;
@@ -123,10 +125,13 @@ namespace CjClutter.OpenGl.Gui
             WebCore.Initialize(WebConfig.Default);
 
             _webView = WebCore.CreateWebView(1024, 768);
+            _webView.WebSession.AddDataSource("myhost", new DirectoryDataSource(Path.Combine(Environment.CurrentDirectory, "gui", "views")));
+            
             while (!_webView.IsLive) { }
 
             _webView.IsTransparent = true;
-            _webView.LoadHTML(Source);
+            _webView.Source = new Uri("asset://myhost/index.html");
+            
             _webView.LoadingFrameComplete += WebViewOnLoadingFrameComplete;
             _webView.DocumentReady += WebViewOnDocumentReady;
             WebCore.Run();
@@ -291,47 +296,5 @@ namespace CjClutter.OpenGl.Gui
         {
             WebCore.QueueWork(_webView, () => _webView.Resize(width, height));
         }
-
-        private const string Source = @"
-<html>
-    <head>
-        <script type='text/javascript'>
-
-            var echo = function() {
-                var element = document.getElementById('attributes');    
-                while(element.firstChild){
-                    element.removeChild(element.firstChild)
-                }
-
-                for(var key in viewModel) {
-                    var div = document.createElement('div');
-                    var label = document.createElement('Label');
-                    label.innerHTML = key + ': ';
-                    var input = document.createElement('input');
-                    input.setAttribute('id', key)
-                    input.value = viewModel[key];
-                    div.appendChild(label);
-                    div.appendChild(input);
-                    element.appendChild(div);
-                }
-            };
-
-            var applyValues = function() {
-		        for(var key in viewModel){
-                  var element = document.getElementById(key);
-                  viewModel[key] = element.value;
-                }
-                communicator.apply();
-              };
-        </script>
-    </head>
-    <body style='margin: 0px'>
-        <div style='width: 100%;background: red'>
-            <div id='attributes'>
-            </div>
-            <input type='button' value='Apply' onclick='applyValues()'></input>
-        </div>
-    </body>
-</html>";
     }
 }
