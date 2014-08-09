@@ -201,6 +201,7 @@
     <Compile Include="SceneGraph\HeightMapGenerator.cs" />
     <Compile Include="Noise\NoiseDecorator.cs" />
     <Compile Include="SceneGraph\TerrainGenerator.cs" />
+    <Compile Include="Terrain.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
