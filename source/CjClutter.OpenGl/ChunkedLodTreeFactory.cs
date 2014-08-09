@@ -45,6 +45,7 @@ namespace CjClutter.OpenGl
 
             public Box3D Bounds { get; private set; }
             public ChunkedLodTreeNode[] Nodes { get; private set; }
+            public double GeometricError { get; private set; }
         }
     }
 }
