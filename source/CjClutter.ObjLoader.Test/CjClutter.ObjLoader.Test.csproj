@@ -83,6 +83,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChunkedLodTreeFactoryTests.cs" />
     <Compile Include="CoordinateSystems\GuiToRelativeCoordinateTransformerTests.cs" />
     <Compile Include="DiamondSquareTests.cs" />
     <Compile Include="MidpointDisplacementTests.cs" />

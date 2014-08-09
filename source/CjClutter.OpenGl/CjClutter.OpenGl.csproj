@@ -104,6 +104,8 @@
     <Compile Include="Camera\LookAtCamera.cs" />
     <Compile Include="Camera\TrackballCamera.cs" />
     <Compile Include="Camera\TrackballCameraRotationCalculator.cs" />
+    <Compile Include="ChunkedLod.cs" />
+    <Compile Include="ChunkedLodTreeFactory.cs" />
     <Compile Include="CoordinateSystems\GuiToRelativeCoordinateTransformer.cs" />
     <Compile Include="CoordinateSystems\IGuiToRelativeCoordinateTransformer.cs" />
     <Compile Include="CoordinateSystems\IInterfaceSize.cs" />

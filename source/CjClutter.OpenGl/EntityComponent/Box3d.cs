@@ -2,9 +2,9 @@
 
 namespace CjClutter.OpenGl.EntityComponent
 {
-    public struct Box3d
+    public struct Box3D
     {
-        public Box3d(Vector3d min, Vector3d max)
+        public Box3D(Vector3d min, Vector3d max)
             : this()
         {
             Min = min;

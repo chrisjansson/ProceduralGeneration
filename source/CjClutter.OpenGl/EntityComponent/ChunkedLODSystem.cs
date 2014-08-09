@@ -17,7 +17,7 @@ namespace CjClutter.OpenGl.EntityComponent
             _camera = camera;
         }
 
-        private Node CreateNode(Box3d bounds, int level, EntityManager entityManager)
+        private Node CreateNode(Box3D bounds, int level, EntityManager entityManager)
         {
             var mesh = GridCreator.CreateXZ(10, 10);
             var staticMesh = new StaticMesh
@@ -58,10 +58,10 @@ namespace CjClutter.OpenGl.EntityComponent
             return new Node(bounds,
                 new[]
                 {
-                    CreateNode(new Box3d(bounds.Min, center), level -1, entityManager),
-                    CreateNode(new Box3d(new Vector3d(center.X, 0, min.Z), new Vector3d(max.X, 0, center.Z)), level -1, entityManager),
-                    CreateNode(new Box3d(new Vector3d(min.X, 0, center.Z), new Vector3d(center.X, 0, max.Z)), level - 1, entityManager),
-                    CreateNode(new Box3d(center, max), level - 1, entityManager)
+                    CreateNode(new Box3D(bounds.Min, center), level -1, entityManager),
+                    CreateNode(new Box3D(new Vector3d(center.X, 0, min.Z), new Vector3d(max.X, 0, center.Z)), level -1, entityManager),
+                    CreateNode(new Box3D(new Vector3d(min.X, 0, center.Z), new Vector3d(center.X, 0, max.Z)), level - 1, entityManager),
+                    CreateNode(new Box3D(center, max), level - 1, entityManager)
                 }, entity, Math.Pow(2, level));
         }
 
@@ -69,7 +69,7 @@ namespace CjClutter.OpenGl.EntityComponent
         {
             if (_root == null)
             {
-                _root = CreateNode(new Box3d(new Vector3d(-100, 0, -100f), new Vector3d(100f, 0, 100f)), 6, entityManager);
+                _root = CreateNode(new Box3D(new Vector3d(-100, 0, -100f), new Vector3d(100f, 0, 100f)), 6, entityManager);
             }
 
             _frustumPlanes = FrustumPlaneExtractor.ExtractRowMajor(_camera);
@@ -118,7 +118,7 @@ namespace CjClutter.OpenGl.EntityComponent
 
     public class Node
     {
-        public Node(Box3d bounds, Node[] leafNodes, Entity entity, double geometricError)
+        public Node(Box3D bounds, Node[] leafNodes, Entity entity, double geometricError)
         {
             Entity = entity;
             GeometricError = geometricError;
@@ -128,7 +128,7 @@ namespace CjClutter.OpenGl.EntityComponent
 
         public Entity Entity { get; private set; }
         public double GeometricError { get; private set; }
-        public Box3d Bounds { get; private set; }
+        public Box3D Bounds { get; private set; }
         public Node[] Leafs { get; private set; }
     }
 }
