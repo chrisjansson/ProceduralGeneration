@@ -1,4 +1,5 @@
-﻿using CjClutter.OpenGl.EntityComponent;
+﻿using System;
+using CjClutter.OpenGl.EntityComponent;
 using OpenTK;
 
 namespace CjClutter.OpenGl
@@ -7,7 +8,12 @@ namespace CjClutter.OpenGl
     {
         public ChunkedLodTreeNode Create(Box3D bounds, int depth)
         {
-            return new ChunkedLodTreeNode(bounds, GetLeafs(bounds, depth));
+            return new ChunkedLodTreeNode(bounds, GetLeafs(bounds, depth), CalculateGeometricError(depth));
+        }
+
+        private double CalculateGeometricError(int depth)
+        {
+            return Math.Pow(2, depth);
         }
 
         private ChunkedLodTreeNode[] GetLeafs(Box3D bounds, int depth)
@@ -26,21 +32,23 @@ namespace CjClutter.OpenGl
             var third = new Box3D(new Vector3d(min.X, center.Y, min.Z), new Vector3d(center.X, max.Y, max.Z));
             var fourth = new Box3D(new Vector3d(center.X, center.Y, min.Z), max);
             var nextDepth = depth -1;
+            var geometricError = CalculateGeometricError(depth - 1); 
             return new[]
             {
-                new ChunkedLodTreeNode(first, GetLeafs(first, nextDepth)),
-                new ChunkedLodTreeNode(second, GetLeafs(second, nextDepth)),
-                new ChunkedLodTreeNode(third, GetLeafs(third, nextDepth)),
-                new ChunkedLodTreeNode(fourth, GetLeafs(fourth, nextDepth))
+                new ChunkedLodTreeNode(first, GetLeafs(first, nextDepth), geometricError),
+                new ChunkedLodTreeNode(second, GetLeafs(second, nextDepth), geometricError),
+                new ChunkedLodTreeNode(third, GetLeafs(third, nextDepth), geometricError),
+                new ChunkedLodTreeNode(fourth, GetLeafs(fourth, nextDepth), geometricError)
             };
         }
 
         public class ChunkedLodTreeNode
         {
-            public ChunkedLodTreeNode(Box3D bounds, ChunkedLodTreeNode[] nodes)
+            public ChunkedLodTreeNode(Box3D bounds, ChunkedLodTreeNode[] nodes, double geometricError)
             {
                 Bounds = bounds;
                 Nodes = nodes;
+                GeometricError = geometricError;
             }
 
             public Box3D Bounds { get; private set; }

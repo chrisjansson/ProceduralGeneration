@@ -17,6 +17,7 @@ namespace ObjLoader.Test
             var result = sut.Create(expectedBounds, 0);
 
             Assert.AreEqual(expectedBounds, result.Bounds);
+            Assert.AreEqual(1, result.GeometricError);
             Assert.IsEmpty(result.Nodes);
         }
 
@@ -29,6 +30,7 @@ namespace ObjLoader.Test
             var result = sut.Create(expectedBounds, 1);
 
             Assert.AreEqual(expectedBounds, result.Bounds);
+            Assert.AreEqual(2, result.GeometricError);
             Assert.AreEqual(4, result.Nodes.Length);
         }
 
@@ -53,6 +55,7 @@ namespace ObjLoader.Test
             var expectedBounds = new Box3D(new Vector3d(-1, -1, -1), new Vector3d(1, 1, 1));
 
             var result = sut.Create(expectedBounds, 2);
+            Assert.AreEqual(4, result.GeometricError);
             var leafs = result.Nodes.SelectMany(x => x.Nodes);
 
             Assert.AreEqual(16, leafs.Count());
@@ -65,6 +68,7 @@ namespace ObjLoader.Test
         private void AssertLeaf(Box3D expected, ChunkedLodTreeFactory.ChunkedLodTreeNode actual)
         {
             Assert.IsEmpty(actual.Nodes);
+            Assert.AreEqual(1, actual.GeometricError);
             Assert.AreEqual(expected, actual.Bounds);
         }
     }
