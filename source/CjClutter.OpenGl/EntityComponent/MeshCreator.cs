@@ -63,7 +63,6 @@ namespace CjClutter.OpenGl.EntityComponent
             }
         }
     }
-}
 
     public interface IHeightMap
     {
@@ -71,3 +70,4 @@ namespace CjClutter.OpenGl.EntityComponent
         Vector3 GetNormal(int column, int row);
     }
 }
+

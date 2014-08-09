@@ -86,6 +86,7 @@
     <Compile Include="ChunkedLodTreeFactoryTests.cs" />
     <Compile Include="CoordinateSystems\GuiToRelativeCoordinateTransformerTests.cs" />
     <Compile Include="DiamondSquareTests.cs" />
+    <Compile Include="ImplicitChunkHeightmapTests.cs" />
     <Compile Include="MidpointDisplacementTests.cs" />
     <Compile Include="KeyArgTests.cs" />
     <Compile Include="KeyDictionaryTests.cs" />
