@@ -76,7 +76,7 @@ namespace CjClutter.OpenGl.EntityComponent
                     mesh = new StaticMesh();
                     mesh.ModelMatrix = component.Transform;
                     mesh.Color = new Vector4(0f, 0f, 1f, 1f);
-                    mesh.Update(GridCreator.CreateXZ(25, 25));
+                    mesh.Update(MeshCreator.CreateXZGrid(25, 25));
                     
                     entityManager.AddComponentToEntity(entity, mesh);
                 }

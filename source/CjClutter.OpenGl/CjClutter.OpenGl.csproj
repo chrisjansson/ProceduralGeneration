@@ -116,7 +116,7 @@
     <Compile Include="EntityComponent\Entity.cs" />
     <Compile Include="EntityComponent\EntityManager.cs" />
     <Compile Include="EntityComponent\FreeCameraSystem.cs" />
-    <Compile Include="EntityComponent\GridCreator.cs" />
+    <Compile Include="EntityComponent\MeshCreator.cs" />
     <Compile Include="EntityComponent\IEntityComponent.cs" />
     <Compile Include="EntityComponent\IEntitySystem.cs" />
     <Compile Include="EntityComponent\RtsCameraSystem.cs" />

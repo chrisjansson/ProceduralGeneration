@@ -19,7 +19,7 @@ namespace CjClutter.OpenGl.EntityComponent
 
         private Node CreateNode(Box3D bounds, int level, EntityManager entityManager)
         {
-            var mesh = GridCreator.CreateXZ(10, 10);
+            var mesh = MeshCreator.CreateXZGrid(10, 10);
             var staticMesh = new StaticMesh
             {
                 Color = new Vector4(0f, 0f, 1f, 1f),
