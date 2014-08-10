@@ -70,6 +70,23 @@ namespace CjClutter.OpenGl
 
             public double GetHeight(int column, int row)
             {
+                var position = CalculatePosition(column, row);
+                return _noiseGenerator.Noise(position.X, position.Y);
+            }
+
+            public Vector3d GetNormal(int column, int row)
+            {
+                var center = CalculatePosition(column, row);
+                var right = new Vector3d(center.X + 1, center.Y, _noiseGenerator.Noise(center.X + 1, center.Y));
+                var left = new Vector3d(center.X - 1, center.Y, _noiseGenerator.Noise(center.X - 1, center.Y));
+                var top = new Vector3d(center.X, center.Y + 1, _noiseGenerator.Noise(center.X, center.Y + 1));
+                var bottom = new Vector3d(center.X, center.Y - 1, _noiseGenerator.Noise(center.X, center.Y - 1));
+
+                return Vector3d.Cross(right - left, top - bottom).Normalized();
+            }
+
+            private Vector2d CalculatePosition(int column, int row)
+            {
                 var delta = _bounds.Max - _bounds.Min;
 
                 var columnFraction = column / (double)_columns;
@@ -78,12 +95,7 @@ namespace CjClutter.OpenGl
                 var x = _bounds.Min.X + delta.X * columnFraction;
                 var y = _bounds.Min.Y + delta.Y * rowFraction;
 
-                return _noiseGenerator.Noise(x, y);
-            }
-
-            public Vector3 GetNormal(int column, int row)
-            {
-                throw new NotImplementedException();
+                return new Vector2d(x, y);
             }
         }
     }

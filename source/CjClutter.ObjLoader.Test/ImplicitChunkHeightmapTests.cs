@@ -27,5 +27,20 @@ namespace ObjLoader.Test
 
             Assert.AreEqual(47, result);
         }
+
+        [Test]
+        public void Get_normal_scales_row_and_column_according_to_bounds_when_accessing_noise()
+        {
+            _noiseGenerator.Stub(x => x.Noise(-3, 8)).Return(40); 
+            _noiseGenerator.Stub(x => x.Noise(-1, 8)).Return(42);
+            _noiseGenerator.Stub(x => x.Noise(-2, 7)).Return(10);
+            _noiseGenerator.Stub(x => x.Noise(-2, 9)).Return(15);
+
+            var sut = new TerrainChunkFactory.ImplicitChunkHeightMap(new Box3D(new Vector3d(-5, 5, 0), new Vector3d(5, 10, 0)), 10, 20, _noiseGenerator);
+            var result = sut.GetNormal(3, 12);
+
+
+            Assert.AreEqual(new Vector3d(-4, -10, 4).Normalized(), result);
+        }
     }
 }

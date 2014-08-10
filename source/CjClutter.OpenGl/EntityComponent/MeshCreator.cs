@@ -23,7 +23,7 @@ namespace CjClutter.OpenGl.EntityComponent
                     vertices.Add(new Vertex3V3N
                     {
                         Position = new Vector3((float) x/columns - 0.5f, (float) height, (float) y/rows - 0.5f),
-                        Normal = heightMap.GetNormal(x, y)
+                        Normal = (Vector3) heightMap.GetNormal(x, y)
                     });
                 }
             }
@@ -57,9 +57,9 @@ namespace CjClutter.OpenGl.EntityComponent
                 return 0;
             }
 
-            public Vector3 GetNormal(int column, int row)
+            public Vector3d GetNormal(int column, int row)
             {
-                return new Vector3(0, 1, 0);
+                return new Vector3d(0, 1, 0);
             }
         }
     }
@@ -67,7 +67,7 @@ namespace CjClutter.OpenGl.EntityComponent
     public interface IHeightMap
     {
         double GetHeight(int column, int row);
-        Vector3 GetNormal(int column, int row);
+        Vector3d GetNormal(int column, int row);
     }
 }
 
