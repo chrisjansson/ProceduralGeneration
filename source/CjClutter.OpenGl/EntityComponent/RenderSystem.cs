@@ -42,7 +42,6 @@ namespace CjClutter.OpenGl.EntityComponent
 
             _simpleMaterial.Bind();
 
-           
             var light = entityManager.GetEntitiesWithComponent<PositionalLightComponent>().Single();
             var positionalLightComponent = entityManager.GetComponent<PositionalLightComponent>(light);
             _simpleMaterial.LightDirection.Set((Vector3) positionalLightComponent.Position);
@@ -52,10 +51,10 @@ namespace CjClutter.OpenGl.EntityComponent
             foreach (var entity in entityManager.GetEntitiesWithComponent<StaticMesh>())
             {
                 var component = entityManager.GetComponent<StaticMesh>(entity);
-                if(!component.IsVisible)
-                    continue;
+                //if(!component.IsVisible)
+                    //continue;
 
-                component.IsVisible = false;
+                //component.IsVisible = false;
 
                 var resources = EnsureResources(component);
 
@@ -64,13 +63,13 @@ namespace CjClutter.OpenGl.EntityComponent
                 _simpleMaterial.ModelMatrix.Set(component.ModelMatrix);
                 _simpleMaterial.Color.Set(component.Color);
 
-                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-                GL.Disable(EnableCap.CullFace);
+                //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+                //GL.Disable(EnableCap.CullFace);
                 
                 GL.DrawElements(BeginMode.Triangles, component.Mesh.Faces.Length * 3, DrawElementsType.UnsignedInt, 0);
 
-                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-                GL.Enable(EnableCap.CullFace);
+                //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+                //GL.Enable(EnableCap.CullFace);
 
                 resources.VertexArrayObject.Unbind();
             }
