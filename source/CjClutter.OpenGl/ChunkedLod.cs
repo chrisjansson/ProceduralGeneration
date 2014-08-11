@@ -10,14 +10,17 @@ namespace CjClutter.OpenGl
         private Vector3d _cameraPosition;
         private double _k;
         private double _allowedScreenSpaceError;
+        private Vector4d[] _frustumPlanes;
 
         public List<ChunkedLodTreeFactory.ChunkedLodTreeNode> Calculate(
             ChunkedLodTreeFactory.ChunkedLodTreeNode root, 
             double viewportWidth, 
             double horizontalFieldOfView, 
             Vector3d cameraPosition, 
-            double allowedScreenSpaceError)
+            double allowedScreenSpaceError, 
+            Vector4d[] frustumPlanes)
         {
+            _frustumPlanes = frustumPlanes;
             _allowedScreenSpaceError = allowedScreenSpaceError;
             _cameraPosition = cameraPosition;
             _visibleNodes = new List<ChunkedLodTreeFactory.ChunkedLodTreeNode>();
@@ -48,14 +51,33 @@ namespace CjClutter.OpenGl
         private bool IsDetailedEnough(ChunkedLodTreeFactory.ChunkedLodTreeNode node)
         {
             var distanceToCamera = (node.Bounds.Center - _cameraPosition).Length;
-            var screenSpaceError = (node.GeometricError/distanceToCamera)*_k;
+            var screenSpaceError = (node.GeometricError / distanceToCamera) * _k;
 
             return screenSpaceError <= _allowedScreenSpaceError;
         }
 
         private bool IsVisible(ChunkedLodTreeFactory.ChunkedLodTreeNode node)
         {
+            var center = node.Bounds.Center;
+            var delta = node.Bounds.Max - node.Bounds.Min;
+            var side = Math.Max(delta.X, delta.Y);
+            var radius = Math.Sqrt(side*side + side*side);
+
+            for (var i = 0; i < _frustumPlanes.Length; i++)
+            {
+                var sphereIsOutsideOfPlane = PlaneDistance(_frustumPlanes[i], center) < -radius;
+                if (sphereIsOutsideOfPlane)
+                {
+                    return false;
+                }
+            }
+
             return true;
+        }
+
+        private double PlaneDistance(Vector4d plane, Vector3d pt)
+        {
+            return plane.X*pt.X + plane.Y*pt.Y + plane.Z*pt.Z + plane.W;
         }
     }
 }

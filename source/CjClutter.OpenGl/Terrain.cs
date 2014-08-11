@@ -45,14 +45,19 @@ namespace CjClutter.OpenGl
 
         public void Render(ICamera camera)
         {
+            var transformation = new Matrix4d(
+                new Vector4d(1, 0, 0, 0),
+                new Vector4d(0, 0, 1, 0),
+                new Vector4d(0, 1, 0, 1),
+                new Vector4d(0, 0, 0, 1));
+
             var visibleChunks = _chunkedLod.Calculate(
                 _tree,
                 camera.Width,
                 camera.HorizontalFieldOfView,
-                camera.Position.Xzy,
-                50);
-
-            Console.WriteLine(camera.Position);
+                Vector3d.Transform(camera.Position, transformation),
+                50,
+                FrustumPlaneExtractor.ExtractRowMajor(transformation * camera.ComputeCameraMatrix() * camera.ComputeProjectionMatrix()));
 
             GL.ClearColor(Color4.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);

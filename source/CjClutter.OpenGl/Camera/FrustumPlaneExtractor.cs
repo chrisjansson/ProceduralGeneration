@@ -2,12 +2,16 @@
 
 namespace CjClutter.OpenGl.Camera
 {
-    public class FrustumPlaneExtractor
+    public static class FrustumPlaneExtractor
     {
-        public static Vector4d[] ExtractRowMajor(ICamera camera)
+        public static Vector4d[] ExtractRowMajor(this ICamera camera)
         {
             var matrix = camera.ComputeCameraMatrix() * camera.ComputeProjectionMatrix();
+            return ExtractRowMajor(matrix);
+        }
 
+        public static Vector4d[] ExtractRowMajor(Matrix4d matrix)
+        {
             var left = matrix.Column3 + matrix.Column0;
             var right = matrix.Column3 - matrix.Column0;
             var bottom = matrix.Column3 + matrix.Column1;
