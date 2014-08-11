@@ -30,6 +30,7 @@ namespace CjClutter.OpenGl.Gui
         private List<IEntitySystem> _systems;
         private LookAtCamera _lodCamera;
         private bool _synchronizeCameras = true;
+        private Terrain _terrain;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -80,7 +81,7 @@ namespace CjClutter.OpenGl.Gui
                 new OceanSystem(),
                 new CubeMeshSystem(),
                 //new ChunkedLODSystem(_lodCamera),
-                new RenderSystem(_camera),
+                //new RenderSystem(_camera),
             };
 
             var light = new Entity(Guid.NewGuid().ToString());
@@ -108,6 +109,9 @@ namespace CjClutter.OpenGl.Gui
                 var settings = settingsViewModel.Assemble();
                 terrainSystem.SetTerrainSettings(new NoiseFactory.RidgedMultiFractal().Create(settings));
             };
+
+            _terrain = new Terrain();
+
         }
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
@@ -167,6 +171,8 @@ namespace CjClutter.OpenGl.Gui
             {
                 system.Update(ElapsedTime.TotalSeconds, _entityManager);
             }
+
+            _terrain.Render(_camera);
 
             if (_awesomiumGui.IsDirty)
             {

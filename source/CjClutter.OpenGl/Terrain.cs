@@ -1,8 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.EntityComponent;
+using CjClutter.OpenGl.Gui;
 using CjClutter.OpenGl.Noise;
+using CjClutter.OpenGl.OpenGl;
+using CjClutter.OpenGl.OpenGl.Shaders;
+using CjClutter.OpenGl.OpenTk;
+using CjClutter.OpenGl.SceneGraph;
+using NUnit.Framework.Constraints;
 using OpenTK;
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL4;
 
 namespace CjClutter.OpenGl
 {
@@ -15,6 +26,8 @@ namespace CjClutter.OpenGl
         {
             _tree = CreateTree();
             _chunkedLod = new ChunkedLod();
+            _simpleMaterial = new SimpleMaterial();
+            _simpleMaterial.Create();
         }
 
         private static ChunkedLodTreeFactory.ChunkedLodTreeNode CreateTree()
@@ -22,11 +35,12 @@ namespace CjClutter.OpenGl
             var chunkedLodTreeFactory = new ChunkedLodTreeFactory();
 
             var bounds = new Box3D(
-                new Vector3d(-2048, -2048, 0),
-                new Vector3d(2048, 2048, 0));
+                new Vector3d(-4096, -4096, 0),
+                new Vector3d(4096, 4096, 0));
 
-            var levels = (int)Math.Log(4096, 2);
-            return chunkedLodTreeFactory.Create(bounds, levels);
+            var levels = (int)Math.Log(4096 / 10, 2);
+            //calculate depth so that one square is one meter as maximum resolution
+            return chunkedLodTreeFactory.Create(bounds, 9);
         }
 
         public void Render(ICamera camera)
@@ -35,22 +49,94 @@ namespace CjClutter.OpenGl
                 _tree,
                 camera.Width,
                 camera.HorizontalFieldOfView,
-                camera.Position,
-                100);
+                camera.Position.Xzy,
+                50);
 
-            //get mesh
-            //upload mesh
+            Console.WriteLine(camera.Position);
 
-            //create a number of renderjobs
+            GL.ClearColor(Color4.White);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            GL.Enable(EnableCap.DepthTest);
+            GL.CullFace(CullFaceMode.Back);
+            GL.Enable(EnableCap.CullFace);
+            GL.FrontFace(FrontFaceDirection.Cw);
+
+            _simpleMaterial.Bind();
+            var terrainChunkFactory = new TerrainChunkFactory();
+            var resourceAllocator = new ResourceAllocator(new OpenGlResourceFactory());
+
+            foreach (var chunkedLodTreeNode in visibleChunks)
+            {
+                if (!_cache.ContainsKey(chunkedLodTreeNode))
+                {
+                    var mesh = terrainChunkFactory.Create(chunkedLodTreeNode.Bounds);
+                    _count = mesh.Faces.Length * 3;
+                    var renderable = resourceAllocator.AllocateResourceFor(mesh);
+                    _cache.Add(chunkedLodTreeNode, renderable);
+                }
+
+                var renderableMesh = _cache[chunkedLodTreeNode];
+
+                _simpleMaterial.LightDirection.Set(new Vector3(0, 1, 0));
+                _simpleMaterial.ProjectionMatrix.Set(camera.ComputeProjectionMatrix().ToMatrix4());
+                _simpleMaterial.ViewMatrix.Set(camera.ComputeCameraMatrix().ToMatrix4());
+
+                renderableMesh.VertexArrayObject.Bind();
+
+                var bounds = chunkedLodTreeNode.Bounds;
+                var translation = Matrix4.CreateTranslation((float)bounds.Center.X, 0, (float)bounds.Center.Y);
+                var delta = bounds.Max - bounds.Min;
+                var scale = Matrix4.CreateScale((float)delta.X, 1, (float)delta.Y);
+
+                _simpleMaterial.ModelMatrix.Set(scale * translation);
+                _simpleMaterial.Color.Set(new Vector4(0, 0, 1.0f, 0));
+
+                //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+                //GL.Disable(EnableCap.CullFace);
+
+                GL.DrawElements(BeginMode.Triangles, _count, DrawElementsType.UnsignedInt, 0);
+
+                //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+                //GL.Enable(EnableCap.CullFace);
+
+                renderableMesh.VertexArrayObject.Unbind();
+            }
+            _simpleMaterial.Unbind();
         }
+
+        private readonly Dictionary<ChunkedLodTreeFactory.ChunkedLodTreeNode, RenderableMesh> _cache = new Dictionary<ChunkedLodTreeFactory.ChunkedLodTreeNode, RenderableMesh>();
+        private SimpleMaterial _simpleMaterial;
+        private int _count;
     }
 
     public class TerrainChunkFactory
     {
-        public void Create(Box3D bounds)
+        public Mesh3V3N Create(Box3D bounds)
         {
-            int meshDimensions = 10;
-            var mesh = MeshCreator.CreateFromHeightMap(meshDimensions, meshDimensions, null);
+            var meshDimensions = 32;
+            var implicintHeightMap = new ImplicitChunkHeightMap(bounds, meshDimensions, meshDimensions, new ScaledNoiseGenerator());
+            return MeshCreator.CreateFromHeightMap(meshDimensions, meshDimensions, implicintHeightMap);
+        }
+
+        public class ScaledNoiseGenerator : INoiseGenerator
+        {
+            private INoiseGenerator _noise;
+
+            public ScaledNoiseGenerator()
+            {
+                _noise = new NoiseFactory.RidgedMultiFractal().Create(new NoiseFactory.NoiseParameters());
+            }
+
+            public double Noise(double x, double y)
+            {
+                return _noise.Noise(x / 30, y / 30) * 3;
+            }
+
+            public double Noise(double x, double y, double z)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public class ImplicitChunkHeightMap : IHeightMap
