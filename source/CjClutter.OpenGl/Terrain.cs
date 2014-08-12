@@ -67,9 +67,14 @@ namespace CjClutter.OpenGl
             GL.Enable(EnableCap.CullFace);
             GL.FrontFace(FrontFaceDirection.Cw);
 
-            _simpleMaterial.Bind();
             var terrainChunkFactory = new TerrainChunkFactory();
             var resourceAllocator = new ResourceAllocator(new OpenGlResourceFactory());
+
+            _simpleMaterial.Bind();
+            _simpleMaterial.LightDirection.Set(new Vector3(0, 50, 0));
+            _simpleMaterial.ProjectionMatrix.Set(camera.ComputeProjectionMatrix().ToMatrix4());
+            _simpleMaterial.ViewMatrix.Set(camera.ComputeCameraMatrix().ToMatrix4());
+            _simpleMaterial.Color.Set(new Vector4(0.8f, 0.8f, 0.8f, 1.0f));
 
             foreach (var chunkedLodTreeNode in visibleChunks)
             {
@@ -82,11 +87,6 @@ namespace CjClutter.OpenGl
                 }
 
                 var renderableMesh = _cache[chunkedLodTreeNode];
-
-                _simpleMaterial.LightDirection.Set(new Vector3(0, 1, 0));
-                _simpleMaterial.ProjectionMatrix.Set(camera.ComputeProjectionMatrix().ToMatrix4());
-                _simpleMaterial.ViewMatrix.Set(camera.ComputeCameraMatrix().ToMatrix4());
-
                 renderableMesh.VertexArrayObject.Bind();
 
                 var bounds = chunkedLodTreeNode.Bounds;
@@ -95,7 +95,6 @@ namespace CjClutter.OpenGl
                 var scale = Matrix4.CreateScale((float)delta.X, 1, (float)delta.Y);
 
                 _simpleMaterial.ModelMatrix.Set(scale * translation);
-                _simpleMaterial.Color.Set(new Vector4(0, 0, 1.0f, 0));
 
                 //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
                 //GL.Disable(EnableCap.CullFace);
