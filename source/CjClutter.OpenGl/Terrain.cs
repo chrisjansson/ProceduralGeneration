@@ -168,12 +168,12 @@ namespace CjClutter.OpenGl
             public Vector3d GetNormal(int column, int row)
             {
                 var center = CalculatePosition(column, row);
-                var right = new Vector3d(center.X + 1, center.Y, _noiseGenerator.Noise(center.X + 1, center.Y));
-                var left = new Vector3d(center.X - 1, center.Y, _noiseGenerator.Noise(center.X - 1, center.Y));
-                var top = new Vector3d(center.X, center.Y + 1, _noiseGenerator.Noise(center.X, center.Y + 1));
-                var bottom = new Vector3d(center.X, center.Y - 1, _noiseGenerator.Noise(center.X, center.Y - 1));
+                var right = new Vector3d(center.X + 1, _noiseGenerator.Noise(center.X + 1, center.Y), center.Y);
+                var left = new Vector3d(center.X - 1, _noiseGenerator.Noise(center.X - 1, center.Y), center.Y);
+                var top = new Vector3d(center.X, _noiseGenerator.Noise(center.X, center.Y + 1), center.Y + 1);
+                var bottom = new Vector3d(center.X, _noiseGenerator.Noise(center.X, center.Y - 1), center.Y - 1);
 
-                return Vector3d.Cross(right - left, top - bottom).Normalized();
+                return -Vector3d.Cross(right - left, top - bottom).Normalized();
             }
 
             private Vector2d CalculatePosition(int column, int row)
