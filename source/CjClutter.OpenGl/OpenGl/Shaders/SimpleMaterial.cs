@@ -73,39 +73,39 @@ layout(location = 1)in vec3 normal;
 uniform mat4 ProjectionMatrix;
 uniform mat4 ViewMatrix;
 uniform mat4 ModelMatrix;
-uniform vec4 Color;
-uniform vec3 LightPosition;
 
-out VertexData
-{
-    vec4 color;
-} vertex;
+out vec4 posWorldSpace;
+out vec3 normWorldSpace;
 
 void main()
 {
-    gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * position;
-    //vec3 dirToLight = normalize((ViewMatrix * vec4(LightPosition, 1)).xyz - (ViewMatrix * ModelMatrix * position).xyz);
-    vec3 dirToLight = normalize((ViewMatrix * vec4(0.5, 0.2, 0, 0)).xyz);
-    vec3 normCamSpace = (ViewMatrix * ModelMatrix * vec4(normal.x, normal.y, normal.z, 0)).xyz;
-    float incidence = dot(normCamSpace, dirToLight);
-    incidence = clamp(incidence, 0, 1);
-    vertex.color = Color * incidence + vec4(0.2, 0.2, 0.2, 1.0);
+
+    posWorldSpace = ModelMatrix * position;
+    normWorldSpace = normalize((ModelMatrix *vec4(normal, 0)).xyz);
+    gl_Position = ProjectionMatrix * ViewMatrix * posWorldSpace; 
 }
 ";
 
         private const string FragmentShaderSource = @"
 #version 330
 
-out vec4 fragColor;
+uniform mat4 ViewMatrix;
+uniform vec4 Color;
+uniform vec3 LightPosition;
 
-in VertexData
-{
-    vec4 color;
-} vertex;
+in vec3 normWorldSpace;
+in vec4 posWorldSpace;
+out vec4 fragColor;
 
 void main()
 {
-    fragColor = vertex.color;
+    vec3 normCamSpace = normalize((ViewMatrix * vec4(normWorldSpace, 0)).xyz);
+    vec4 posCamSpace = ViewMatrix * posWorldSpace;
+    vec3 lightPosCamSpace = (ViewMatrix * vec4(LightPosition, 1)).xyz;
+    vec3 dirToLight = normalize(lightPosCamSpace - posCamSpace.xyz);
+    float incidence = dot(normCamSpace, dirToLight);
+    incidence = clamp(incidence, 0, 1);
+    fragColor = Color * incidence + vec4(0.2, 0.2, 0.2, 1.0);
 }
 ";
     }

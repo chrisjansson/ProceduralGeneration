@@ -105,7 +105,7 @@ void main()
         EmitVertex();
 
         vec3 normal = vertexData[i].normal;
-        gl_Position =  ProjectionMatrix * ViewMatrix * ModelMatrix * (gl_in[0].gl_Position + vec4(normal, 0) * 0.05) ;
+        gl_Position =  ProjectionMatrix * ViewMatrix * ModelMatrix * (gl_in[0].gl_Position + vec4(normal, 0) * 0.5) ;
         EmitVertex();
 
         EndPrimitive();    

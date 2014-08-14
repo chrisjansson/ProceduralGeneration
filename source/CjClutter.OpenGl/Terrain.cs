@@ -28,6 +28,8 @@ namespace CjClutter.OpenGl
             _chunkedLod = new ChunkedLod();
             _simpleMaterial = new SimpleMaterial();
             _simpleMaterial.Create();
+            _normalDebugProgram = new NormalDebugProgram();
+            _normalDebugProgram.Create();
         }
 
         private static ChunkedLodTreeFactory.ChunkedLodTreeNode CreateTree()
@@ -35,12 +37,12 @@ namespace CjClutter.OpenGl
             var chunkedLodTreeFactory = new ChunkedLodTreeFactory();
 
             var bounds = new Box3D(
-                new Vector3d(-4096, -4096, 0),
-                new Vector3d(4096, 4096, 0));
+                new Vector3d(-16, -16, 0),
+                new Vector3d(16, 16, 0));
 
             var levels = (int)Math.Log(4096 / 10, 2);
             //calculate depth so that one square is one meter as maximum resolution
-            return chunkedLodTreeFactory.Create(bounds, 9);
+            return chunkedLodTreeFactory.Create(bounds, 0);
         }
 
         public void Render(ICamera camera)
@@ -56,7 +58,7 @@ namespace CjClutter.OpenGl
                 camera.Width,
                 camera.HorizontalFieldOfView,
                 Vector3d.Transform(camera.Position, transformation),
-                50,
+                10,
                 FrustumPlaneExtractor.ExtractRowMajor(transformation * camera.ComputeCameraMatrix() * camera.ComputeProjectionMatrix()));
 
             GL.ClearColor(Color4.White);
@@ -71,10 +73,10 @@ namespace CjClutter.OpenGl
             var resourceAllocator = new ResourceAllocator(new OpenGlResourceFactory());
 
             _simpleMaterial.Bind();
-            _simpleMaterial.LightDirection.Set(new Vector3(0, 50, 0));
+            _simpleMaterial.LightDirection.Set(new Vector3(0, 10000, 0));
             _simpleMaterial.ProjectionMatrix.Set(camera.ComputeProjectionMatrix().ToMatrix4());
             _simpleMaterial.ViewMatrix.Set(camera.ComputeCameraMatrix().ToMatrix4());
-            _simpleMaterial.Color.Set(new Vector4(0.8f, 0.8f, 0.8f, 1.0f));
+            _simpleMaterial.Color.Set(new Vector4(0.9f, 0.9f, 0.9f, 1.0f));
 
             foreach (var chunkedLodTreeNode in visibleChunks)
             {
@@ -104,6 +106,13 @@ namespace CjClutter.OpenGl
                 //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
                 //GL.Enable(EnableCap.CullFace);
 
+                //_normalDebugProgram.Bind();
+                //_normalDebugProgram.ProjectionMatrix.Set(camera.ComputeProjectionMatrix().ToMatrix4());
+                //_normalDebugProgram.ViewMatrix.Set(camera.ComputeCameraMatrix().ToMatrix4());
+                //_normalDebugProgram.ModelMatrix.Set(scale * translation);
+                //GL.DrawElements(BeginMode.Triangles, _count, DrawElementsType.UnsignedInt, 0);
+                //_normalDebugProgram.Unbind();
+
                 renderableMesh.VertexArrayObject.Unbind();
             }
             _simpleMaterial.Unbind();
@@ -112,13 +121,14 @@ namespace CjClutter.OpenGl
         private readonly Dictionary<ChunkedLodTreeFactory.ChunkedLodTreeNode, RenderableMesh> _cache = new Dictionary<ChunkedLodTreeFactory.ChunkedLodTreeNode, RenderableMesh>();
         private SimpleMaterial _simpleMaterial;
         private int _count;
+        private NormalDebugProgram _normalDebugProgram;
     }
 
     public class TerrainChunkFactory
     {
         public Mesh3V3N Create(Box3D bounds)
         {
-            var meshDimensions = 32;
+            var meshDimensions = 512;
             var implicintHeightMap = new ImplicitChunkHeightMap(bounds, meshDimensions, meshDimensions, new ScaledNoiseGenerator());
             return MeshCreator.CreateFromHeightMap(meshDimensions, meshDimensions, implicintHeightMap);
         }
@@ -134,7 +144,7 @@ namespace CjClutter.OpenGl
 
             public double Noise(double x, double y)
             {
-                return _noise.Noise(x / 30, y / 30) * 3;
+                return _noise.Noise((x + 1000) / 100, (y + 1000) / 100) * 5;
             }
 
             public double Noise(double x, double y, double z)

@@ -9,7 +9,7 @@ namespace CjClutter.OpenGl.Camera
 
         public LookAtCamera()
         {
-            Position = new Vector3d(0, 5, 2);
+            Position = new Vector3d(0, 50, 2);
             Target = new Vector3d(0, 0, 0);
             Up = new Vector3d(0, 1, 0);
         }
