@@ -22,8 +22,8 @@ namespace CjClutter.OpenGl.EntityComponent
                     var height = heightMap.GetHeight(x, y);
                     vertices.Add(new Vertex3V3N
                     {
-                        Position = new Vector3((float) x/columns - 0.5f, (float) height, (float) y/rows - 0.5f),
-                        Normal = (Vector3) heightMap.GetNormal(x, y)
+                        Position = new Vector3((float)x / columns - 0.5f, (float)height, (float)y / rows - 0.5f),
+                        Normal = (Vector3)heightMap.GetNormal(x, y)
                     });
                 }
             }
@@ -34,13 +34,42 @@ namespace CjClutter.OpenGl.EntityComponent
                 for (var y = 0; y < rows; y++)
                 {
                     var verticesInColumn = rows + 1;
-                    var v0 = x*verticesInColumn + y;
-                    var v1 = (x + 1)*verticesInColumn + y;
-                    var v2 = (x + 1)*verticesInColumn + y + 1;
-                    var v3 = x*verticesInColumn + y + 1;
+                    var v0 = x * verticesInColumn + y;
+                    var v1 = (x + 1) * verticesInColumn + y;
+                    var v2 = (x + 1) * verticesInColumn + y + 1;
+                    var v3 = x * verticesInColumn + y + 1;
 
-                    var f0 = new Face3 {V0 = v0, V1 = v1, V2 = v2};
-                    var f1 = new Face3 {V0 = v0, V1 = v2, V2 = v3};
+                    Face3 f0;
+                    Face3 f1;
+                    if (y % 2 == 0)
+                    {
+                        if (x % 2 == 0)
+                        {
+                            f0 = new Face3 { V0 = v0, V1 = v1, V2 = v2 };
+                            f1 = new Face3 { V0 = v0, V1 = v2, V2 = v3 };
+                        }
+                        else
+                        {
+                            f0 = new Face3 { V0 = v0, V1 = v1, V2 = v3 };
+                            f1 = new Face3 { V0 = v1, V1 = v2, V2 = v3 };
+                        }
+                    }
+                    else
+                    {
+                        if (x % 2 == 0)
+                        {
+                            f0 = new Face3 { V0 = v0, V1 = v1, V2 = v3 };
+                            f1 = new Face3 { V0 = v1, V1 = v2, V2 = v3 };
+                        }
+                        else
+                        {
+                            f0 = new Face3 { V0 = v0, V1 = v1, V2 = v2 };
+                            f1 = new Face3 { V0 = v0, V1 = v2, V2 = v3 };
+                        }
+                    }
+
+                    //var f0 = new Face3 { V0 = v0, V1 = v1, V2 = v2 };
+                    //var f1 = new Face3 { V0 = v0, V1 = v2, V2 = v3 };
 
                     faces.Add(f0);
                     faces.Add(f1);
