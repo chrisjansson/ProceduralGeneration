@@ -41,7 +41,7 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
             ViewMatrix = Program.GetUniform<Matrix4>("ViewMatrix");
             ModelMatrix = Program.GetUniform<Matrix4>("ModelMatrix");
             Color = Program.GetUniform<Vector4>("Color");
-            LightDirection = Program.GetUniform<Vector3>("LightPosition");
+            LightDirection = Program.GetUniform<Vector3>("ModelSpaceLightPosition");
         }
 
         public void Delete()
@@ -74,36 +74,32 @@ uniform mat4 ProjectionMatrix;
 uniform mat4 ViewMatrix;
 uniform mat4 ModelMatrix;
 
-out vec4 posWorldSpace;
-out vec3 normWorldSpace;
+out vec4 modelPosition;
+out vec3 modelNormal;
 
 void main()
 {
-
-    posWorldSpace = ModelMatrix * position;
-    normWorldSpace = normalize((ModelMatrix *vec4(normal, 0)).xyz);
-    gl_Position = ProjectionMatrix * ViewMatrix * posWorldSpace; 
+    modelPosition = position;
+    modelNormal = normal;
+    gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * position; 
 }
 ";
 
         private const string FragmentShaderSource = @"
 #version 330
 
-uniform mat4 ViewMatrix;
 uniform vec4 Color;
-uniform vec3 LightPosition;
+uniform vec3 ModelSpaceLightPosition;
 
-in vec3 normWorldSpace;
-in vec4 posWorldSpace;
+in vec3 modelNormal;
+in vec4 modelPosition;
 out vec4 fragColor;
 
 void main()
 {
-    vec3 normCamSpace = normalize((ViewMatrix * vec4(normWorldSpace, 0)).xyz);
-    vec4 posCamSpace = ViewMatrix * posWorldSpace;
-    vec3 lightPosCamSpace = (ViewMatrix * vec4(LightPosition, 1)).xyz;
-    vec3 dirToLight = normalize(lightPosCamSpace - posCamSpace.xyz);
-    float incidence = dot(normCamSpace, dirToLight);
+    
+    vec3 lightToDir = normalize(ModelSpaceLightPosition - (modelPosition.xyz));
+    float incidence = dot(normalize(modelNormal), lightToDir);
     incidence = clamp(incidence, 0, 1);
     fragColor = Color * incidence + vec4(0.2, 0.2, 0.2, 1.0);
 }

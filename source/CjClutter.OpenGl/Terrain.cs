@@ -37,12 +37,12 @@ namespace CjClutter.OpenGl
             var chunkedLodTreeFactory = new ChunkedLodTreeFactory();
 
             var bounds = new Box3D(
-                new Vector3d(-16, -16, 0),
-                new Vector3d(16, 16, 0));
+                new Vector3d(-256, -256, 0),
+                new Vector3d(256, 256, 0));
 
             var levels = (int)Math.Log(4096 / 10, 2);
             //calculate depth so that one square is one meter as maximum resolution
-            return chunkedLodTreeFactory.Create(bounds, 0);
+            return chunkedLodTreeFactory.Create(bounds, 2);
         }
 
         public void Render(ICamera camera)
@@ -61,22 +61,8 @@ namespace CjClutter.OpenGl
                 10,
                 FrustumPlaneExtractor.ExtractRowMajor(transformation * camera.ComputeCameraMatrix() * camera.ComputeProjectionMatrix()));
 
-            GL.ClearColor(Color4.White);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            GL.Enable(EnableCap.DepthTest);
-            GL.CullFace(CullFaceMode.Back);
-            GL.Enable(EnableCap.CullFace);
-            GL.FrontFace(FrontFaceDirection.Cw);
-
             var terrainChunkFactory = new TerrainChunkFactory();
             var resourceAllocator = new ResourceAllocator(new OpenGlResourceFactory());
-
-            _simpleMaterial.Bind();
-            _simpleMaterial.LightDirection.Set(new Vector3(0, 10000, 0));
-            _simpleMaterial.ProjectionMatrix.Set(camera.ComputeProjectionMatrix().ToMatrix4());
-            _simpleMaterial.ViewMatrix.Set(camera.ComputeCameraMatrix().ToMatrix4());
-            _simpleMaterial.Color.Set(new Vector4(0.9f, 0.9f, 0.9f, 1.0f));
 
             foreach (var chunkedLodTreeNode in visibleChunks)
             {
@@ -87,16 +73,41 @@ namespace CjClutter.OpenGl
                     var renderable = resourceAllocator.AllocateResourceFor(mesh);
                     _cache.Add(chunkedLodTreeNode, renderable);
                 }
+            }
 
+            GL.ClearColor(Color4.White);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            GL.Enable(EnableCap.DepthTest);
+            GL.CullFace(CullFaceMode.Back);
+            GL.Enable(EnableCap.CullFace);
+            GL.FrontFace(FrontFaceDirection.Cw);
+
+            _simpleMaterial.Bind();
+            var worldSpaceLightPosition = new Vector4(0, 15, 100, 1);
+            //_simpleMaterial.LightDirection.Set(worldSpaceLightPosition);
+
+            _simpleMaterial.ProjectionMatrix.Set(camera.ComputeProjectionMatrix().ToMatrix4());
+            _simpleMaterial.ViewMatrix.Set(camera.ComputeCameraMatrix().ToMatrix4());
+
+            _simpleMaterial.Color.Set(new Vector4(0.9f, 0.9f, 0.9f, 1.0f));
+
+            foreach (var chunkedLodTreeNode in visibleChunks)
+            {
                 var renderableMesh = _cache[chunkedLodTreeNode];
                 renderableMesh.VertexArrayObject.Bind();
 
                 var bounds = chunkedLodTreeNode.Bounds;
                 var translation = Matrix4.CreateTranslation((float)bounds.Center.X, 0, (float)bounds.Center.Y);
                 var delta = bounds.Max - bounds.Min;
-                var scale = Matrix4.CreateScale((float)delta.X, 1, (float)delta.Y);
+                var scale = Matrix4.CreateScale((float)delta.X, 10f, (float)delta.Y);
 
-                _simpleMaterial.ModelMatrix.Set(scale * translation);
+                var modelMatrix = scale * translation;
+                _simpleMaterial.ModelMatrix.Set(modelMatrix);
+
+                var worldToModel = modelMatrix.Inverted();
+                var transform = Vector4.Transform(worldSpaceLightPosition, worldToModel);
+                _simpleMaterial.LightDirection.Set(transform.Xyz);
 
                 //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
                 //GL.Disable(EnableCap.CullFace);
@@ -116,6 +127,29 @@ namespace CjClutter.OpenGl
                 renderableMesh.VertexArrayObject.Unbind();
             }
             _simpleMaterial.Unbind();
+
+            //_normalDebugProgram.Bind();
+            //_normalDebugProgram.ProjectionMatrix.Set(camera.ComputeProjectionMatrix().ToMatrix4());
+            //_normalDebugProgram.ViewMatrix.Set(camera.ComputeCameraMatrix().ToMatrix4());
+
+            //foreach (var chunkedLodTreeNode in visibleChunks)
+            //{
+            //    var renderableMesh = _cache[chunkedLodTreeNode];
+            //    renderableMesh.VertexArrayObject.Bind();
+
+            //    var bounds = chunkedLodTreeNode.Bounds;
+            //    var translation = Matrix4.CreateTranslation((float)bounds.Center.X, 0, (float)bounds.Center.Y);
+            //    var delta = bounds.Max - bounds.Min;
+            //    var scale = Matrix4.CreateScale((float)delta.X, 1, (float)delta.Y);
+
+            //    _normalDebugProgram.ModelMatrix.Set(scale * translation);
+
+            //    GL.DrawElements(BeginMode.Triangles, _count, DrawElementsType.UnsignedInt, 0);
+
+            //    renderableMesh.VertexArrayObject.Unbind();
+            //}
+
+            //_normalDebugProgram.Unbind();
         }
 
         private readonly Dictionary<ChunkedLodTreeFactory.ChunkedLodTreeNode, RenderableMesh> _cache = new Dictionary<ChunkedLodTreeFactory.ChunkedLodTreeNode, RenderableMesh>();
@@ -128,7 +162,7 @@ namespace CjClutter.OpenGl
     {
         public Mesh3V3N Create(Box3D bounds)
         {
-            var meshDimensions = 512;
+            var meshDimensions = 128;
             var implicintHeightMap = new ImplicitChunkHeightMap(bounds, meshDimensions, meshDimensions, new ScaledNoiseGenerator());
             return MeshCreator.CreateFromHeightMap(meshDimensions, meshDimensions, implicintHeightMap);
         }
@@ -144,7 +178,7 @@ namespace CjClutter.OpenGl
 
             public double Noise(double x, double y)
             {
-                return _noise.Noise((x + 1000) / 100, (y + 1000) / 100) * 5;
+                return _noise.Noise(x/100, y/100);
             }
 
             public double Noise(double x, double y, double z)
@@ -182,7 +216,7 @@ namespace CjClutter.OpenGl
                 var top = new Vector3d(center.X, _noiseGenerator.Noise(center.X, center.Y + 1), center.Y + 1);
                 var bottom = new Vector3d(center.X, _noiseGenerator.Noise(center.X, center.Y - 1), center.Y - 1);
 
-                return -Vector3d.Cross(right - left, top - bottom).Normalized();
+                return -Vector3d.Cross((right - left).Normalized(), (top - bottom).Normalized()).Normalized();
             }
 
             private Vector2d CalculatePosition(int column, int row)
