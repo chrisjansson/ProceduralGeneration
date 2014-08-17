@@ -21,7 +21,8 @@ namespace CjClutter.OpenGl.OpenGl
                                         {typeof(Matrix4), SetMatrix4},
                                         {typeof(Vector3), SetVector3},
                                         {typeof(Vector4), SetVector4},
-                                        {typeof(Vector2), SetVector2}
+                                        {typeof(Vector2), SetVector2},
+                                        {typeof(Matrix3), SetMatrix3},
                                     };
 
             var type = typeof (T);
@@ -62,6 +63,12 @@ namespace CjClutter.OpenGl.OpenGl
         {
             var matrix = (Matrix4)value;
             GL.UniformMatrix4(_location, false, ref matrix);
+        }
+
+        private void SetMatrix3(object value)
+        {
+            var matrix = (Matrix3) value;
+            GL.UniformMatrix3(_location, false, ref matrix);
         }
     }
 }
