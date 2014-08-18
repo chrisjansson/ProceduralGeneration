@@ -45,7 +45,7 @@ namespace CjClutter.OpenGl
             return chunkedLodTreeFactory.Create(bounds, 2);
         }
 
-        public void Render(ICamera camera)
+        public void Render(ICamera camera, Vector3d lightPosition)
         {
             var transformation = new Matrix4d(
                 new Vector4d(1, 0, 0, 0),
@@ -84,7 +84,7 @@ namespace CjClutter.OpenGl
             GL.FrontFace(FrontFaceDirection.Cw);
 
             _simpleMaterial.Bind();
-            var worldSpaceLightPosition = new Vector4(0, 15, 100, 1);
+            var worldSpaceLightPosition = new Vector4d(lightPosition, 1);
             //_simpleMaterial.LightDirection.Set(worldSpaceLightPosition);
 
             _simpleMaterial.ProjectionMatrix.Set(camera.ComputeProjectionMatrix().ToMatrix4());
@@ -106,7 +106,7 @@ namespace CjClutter.OpenGl
                 _simpleMaterial.ModelMatrix.Set(modelMatrix);
 
                 var worldToModel = modelMatrix.Inverted();
-                var transform = Vector4.Transform(worldSpaceLightPosition, worldToModel);
+                var transform = Vector4.Transform((Vector4) worldSpaceLightPosition, worldToModel);
                 _simpleMaterial.LightDirection.Set(transform.Xyz);
 
                 //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);

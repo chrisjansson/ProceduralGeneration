@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.CoordinateSystems;
 using CjClutter.OpenGl.EntityComponent;
@@ -11,6 +12,7 @@ using CjClutter.OpenGl.SceneGraph;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
 using FrameEventArgs = OpenTK.FrameEventArgs;
 
 namespace CjClutter.OpenGl.Gui
@@ -80,6 +82,7 @@ namespace CjClutter.OpenGl.Gui
                 new LightMoverSystem(),
                 new OceanSystem(),
                 new CubeMeshSystem(),
+                new InputSystem(_keyboardInputProcessor)
                 //new ChunkedLODSystem(_lodCamera),
                 //new RenderSystem(_camera),
             };
@@ -87,6 +90,7 @@ namespace CjClutter.OpenGl.Gui
             var light = new Entity(Guid.NewGuid().ToString());
             _entityManager.Add(light);
             _entityManager.AddComponentToEntity(light, new PositionalLightComponent { Position = new Vector3d(0, 1, 0) });
+            _entityManager.AddComponentToEntity(light, new InputComponent(Key.J, Key.L, Key.M, Key.N, Key.U, Key.I));
 
             const int numberOfChunksX = 20;
             const int numberOfChunksY = 20;
@@ -172,7 +176,7 @@ namespace CjClutter.OpenGl.Gui
                 system.Update(ElapsedTime.TotalSeconds, _entityManager);
             }
 
-            _terrain.Render(_camera);
+            _terrain.Render(_camera, _entityManager.GetComponent<PositionalLightComponent>(_entityManager.GetEntitiesWithComponent<PositionalLightComponent>().Single()).Position);
 
             if (_awesomiumGui.IsDirty)
             {
