@@ -27,7 +27,7 @@ namespace CjClutter.OpenGl.Gui
             var elementBuffer = CreateElementBuffer(mesh);
             var vertexArrayObject = CreateAndSetupVertexArrayObject(vertexBuffer, elementBuffer);
 
-            return new RenderableMesh(vertexBuffer, elementBuffer, vertexArrayObject);
+            return new RenderableMesh(vertexBuffer, elementBuffer, vertexArrayObject, mesh.Faces.Length);
         }
 
         private VertexArrayObject CreateAndSetupVertexArrayObject(VertexBufferObject<Vertex3V3N> vertexBuffer, VertexBufferObject<uint> elementBuffer)

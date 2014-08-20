@@ -15,5 +15,24 @@ namespace CjClutter.OpenGl.EntityComponent
         public Vector3d Min { get; private set; }
         public Vector3d Max { get; private set; }
         public Vector3d Center { get; private set; }
+
+        public bool Equals(Box3D other)
+        {
+            return Min.Equals(other.Min) && Max.Equals(other.Max);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is Box3D && Equals((Box3D) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (Min.GetHashCode()*397) ^ Max.GetHashCode();
+            }
+        }
     }
 }
