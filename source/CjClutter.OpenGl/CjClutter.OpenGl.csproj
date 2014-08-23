@@ -203,6 +203,7 @@
     <Compile Include="Noise\NoiseDecorator.cs" />
     <Compile Include="SceneGraph\TerrainGenerator.cs" />
     <Compile Include="Terrain.cs" />
+    <Compile Include="TerrainChunkCache.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.EntityComponent;
 using CjClutter.OpenGl.Gui;
@@ -17,84 +13,6 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace CjClutter.OpenGl
 {
-    public class TerrainChunkCache
-    {
-        private readonly Dictionary<Box3D, RenderableMesh> _cache = new Dictionary<Box3D, RenderableMesh>();
-        private TerrainChunkFactory _terrainChunkFactory;
-        private List<Box3D> _queue;
-        private IResourceAllocator _resourceAllocator;
-        private Dictionary<Box3D, Mesh3V3N> _mapping;
-
-        public TerrainChunkCache(TerrainChunkFactory terrainChunkFactory, IResourceAllocator resourceAllocator)
-        {
-            _resourceAllocator = resourceAllocator;
-            _terrainChunkFactory = terrainChunkFactory;
-            _queue = new List<Box3D>();
-            _mapping = new Dictionary<Box3D, Mesh3V3N>();
-            for (int i = 0; i < 1; i++)
-            {
-                var workerThread = new Thread(() => Worker());
-                workerThread.IsBackground = true;
-                workerThread.Start();
-            }
-        }
-
-        private void Worker()
-        {
-            while (true)
-            {
-                Box3D bounds;
-                lock (this)
-                {
-                    if (!_queue.Any())
-                    {
-                        continue;
-                    }
-
-                    bounds = _queue[0];
-                }
-
-                var mesh = _terrainChunkFactory.Create(bounds);
-                lock (this)
-                {
-                    _queue.Remove(bounds);
-                    _mapping[bounds] = mesh;
-                }
-            }
-        }
-
-        public void LoadIfNotCachedAsync(Box3D bounds)
-        {
-            lock (this)
-            {
-                if (!_cache.ContainsKey(bounds) && !_queue.Contains(bounds))
-                {
-                    _queue.Insert(0, bounds);
-                }
-            }
-        }
-
-        public RenderableMesh GetRenderable(Box3D bounds)
-        {
-            lock (this)
-            {
-                if (!_cache.ContainsKey(bounds))
-                {
-                    if (!_mapping.ContainsKey(bounds))
-                    {
-                        return null;
-                    }
-                    var mesh = _mapping[bounds];
-                    var renderableMesh = _resourceAllocator.AllocateResourceFor(mesh);
-                    _cache[bounds] = renderableMesh;
-                    _mapping.Remove(bounds);
-                }
-
-                return _cache[bounds];
-            }
-        }
-    }
-
     public class Terrain
     {
         private readonly ChunkedLodTreeFactory.ChunkedLodTreeNode _tree;
@@ -125,7 +43,7 @@ namespace CjClutter.OpenGl
             return chunkedLodTreeFactory.Create(bounds, (int)7);
         }
 
-        public void Render(ICamera camera, Vector3d lightPosition)
+        public void Render(ICamera camera, ICamera lodCamera, Vector3d lightPosition)
         {
             var transformation = new Matrix4d(
                 new Vector4d(1, 0, 0, 0),
@@ -135,22 +53,15 @@ namespace CjClutter.OpenGl
 
             var visibleChunks = _chunkedLod.Calculate(
                 _tree,
-                camera.Width,
-                camera.HorizontalFieldOfView,
-                Vector3d.Transform(camera.Position, transformation),
-                10,
-                FrustumPlaneExtractor.ExtractRowMajor(transformation * camera.ComputeCameraMatrix() * camera.ComputeProjectionMatrix()));
+                lodCamera.Width,
+                lodCamera.HorizontalFieldOfView,
+                Vector3d.Transform(lodCamera.Position, transformation),
+                20,
+                FrustumPlaneExtractor.ExtractRowMajor(transformation * lodCamera.ComputeCameraMatrix() * lodCamera.ComputeProjectionMatrix()));
 
             foreach (var chunkedLodTreeNode in visibleChunks)
             {
                 _cache.LoadIfNotCachedAsync(chunkedLodTreeNode.Bounds);
-                //if (!_cache.ContainsKey(chunkedLodTreeNode))
-                //{
-                //    var mesh = terrainChunkFactory.Create(chunkedLodTreeNode.Bounds);
-                //    _count = mesh.Faces.Length * 3;
-                //    var renderable = resourceAllocator.AllocateResourceFor(mesh);
-                //    _cache.Add(chunkedLodTreeNode, renderable);
-                //}
             }
 
             GL.ClearColor(Color4.White);
@@ -163,7 +74,6 @@ namespace CjClutter.OpenGl
 
             _simpleMaterial.Bind();
             var worldSpaceLightPosition = new Vector4d(lightPosition, 1);
-            //_simpleMaterial.LightDirection.Set(worldSpaceLightPosition);
 
             _simpleMaterial.ProjectionMatrix.Set(camera.ComputeProjectionMatrix().ToMatrix4());
             _simpleMaterial.ViewMatrix.Set(camera.ComputeCameraMatrix().ToMatrix4());
@@ -242,7 +152,7 @@ namespace CjClutter.OpenGl
     {
         public Mesh3V3N Create(Box3D bounds)
         {
-            var meshDimensions = 128;
+            var meshDimensions = 64;
             var implicintHeightMap = new ImplicitChunkHeightMap(bounds, meshDimensions, meshDimensions, new ScaledNoiseGenerator());
             return MeshCreator.CreateFromHeightMap(meshDimensions, meshDimensions, implicintHeightMap);
         }
@@ -250,15 +160,17 @@ namespace CjClutter.OpenGl
         public class ScaledNoiseGenerator : INoiseGenerator
         {
             private INoiseGenerator _noise;
+            private ImprovedPerlinNoise _largeScaleNoise;
 
             public ScaledNoiseGenerator()
             {
+                _largeScaleNoise = new ImprovedPerlinNoise(4711);
                 _noise = new NoiseFactory.RidgedMultiFractal().Create(new NoiseFactory.NoiseParameters());
             }
 
             public double Noise(double x, double y)
             {
-                return _noise.Noise(x / 100, y / 100);
+                return _noise.Noise(x / 200, y / 200) + _largeScaleNoise.Noise(x / 1000, y / 1000) * 10;
             }
 
             public double Noise(double x, double y, double z)

@@ -176,7 +176,7 @@ namespace CjClutter.OpenGl.Gui
                 system.Update(ElapsedTime.TotalSeconds, _entityManager);
             }
 
-            _terrain.Render(_camera, _entityManager.GetComponent<PositionalLightComponent>(_entityManager.GetEntitiesWithComponent<PositionalLightComponent>().Single()).Position);
+            _terrain.Render(_camera, _lodCamera, _entityManager.GetComponent<PositionalLightComponent>(_entityManager.GetEntitiesWithComponent<PositionalLightComponent>().Single()).Position);
 
             if (_awesomiumGui.IsDirty)
             {
