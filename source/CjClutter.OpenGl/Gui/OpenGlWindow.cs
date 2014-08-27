@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.CoordinateSystems;
 using CjClutter.OpenGl.EntityComponent;
@@ -13,6 +14,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+using OpenTK.Platform;
 using FrameEventArgs = OpenTK.FrameEventArgs;
 
 namespace CjClutter.OpenGl.Gui
@@ -61,6 +63,27 @@ namespace CjClutter.OpenGl.Gui
 
         protected override void OnLoad(EventArgs e)
         {
+            Context.MakeCurrent(null);
+            var contextReady = new AutoResetEvent(false);
+            var thread = new Thread(() =>
+            {
+                var window = new NativeWindow();
+                var context = new GraphicsContext(Context.GraphicsMode, window.WindowInfo);
+                context.MakeCurrent(window.WindowInfo);
+                contextReady.Set();
+
+                while (true)
+                {
+                    var action = JobDispatcher.Instance.Dequeue();
+                    action();
+                }
+            });
+
+            thread.IsBackground = true;
+            thread.Start();
+            contextReady.WaitOne();
+            MakeCurrent();
+
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
 
