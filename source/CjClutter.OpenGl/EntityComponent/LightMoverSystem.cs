@@ -12,7 +12,7 @@ namespace CjClutter.OpenGl.EntityComponent
                 .Single();
 
             var component = entityManager.GetComponent<PositionalLightComponent>(light);
-            component.Position = new Vector3d(Math.Cos(elapsedTime) * 5, 2, Math.Sin(elapsedTime) * 5);
+            //component.Position = new Vector3d(Math.Cos(elapsedTime) * 5, 2, Math.Sin(elapsedTime) * 5);
         }
     }
 }
