@@ -25,12 +25,12 @@ namespace CjClutter.OpenGl.Gui
         {
             var vertexBuffer = CreateVertexBuffer(mesh);
             var elementBuffer = CreateElementBuffer(mesh);
-            var vertexArrayObject = CreateAndSetupVertexArrayObject(vertexBuffer, elementBuffer);
+            //var vertexArrayObject = CreateAndSetupVertexArrayObject(vertexBuffer, elementBuffer);
 
-            return new RenderableMesh(vertexBuffer, elementBuffer, vertexArrayObject, mesh.Faces.Length);
+            return new RenderableMesh(vertexBuffer, elementBuffer, null, mesh.Faces.Length, this);
         }
 
-        private VertexArrayObject CreateAndSetupVertexArrayObject(VertexBufferObject<Vertex3V3N> vertexBuffer, VertexBufferObject<uint> elementBuffer)
+        public VertexArrayObject CreateAndSetupVertexArrayObject(VertexBufferObject<Vertex3V3N> vertexBuffer, VertexBufferObject<uint> elementBuffer)
         {
             var vertexArrayObject = _resourceFactory.CreateVertexArrayObject();
 

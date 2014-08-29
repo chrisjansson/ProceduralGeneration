@@ -9,15 +9,24 @@ namespace CjClutter.OpenGl.Gui
     {
         private readonly VertexBufferObject<Vertex3V3N> _vertexBuffer;
         private readonly VertexBufferObject<uint> _elementBuffer;
-        private readonly VertexArrayObject _vertexArrayObject;
+        private VertexArrayObject _vertexArrayObject;
         public readonly int Faces;
+        private ResourceAllocator _resourceAllocator;
 
-        public RenderableMesh(VertexBufferObject<Vertex3V3N> vertexBuffer, VertexBufferObject<uint> elementBuffer, VertexArrayObject vertexArrayObject, int length)
+        public RenderableMesh(VertexBufferObject<Vertex3V3N> vertexBuffer, VertexBufferObject<uint> elementBuffer, VertexArrayObject vertexArrayObject, int length, ResourceAllocator resourceAllocator)
         {
+            _resourceAllocator = resourceAllocator;
             Faces = length;
             _vertexArrayObject = vertexArrayObject;
             _elementBuffer = elementBuffer;
             _vertexBuffer = vertexBuffer;
+        }
+
+        public void CreateVAO()
+        {
+            if (_vertexArrayObject != null)
+                return;
+            _vertexArrayObject= _resourceAllocator.CreateAndSetupVertexArrayObject(_vertexBuffer, _elementBuffer);
         }
 
         public VertexArrayObject VertexArrayObject
