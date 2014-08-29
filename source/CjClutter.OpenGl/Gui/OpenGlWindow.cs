@@ -61,7 +61,7 @@ namespace CjClutter.OpenGl.Gui
             _awesomiumGui = new SettingsGui(this);
         }
 
-        protected override void OnLoad(EventArgs e)
+        private void StartJobThread()
         {
             Context.MakeCurrent(null);
             var contextReady = new AutoResetEvent(false);
@@ -83,6 +83,18 @@ namespace CjClutter.OpenGl.Gui
             thread.Start();
             contextReady.WaitOne();
             MakeCurrent();
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            StartJobThread();
+            StartJobThread();
+            StartJobThread();
+            StartJobThread();
+            StartJobThread();
+            StartJobThread();
+            StartJobThread();
+            StartJobThread();
 
             _stopwatch = new Stopwatch();
             _stopwatch.Start();
@@ -112,7 +124,7 @@ namespace CjClutter.OpenGl.Gui
 
             var light = new Entity(Guid.NewGuid().ToString());
             _entityManager.Add(light);
-            _entityManager.AddComponentToEntity(light, new PositionalLightComponent { Position = new Vector3d(0, 1, 0) });
+            _entityManager.AddComponentToEntity(light, new PositionalLightComponent { Position = new Vector3d(0, 20, 0) });
             _entityManager.AddComponentToEntity(light, new InputComponent(Key.J, Key.L, Key.M, Key.N, Key.U, Key.I));
 
             const int numberOfChunksX = 20;

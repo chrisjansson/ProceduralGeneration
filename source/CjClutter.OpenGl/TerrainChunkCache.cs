@@ -1,9 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using CjClutter.OpenGl.EntityComponent;
 using CjClutter.OpenGl.Gui;
-using CjClutter.OpenGl.SceneGraph;
 
 namespace CjClutter.OpenGl
 {
@@ -12,13 +10,13 @@ namespace CjClutter.OpenGl
         private readonly ConcurrentDictionary<Box3D, RenderableMesh> _cache = new ConcurrentDictionary<Box3D, RenderableMesh>();
         private readonly TerrainChunkFactory _terrainChunkFactory;
         private readonly IResourceAllocator _resourceAllocator;
-        private readonly Dictionary<Box3D, Task<Mesh3V3N>> _jobs;
+        private readonly HashSet<Box3D> _jobs;
 
         public TerrainChunkCache(TerrainChunkFactory terrainChunkFactory, IResourceAllocator resourceAllocator)
         {
             _resourceAllocator = resourceAllocator;
             _terrainChunkFactory = terrainChunkFactory;
-            _jobs = new Dictionary<Box3D, Task<Mesh3V3N>>();
+            _jobs = new HashSet<Box3D>();
         }
 
         public RenderableMesh GetRenderable(Box3D bounds)
@@ -30,25 +28,19 @@ namespace CjClutter.OpenGl
                 return mesh;
             }
 
-            if (!_jobs.ContainsKey(bounds))
+            if (!_jobs.Contains(bounds))
             {
-                var inProgressTask = Task.Run(() => _terrainChunkFactory.Create(bounds));
-                _jobs.Add(bounds, inProgressTask);
-                return null;
+                _jobs.Add(bounds);
+                JobDispatcher.Instance.Enqueue(() =>
+                {
+                    var terrainChunk = _terrainChunkFactory.Create(bounds);
+                    var renderableMesh = _resourceAllocator.AllocateResourceFor(terrainChunk);
+                    _cache[bounds] = renderableMesh;
+                    _jobs.Remove(bounds);
+                });
             }
 
-            var meshTask = _jobs[bounds];
-            if (!meshTask.IsCompleted)
-            {
-                return null;
-            }
-
-            _jobs.Remove(bounds);
-            var allocatedMesh = meshTask.Result;
-            mesh = _resourceAllocator.AllocateResourceFor(allocatedMesh);
-            _cache[bounds] = mesh;
-
-            return mesh;
+            return null;
         }
     }
 }

@@ -44,6 +44,7 @@ namespace CjClutter.OpenGl.SceneGraph
                 var normal = -Vector3.Cross(u, v);
                 normal.Normalize();
 
+
                 _vertices[face.V0].Normal += normal;
                 _vertices[face.V1].Normal += normal;
                 _vertices[face.V2].Normal += normal;
