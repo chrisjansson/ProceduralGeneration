@@ -125,7 +125,7 @@ namespace CjClutter.OpenGl.Gui
 
             var light = new Entity(Guid.NewGuid().ToString());
             _entityManager.Add(light);
-            _entityManager.AddComponentToEntity(light, new PositionalLightComponent { Position = new Vector3d(0, 11, 0) });
+            _entityManager.AddComponentToEntity(light, new PositionalLightComponent { Position = new Vector3d(0, 20, 0) });
             _entityManager.AddComponentToEntity(light, new InputComponent(Key.J, Key.L, Key.M, Key.N, Key.U, Key.I));
 
             const int numberOfChunksX = 20;
