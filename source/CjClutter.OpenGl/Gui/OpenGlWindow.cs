@@ -35,6 +35,7 @@ namespace CjClutter.OpenGl.Gui
         private LookAtCamera _lodCamera;
         private bool _synchronizeCameras = true;
         private Terrain _terrain;
+        private Cube _cube;
 
         public OpenGlWindow(int width, int height, string title, OpenGlVersion openGlVersion)
             : base(
@@ -124,7 +125,7 @@ namespace CjClutter.OpenGl.Gui
 
             var light = new Entity(Guid.NewGuid().ToString());
             _entityManager.Add(light);
-            _entityManager.AddComponentToEntity(light, new PositionalLightComponent { Position = new Vector3d(0, 20, 0) });
+            _entityManager.AddComponentToEntity(light, new PositionalLightComponent { Position = new Vector3d(0, 11, 0) });
             _entityManager.AddComponentToEntity(light, new InputComponent(Key.J, Key.L, Key.M, Key.N, Key.U, Key.I));
 
             const int numberOfChunksX = 20;
@@ -150,6 +151,7 @@ namespace CjClutter.OpenGl.Gui
             };
 
             _terrain = new Terrain();
+            _cube = new Cube();
 
         }
 
@@ -212,6 +214,7 @@ namespace CjClutter.OpenGl.Gui
             }
 
             _terrain.Render(_camera, _lodCamera, _entityManager.GetComponent<PositionalLightComponent>(_entityManager.GetEntitiesWithComponent<PositionalLightComponent>().Single()).Position);
+            _cube.Render(_camera, _entityManager.GetComponent<PositionalLightComponent>(_entityManager.GetEntitiesWithComponent<PositionalLightComponent>().Single()).Position);
 
             if (_awesomiumGui.IsDirty)
             {

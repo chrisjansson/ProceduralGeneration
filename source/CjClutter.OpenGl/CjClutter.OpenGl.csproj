@@ -110,6 +110,7 @@
     <Compile Include="CoordinateSystems\GuiToRelativeCoordinateTransformer.cs" />
     <Compile Include="CoordinateSystems\IGuiToRelativeCoordinateTransformer.cs" />
     <Compile Include="CoordinateSystems\IInterfaceSize.cs" />
+    <Compile Include="Cube.cs" />
     <Compile Include="DiamondSquare.cs" />
     <Compile Include="EntityComponent\Box3d.cs" />
     <Compile Include="EntityComponent\ChunkedLODSystem.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="EntityComponent\TerrainSystem.cs" />
     <Compile Include="EntityComponent\OceanSystem.cs" />
     <Compile Include="Gui\AwesomiumGui.cs" />
+    <Compile Include="Gui\JobDispatcher.cs" />
     <Compile Include="Gui\RenderableMesh.cs" />
     <Compile Include="Gui\ResourceAllocator.cs" />
     <Compile Include="Gui\SettingsGui.cs" />
