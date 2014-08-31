@@ -40,7 +40,7 @@ namespace CjClutter.OpenGl
             var levels = Math.Log((8192 / 128), 2);
 
             //calculate depth so that one square is one meter as maximum resolution
-            return chunkedLodTreeFactory.Create(bounds, (int)7);
+            return chunkedLodTreeFactory.Create(bounds, (int)8);
         }
 
         public void Render(ICamera camera, ICamera lodCamera, Vector3d lightPosition)
@@ -59,11 +59,6 @@ namespace CjClutter.OpenGl
                 20,
                 FrustumPlaneExtractor.ExtractRowMajor(transformation * lodCamera.ComputeCameraMatrix() * lodCamera.ComputeProjectionMatrix()));
 
-            foreach (var chunkedLodTreeNode in visibleChunks)
-            {
-                _cache.LoadIfNotCachedAsync(chunkedLodTreeNode.Bounds);
-            }
-
             GL.ClearColor(Color4.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
@@ -73,10 +68,10 @@ namespace CjClutter.OpenGl
             GL.FrontFace(FrontFaceDirection.Cw);
 
             _simpleMaterial.Bind();
-            var worldSpaceLightPosition = new Vector4d(lightPosition, 1);
 
             _simpleMaterial.ProjectionMatrix.Set(camera.ComputeProjectionMatrix().ToMatrix4());
             _simpleMaterial.ViewMatrix.Set(camera.ComputeCameraMatrix().ToMatrix4());
+            _simpleMaterial.LightDirection.Set(new Vector3(10, 2, 10).Normalized());
 
             _simpleMaterial.Color.Set(new Vector4(0.9f, 0.9f, 0.9f, 1.0f));
 
@@ -85,61 +80,30 @@ namespace CjClutter.OpenGl
                 var renderableMesh = _cache.GetRenderable(chunkedLodTreeNode.Bounds);
                 if (renderableMesh == null)
                     continue;
+
+                renderableMesh.CreateVAO();
                 renderableMesh.VertexArrayObject.Bind();
 
                 var bounds = chunkedLodTreeNode.Bounds;
                 var translation = Matrix4.CreateTranslation((float)bounds.Center.X, 0, (float)bounds.Center.Y);
                 var delta = bounds.Max - bounds.Min;
-                var scale = Matrix4.CreateScale((float)delta.X, 10f, (float)delta.Y);
+                var scale = Matrix4.CreateScale((float)delta.X, 1, (float)delta.Y);
 
                 var modelMatrix = scale * translation;
                 _simpleMaterial.ModelMatrix.Set(modelMatrix);
 
-                var worldToModel = modelMatrix.Inverted();
-                var transform = Vector4.Transform((Vector4)worldSpaceLightPosition, worldToModel);
-                _simpleMaterial.LightDirection.Set(transform.Xyz);
+                var normalToWorld = modelMatrix.Inverted();
+                var transposed = Matrix4.Transpose(normalToWorld);
+                var normalToWorld3x3 = new Matrix3(transposed);
+                _simpleMaterial.NormalToWorld3x3.Set(normalToWorld3x3);
 
-                //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-                //GL.Disable(EnableCap.CullFace);
+                _simpleMaterial.LightPosition.Set((Vector3)lightPosition);
 
                 GL.DrawElements(BeginMode.Triangles, renderableMesh.Faces * 3, DrawElementsType.UnsignedInt, 0);
-
-                //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-                //GL.Enable(EnableCap.CullFace);
-
-                //_normalDebugProgram.Bind();
-                //_normalDebugProgram.ProjectionMatrix.Set(camera.ComputeProjectionMatrix().ToMatrix4());
-                //_normalDebugProgram.ViewMatrix.Set(camera.ComputeCameraMatrix().ToMatrix4());
-                //_normalDebugProgram.ModelMatrix.Set(scale * translation);
-                //GL.DrawElements(BeginMode.Triangles, _count, DrawElementsType.UnsignedInt, 0);
-                //_normalDebugProgram.Unbind();
 
                 renderableMesh.VertexArrayObject.Unbind();
             }
             _simpleMaterial.Unbind();
-
-            //_normalDebugProgram.Bind();
-            //_normalDebugProgram.ProjectionMatrix.Set(camera.ComputeProjectionMatrix().ToMatrix4());
-            //_normalDebugProgram.ViewMatrix.Set(camera.ComputeCameraMatrix().ToMatrix4());
-
-            //foreach (var chunkedLodTreeNode in visibleChunks)
-            //{
-            //    var renderableMesh = _cache[chunkedLodTreeNode];
-            //    renderableMesh.VertexArrayObject.Bind();
-
-            //    var bounds = chunkedLodTreeNode.Bounds;
-            //    var translation = Matrix4.CreateTranslation((float)bounds.Center.X, 0, (float)bounds.Center.Y);
-            //    var delta = bounds.Max - bounds.Min;
-            //    var scale = Matrix4.CreateScale((float)delta.X, 1, (float)delta.Y);
-
-            //    _normalDebugProgram.ModelMatrix.Set(scale * translation);
-
-            //    GL.DrawElements(BeginMode.Triangles, _count, DrawElementsType.UnsignedInt, 0);
-
-            //    renderableMesh.VertexArrayObject.Unbind();
-            //}
-
-            //_normalDebugProgram.Unbind();
         }
 
         private SimpleMaterial _simpleMaterial;
@@ -152,9 +116,9 @@ namespace CjClutter.OpenGl
     {
         public Mesh3V3N Create(Box3D bounds)
         {
-            var meshDimensions = 64;
+            var meshDimensions = 128;
             var implicintHeightMap = new ImplicitChunkHeightMap(bounds, meshDimensions, meshDimensions, new ScaledNoiseGenerator());
-            return MeshCreator.CreateFromHeightMap(meshDimensions, meshDimensions, implicintHeightMap);
+            return MeshCreator.CreateFromHeightMap(meshDimensions, meshDimensions, implicintHeightMap);//.Transformed(Matrix4.CreateScale(256f, 1f, 256f));
         }
 
         public class ScaledNoiseGenerator : INoiseGenerator
@@ -170,7 +134,7 @@ namespace CjClutter.OpenGl
 
             public double Noise(double x, double y)
             {
-                return _noise.Noise(x / 200, y / 200) + _largeScaleNoise.Noise(x / 1000, y / 1000) * 10;
+                return _noise.Noise(x / 200, y / 200) * 30;
             }
 
             public double Noise(double x, double y, double z)
@@ -208,7 +172,7 @@ namespace CjClutter.OpenGl
                 var top = new Vector3d(center.X, _noiseGenerator.Noise(center.X, center.Y + 1), center.Y + 1);
                 var bottom = new Vector3d(center.X, _noiseGenerator.Noise(center.X, center.Y - 1), center.Y - 1);
 
-                return -Vector3d.Cross((right - left).Normalized(), (top - bottom).Normalized()).Normalized();
+                return -(Vector3d.Cross((right - left).Normalized(), (top - bottom).Normalized()).Normalized());
             }
 
             private Vector2d CalculatePosition(int column, int row)

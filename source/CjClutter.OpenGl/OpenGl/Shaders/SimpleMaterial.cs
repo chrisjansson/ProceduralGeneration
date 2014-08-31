@@ -10,10 +10,12 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
         private IProgram Program { get; set; }
         private readonly OpenGlResourceFactory _openGlResourceFactory;
 
+        public Uniform<Matrix3> NormalToWorld3x3 { get; private set; }
         public Uniform<Matrix4> ProjectionMatrix { get; private set; }
         public Uniform<Matrix4> ViewMatrix { get; private set; }
         public Uniform<Matrix4> ModelMatrix { get; private set; }
         public Uniform<Vector4> Color { get; private set; }
+        public Uniform<Vector3> LightPosition { get; private set; }
         public Uniform<Vector3> LightDirection { get; private set; }
 
         public SimpleMaterial()
@@ -41,7 +43,9 @@ namespace CjClutter.OpenGl.OpenGl.Shaders
             ViewMatrix = Program.GetUniform<Matrix4>("ViewMatrix");
             ModelMatrix = Program.GetUniform<Matrix4>("ModelMatrix");
             Color = Program.GetUniform<Vector4>("Color");
-            LightDirection = Program.GetUniform<Vector3>("ModelSpaceLightPosition");
+            LightPosition = Program.GetUniform<Vector3>("ModelSpaceLightPosition");
+            NormalToWorld3x3 = Program.GetUniform<Matrix3>("NormalToWorld3x3");
+            LightDirection = Program.GetUniform<Vector3>("LightDirection");
         }
 
         public void Delete()
@@ -90,6 +94,10 @@ void main()
 
 uniform vec4 Color;
 uniform vec3 ModelSpaceLightPosition;
+uniform vec3 LightDirection;
+
+uniform mat4 ModelMatrix;
+uniform mat3 NormalToWorld3x3;
 
 in vec3 modelNormal;
 in vec4 modelPosition;
@@ -97,11 +105,12 @@ out vec4 fragColor;
 
 void main()
 {
-    
-    vec3 lightToDir = normalize(ModelSpaceLightPosition - (modelPosition.xyz));
-    float incidence = dot(normalize(modelNormal), lightToDir);
-    incidence = clamp(incidence, 0, 1);
-    fragColor = Color * incidence + vec4(0.2, 0.2, 0.2, 1.0);
+    vec3 worldSpaceNormal = normalize(NormalToWorld3x3 * modelNormal);
+//    vec4 worldSpacePosition = ModelMatrix * modelPosition;
+//    vec3 lightToDir = normalize(ModelSpaceLightPosition - (worldSpacePosition.xyz));
+//    float incidence = dot(worldSpaceNormal, lightToDir);
+//    incidence = clamp(incidence, 0.1, 1);
+    fragColor = vec4(1.0, 1.0, 1.0, 1.0) * clamp(dot(worldSpaceNormal, normalize(vec3(1, 1, 0))), 0.0, 1);
 }
 ";
     }
