@@ -66,12 +66,12 @@ namespace CjClutter.OpenGl.EntityComponent
 
                 if (_keyboardInputProcessor.IsButtonDown(inputComponent.Up))
                 {
-                    lightPosition.Position += new Vector3d(0, 1, 0) * dt;
+                    lightPosition.Position += new Vector3d(0, 1, 0) * dt * 10;
                 }
 
                 if (_keyboardInputProcessor.IsButtonDown(inputComponent.Down))
                 {
-                    lightPosition.Position -= new Vector3d(0, 1, 0) * dt;
+                    lightPosition.Position -= new Vector3d(0, 1, 0) * dt * 10;
                 }
                 _elapsedTime = elapsedTime;
             }
