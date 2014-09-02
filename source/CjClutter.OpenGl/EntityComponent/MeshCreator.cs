@@ -22,7 +22,7 @@ namespace CjClutter.OpenGl.EntityComponent
                     var height = heightMap.GetHeight(x, y);
                     vertices.Add(new Vertex3V3N
                     {
-                        Position = new Vector3((float)x / columns - 0.5f, (float)height, (float)y / rows - 0.5f),
+                        Position = new Vector3(x, (float)height, y),
                         Normal = (Vector3)heightMap.GetNormal(x, y)
                     });
                 }
@@ -68,15 +68,12 @@ namespace CjClutter.OpenGl.EntityComponent
                         }
                     }
 
-                    //var f0 = new Face3 { V0 = v0, V1 = v1, V2 = v2 };
-                    //var f1 = new Face3 { V0 = v0, V1 = v2, V2 = v3 };
-
                     faces.Add(f0);
                     faces.Add(f1);
                 }
             }
 
-            return new Mesh3V3N(vertices, faces);
+            return new Mesh3V3N(vertices, faces).Transformed(Matrix4.CreateTranslation(-columns / 2, 0, -rows / 2) * Matrix4.CreateScale((float)(1.0 / columns), 1, (float)(1.0 / rows)));
         }
 
         private class FlatHeightMap : IHeightMap
