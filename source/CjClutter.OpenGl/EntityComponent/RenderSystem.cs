@@ -44,7 +44,7 @@ namespace CjClutter.OpenGl.EntityComponent
 
             var light = entityManager.GetEntitiesWithComponent<PositionalLightComponent>().Single();
             var positionalLightComponent = entityManager.GetComponent<PositionalLightComponent>(light);
-            _simpleMaterial.LightDirection.Set((Vector3) positionalLightComponent.Position);
+            _simpleMaterial.LightPosition.Set((Vector3) positionalLightComponent.Position);
             _simpleMaterial.ProjectionMatrix.Set(_camera.ComputeProjectionMatrix().ToMatrix4());
             _simpleMaterial.ViewMatrix.Set(_camera.ComputeCameraMatrix().ToMatrix4());
 
