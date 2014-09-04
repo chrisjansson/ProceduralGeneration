@@ -40,7 +40,7 @@ namespace CjClutter.OpenGl
             var levels = Math.Log((8192 / 128), 2);
 
             //calculate depth so that one square is one meter as maximum resolution
-            return chunkedLodTreeFactory.Create(bounds, (int)8);
+            return chunkedLodTreeFactory.Create(bounds, (int)9);
         }
 
         public void Render(ICamera camera, ICamera lodCamera, Vector3d lightPosition)
@@ -56,7 +56,7 @@ namespace CjClutter.OpenGl
                 lodCamera.Width,
                 lodCamera.HorizontalFieldOfView,
                 Vector3d.Transform(lodCamera.Position, transformation),
-                20,
+                30,
                 FrustumPlaneExtractor.ExtractRowMajor(transformation * lodCamera.ComputeCameraMatrix() * lodCamera.ComputeProjectionMatrix()));
 
             GL.ClearColor(Color4.White);
@@ -89,7 +89,7 @@ namespace CjClutter.OpenGl
                 var delta = bounds.Max - bounds.Min;
                 var scale = Matrix4.CreateScale((float)delta.X, 1, (float)delta.Y);
 
-                var modelMatrix = Matrix4.Identity;//scale * translation;
+                var modelMatrix = scale * translation;
                 _simpleMaterial.ModelMatrix.Set(modelMatrix);
 
                 //var normalToWorld = modelMatrix.Inverted();
@@ -116,13 +116,10 @@ namespace CjClutter.OpenGl
     {
         public Mesh3V3N Create(Box3D bounds)
         {
-            var meshDimensions = 32;
+            var meshDimensions = 128;
             var implicintHeightMap = new ImplicitChunkHeightMap(bounds, meshDimensions, meshDimensions, new ScaledNoiseGenerator());
             var delta = bounds.Max - bounds.Min;
-            var matrix4 = Matrix4.CreateScale((float) delta.X, 1, (float) delta.Y);
-            var translation = Matrix4.CreateTranslation((float) bounds.Center.X, 0, (float) bounds.Center.Y);
-            return MeshCreator.CreateFromHeightMap(meshDimensions, meshDimensions, implicintHeightMap)
-                .Transformed(matrix4 * translation);
+            return MeshCreator.CreateFromHeightMap(meshDimensions, meshDimensions, implicintHeightMap);
         }
 
         public class ScaledNoiseGenerator : INoiseGenerator
@@ -153,6 +150,8 @@ namespace CjClutter.OpenGl
             private readonly INoiseGenerator _noiseGenerator;
             private readonly int _columns;
             private readonly int _rows;
+            private double _dx;
+            private double _dy;
 
             public ImplicitChunkHeightMap(Box3D bounds, int columns, int rows, INoiseGenerator noiseGenerator)
             {
@@ -160,6 +159,12 @@ namespace CjClutter.OpenGl
                 _rows = rows;
                 _columns = columns;
                 _bounds = bounds;
+
+                var origin = CalculatePosition(0, 0);
+                var position = CalculatePosition(1, 1);
+
+                _dx = 1 / (position.X - origin.X);
+                _dy = 1 / (position.Y - origin.Y);
             }
 
             public double GetHeight(int column, int row)
@@ -170,33 +175,12 @@ namespace CjClutter.OpenGl
 
             public Vector3d GetNormal(int column, int row)
             {
-                //var center = CalculatePosition(column, row);
-                //var right = CalculatePosition(column + 1, row);
-                //var top = CalculatePosition(column, row + 1);
-
-                //var centerHeight = GetHeight(column, row);
-                //var centerPosition = new Vector3d(center.X, centerHeight, center.Y);
-                //var rightPosition = new Vector3d(right.X, _noiseGenerator.Noise(right.X, right.Y), right.Y);
-                //var topPosition = new Vector3d(top.X, _noiseGenerator.Noise(top.X, top.Y), top.Y);
-
-                //return -(Vector3d.Cross((rightPosition - centerPosition).Normalized(), (topPosition - centerPosition).Normalized())).Normalized();
-
-                //var right = new Vector3d(center.X + 1, _noiseGenerator.Noise(center.X + 1, center.Y), center.Y);
-                //var left = new Vector3d(center.X - 1, _noiseGenerator.Noise(center.X - 1, center.Y), center.Y);
-                //var top = new Vector3d(center.X, _noiseGenerator.Noise(center.X, center.Y + 1), center.Y + 1);
-                //var bottom = new Vector3d(center.X, _noiseGenerator.Noise(center.X, center.Y - 1), center.Y - 1);
-
-                //return -(Vector3d.Cross((right - left).Normalized(), (top - bottom).Normalized()).Normalized());
-
                 var center = CalculatePosition(column, row);
-                var right = CalculatePosition(column + 1, row);
-                var top = CalculatePosition(column, row + 1);
-                
-                var centerHeight = GetHeight(column, row);
-                var rightPosition = new Vector3d(1, _noiseGenerator.Noise(right.X, right.Y)  - centerHeight, 0);
-                var topPosition = new Vector3d(0, _noiseGenerator.Noise(top.X, top.Y) - centerHeight, 1);
 
-                return -(Vector3d.Cross((rightPosition).Normalized(), (topPosition).Normalized())).Normalized();
+                var leftRight = new Vector3d(_dx * 2, _noiseGenerator.Noise(center.X + 1, center.Y) - _noiseGenerator.Noise(center.X - 1, center.Y), 0);
+                var bottomTop = new Vector3d(0, _noiseGenerator.Noise(center.X, center.Y + 1) - _noiseGenerator.Noise(center.X, center.Y - 1), _dy * 2);
+
+                return -(Vector3d.Cross(leftRight.Normalized(), bottomTop.Normalized()).Normalized());
             }
 
             public Vector2d CalculatePosition(int column, int row)
