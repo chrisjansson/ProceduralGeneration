@@ -91,10 +91,6 @@ namespace CjClutter.OpenGl
 
                 var modelMatrix = scale * translation;
                 _simpleMaterial.ModelMatrix.Set(modelMatrix);
-
-                //var normalToWorld = modelMatrix.Inverted();
-                //var transposed = Matrix4.Transpose(normalToWorld);
-                //var normalToWorld3x3 = new Matrix3(transposed);
                 _simpleMaterial.NormalToWorld3x3.Set(new Matrix3(Matrix4.Transpose(modelMatrix.Inverted())));
 
                 _simpleMaterial.LightPosition.Set((Vector3)lightPosition);
