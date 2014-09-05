@@ -106,11 +106,11 @@ out vec4 fragColor;
 void main()
 {
     vec3 worldSpaceNormal = normalize(NormalToWorld3x3 * modelNormal);
-//    vec4 worldSpacePosition = ModelMatrix * modelPosition;
-//    vec3 lightToDir = normalize(ModelSpaceLightPosition - (worldSpacePosition.xyz));
-//    float incidence = dot(worldSpaceNormal, lightToDir);
-//    incidence = clamp(incidence, 0.1, 1);
-    fragColor = vec4(1.0, 1.0, 1.0, 1.0) * clamp(dot(worldSpaceNormal, normalize(vec3(1, 1, 0))), 0.0, 1);
+    vec4 worldSpacePosition = ModelMatrix * modelPosition;
+    vec3 dirToLight = normalize(ModelSpaceLightPosition - (worldSpacePosition.xyz));
+    float positionalIncidence = clamp(dot(worldSpaceNormal, dirToLight), 0, 1);
+    float directionalIncidence = clamp(dot(worldSpaceNormal, LightDirection), 0, 1);
+    fragColor = Color * directionalIncidence + Color * positionalIncidence;
 }
 ";
     }

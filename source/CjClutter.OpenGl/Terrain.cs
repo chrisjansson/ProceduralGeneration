@@ -40,7 +40,7 @@ namespace CjClutter.OpenGl
             var levels = Math.Log((8192 / 128), 2);
 
             //calculate depth so that one square is one meter as maximum resolution
-            return chunkedLodTreeFactory.Create(bounds, (int)9);
+            return chunkedLodTreeFactory.Create(bounds, (int)8);
         }
 
         public void Render(ICamera camera, ICamera lodCamera, Vector3d lightPosition)
@@ -71,7 +71,7 @@ namespace CjClutter.OpenGl
 
             _simpleMaterial.ProjectionMatrix.Set(camera.ComputeProjectionMatrix().ToMatrix4());
             _simpleMaterial.ViewMatrix.Set(camera.ComputeCameraMatrix().ToMatrix4());
-            _simpleMaterial.LightDirection.Set(new Vector3(10, 2, 10).Normalized());
+            _simpleMaterial.LightDirection.Set(new Vector3(1, 1, 0).Normalized());
 
             _simpleMaterial.Color.Set(new Vector4(0.9f, 0.9f, 0.9f, 1.0f));
 
@@ -114,7 +114,6 @@ namespace CjClutter.OpenGl
         {
             var meshDimensions = 128;
             var implicintHeightMap = new ImplicitChunkHeightMap(bounds, meshDimensions, meshDimensions, new ScaledNoiseGenerator());
-            var delta = bounds.Max - bounds.Min;
             return MeshCreator.CreateFromHeightMap(meshDimensions, meshDimensions, implicintHeightMap);
         }
 

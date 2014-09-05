@@ -44,7 +44,7 @@ namespace CjClutter.OpenGl.Gui
         public void Update(Mesh3V3N mesh)
         {
             _vertexBuffer.Bind();
-            _vertexBuffer.Data(mesh.Vertices, BufferUsageHint.StreamDraw);
+            _vertexBuffer.Data(mesh.Vertices, BufferUsageHint.StaticDraw);
             _vertexBuffer.Unbind();
         }
     }
