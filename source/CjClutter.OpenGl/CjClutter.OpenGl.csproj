@@ -72,10 +72,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Awesomium.Core, Version=1.7.4.2, Culture=neutral, PublicKeyToken=e1a0d7c8071a5214, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Awesomium Technologies LLC\Awesomium SDK\1.7.4.2\wrappers\Awesomium.NET\Assemblies\Awesomium.Core.dll</HintPath>
-    </Reference>
     <Reference Include="FluentAssertions, Version=1.7.1.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\FluentAssertions.1.7.1.1\Lib\net40\FluentAssertions.dll</HintPath>
@@ -128,13 +124,10 @@
     <Compile Include="EntityComponent\StaticMesh.cs" />
     <Compile Include="EntityComponent\TerrainSystem.cs" />
     <Compile Include="EntityComponent\OceanSystem.cs" />
-    <Compile Include="Gui\AwesomiumGui.cs" />
     <Compile Include="Gui\JobDispatcher.cs" />
     <Compile Include="Gui\RenderableMesh.cs" />
     <Compile Include="Gui\ResourceAllocator.cs" />
-    <Compile Include="Gui\SettingsGui.cs" />
     <Compile Include="Gui\SettingsViewModel.cs" />
-    <Compile Include="Gui\Texture.cs" />
     <Compile Include="Input\Keboard\KeyArgActionPair.cs" />
     <Compile Include="Input\Keboard\CombinationDirection.cs" />
     <Compile Include="KeyCombination.cs" />
@@ -192,7 +185,6 @@
     <Compile Include="OpenGl\VertexTypes\Vertex3V3N.cs" />
     <Compile Include="OpenGl\VertexTypes\Vertex3V3NTests.cs" />
     <Compile Include="OpenGl\VertexTypes\Vertex3VTests.cs" />
-    <Compile Include="OpenTkToAwesomiumKeyMapper.cs" />
     <Compile Include="OpenTk\Matrix4dExtensions.cs" />
     <Compile Include="OpenTk\PointExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

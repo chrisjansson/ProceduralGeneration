@@ -29,8 +29,6 @@ namespace CjClutter.OpenGl.Gui
         private readonly KeyboardInputObservable _keyboardInputObservable;
         private readonly ICamera _camera;
         private EntityManager _entityManager;
-        private Texture _texture;
-        private readonly SettingsGui _awesomiumGui;
         private List<IEntitySystem> _systems;
         private LookAtCamera _lodCamera;
         private bool _synchronizeCameras = true;
@@ -58,8 +56,6 @@ namespace CjClutter.OpenGl.Gui
 
             _camera = new LookAtCamera();
             _lodCamera = new LookAtCamera();
-
-            _awesomiumGui = new SettingsGui(this);
         }
 
         private void StartJobThread()
@@ -105,7 +101,6 @@ namespace CjClutter.OpenGl.Gui
             _keyboardInputObservable.SubscribeKey(KeyCombination.Esc, CombinationDirection.Down, Exit);
             _keyboardInputObservable.SubscribeKey(KeyCombination.P, CombinationDirection.Down, () => _camera.Projection = ProjectionMode.Perspective);
             _keyboardInputObservable.SubscribeKey(KeyCombination.O, CombinationDirection.Down, () => _camera.Projection = ProjectionMode.Orthographic);
-            _keyboardInputObservable.SubscribeKey(KeyCombination.Tilde, CombinationDirection.Down, () => _awesomiumGui.IsEnabled = !_awesomiumGui.IsEnabled);
             _keyboardInputObservable.SubscribeKey(KeyCombination.F, CombinationDirection.Down, () => _synchronizeCameras = !_synchronizeCameras);
 
             _entityManager = new EntityManager();
@@ -141,9 +136,7 @@ namespace CjClutter.OpenGl.Gui
                 }
             }
 
-            _awesomiumGui.Start();
             var settingsViewModel = new SettingsViewModel(new NoiseFactory.NoiseParameters());
-            _awesomiumGui.SetDataContext(settingsViewModel);
             settingsViewModel.SettingsChanged += () =>
             {
                 var settings = settingsViewModel.Assemble();
@@ -153,11 +146,6 @@ namespace CjClutter.OpenGl.Gui
             _terrain = new Terrain();
             _cube = new Cube();
 
-        }
-
-        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
-        {
-            _awesomiumGui.Stop();
         }
 
         private void ToggleFullScren()
@@ -177,7 +165,6 @@ namespace CjClutter.OpenGl.Gui
             GL.Viewport(0, 0, Width, Height);
             _camera.Width = Width;
             _camera.Height = Height;
-            _awesomiumGui.Resize(Width, Height);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -198,12 +185,6 @@ namespace CjClutter.OpenGl.Gui
                 _lodCamera.Height = _camera.Height;
             }
 
-            if (_texture == null)
-            {
-                _texture = new Texture();
-                _texture.Create();
-            }
-
             _frameTimeCounter.UpdateFrameTime(e.Time);
 
             GL.Clear(ClearBufferMask.DepthBufferBit);
@@ -215,15 +196,6 @@ namespace CjClutter.OpenGl.Gui
 
             _terrain.Render(_camera, _lodCamera, _entityManager.GetComponent<PositionalLightComponent>(_entityManager.GetEntitiesWithComponent<PositionalLightComponent>().Single()).Position);
             _cube.Render(_camera, _entityManager.GetComponent<PositionalLightComponent>(_entityManager.GetEntitiesWithComponent<PositionalLightComponent>().Single()).Position);
-
-            if (_awesomiumGui.IsDirty)
-            {
-                _texture.Upload(_awesomiumGui.Frame);
-                _awesomiumGui.IsDirty = false;
-            }
-
-            if (_awesomiumGui.IsEnabled)
-                _texture.Render();
 
             SwapBuffers();
         }
