@@ -160,15 +160,15 @@ type FysicsWindow() =
     override this.OnKeyPress(e) =
         this.tweakbarContext.HandleKeyPress(e.KeyChar) |> ignore
 
-//    override this.OnMouseMove(e) =
-//        this.tweakbarContext.HandleMouseMove(new Point(e.X, e.Y)) |> ignore
-//
-//    override this.OnMouseDown(e) =
-//        this.tweakbarContext.HandleMouseClick(Tw.MouseAction.Pressed, Tw.MouseButton.Left) |> ignore
-//
-//    override this.OnMouseUp(e) =
-//        this.tweakbarContext.HandleMouseClick(Tw.MouseAction.Released, Tw.MouseButton.Left) |> ignore
-//
+    override this.OnMouseMove(e) =
+        this.tweakbarContext.HandleMouseMove(new Point(e.X, e.Y)) |> ignore
+
+    override this.OnMouseDown(e) =
+        this.tweakbarContext.HandleMouseClick(Tw.MouseAction.Pressed, Tw.MouseButton.Left) |> ignore
+
+    override this.OnMouseUp(e) =
+        this.tweakbarContext.HandleMouseClick(Tw.MouseAction.Released, Tw.MouseButton.Left) |> ignore
+
     override this.OnResize(e) =
         GL.Viewport(0, 0, this.Width, this.Height)
         this.tweakbarContext.HandleResize(this.ClientSize)
