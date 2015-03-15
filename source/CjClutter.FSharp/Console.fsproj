@@ -5,14 +5,14 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>b2a23f04-9a30-4148-962b-322739d377f3</ProjectGuid>
+    <ProjectGuid>2596be1a-30c0-4910-a991-8d08c7f71417</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>CjClutter.FSharp</RootNamespace>
-    <AssemblyName>CjClutter.FSharp</AssemblyName>
+    <RootNamespace>Console</RootNamespace>
+    <AssemblyName>Console</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
-    <Name>CjClutter.FSharp</Name>
+    <Name>Console</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,7 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Debug\CjClutter.FSharp.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Console.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -34,11 +34,34 @@
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Release\CjClutter.FSharp.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Console.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <Tailcalls>false</Tailcalls>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <WarningLevel>3</WarningLevel>
+    <DocumentationFile>bin\Debug\Console.XML</DocumentationFile>
+    <Prefer32Bit>true</Prefer32Bit>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <Tailcalls>true</Tailcalls>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <WarningLevel>3</WarningLevel>
+    <DocumentationFile>bin\Release\Console.XML</DocumentationFile>
+    <Prefer32Bit>true</Prefer32Bit>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '11.0'">
@@ -54,23 +77,33 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <None Include="App.config" />
-    <Content Include="packages.config" />
+    <Compile Include="vector.fs" />
+    <Compile Include="particle.fs" />
+    <Compile Include="integrator.fs" />
+    <Compile Include="ForceGenerators.fs" />
     <Compile Include="AssemblyInfo.fs" />
-    <Content Include="blinn.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Compile Include="primitives.fs" />
-    <Compile Include="Rendering.fs" />
     <Compile Include="shader.fs" />
-    <Compile Include="BlinnShaderProgram.fs" />
     <Compile Include="NormalDebugShaderProgram.fs" />
     <Compile Include="SimpleShaderProgram.fs" />
+    <Compile Include="BlinnShaderProgram.fs" />
+    <Compile Include="Rendering.fs" />
     <Compile Include="TweakBar.fs" />
     <Compile Include="TweakBarGui.fs" />
     <Compile Include="BlinnMaterialTweakBar.fs" />
     <Compile Include="TweakBarViewModel.fs" />
     <Compile Include="Program.fs" />
+    <None Include="App.config" />
+    <None Include="blinn.vs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="blinn.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="packages.config" />
+    <None Include="AntTweakBar.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="AntTweakBar.NET">
@@ -82,7 +115,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="OpenTK">
-      <HintPath>..\..\includes\OpenTK.dll</HintPath>
+      <HintPath>..\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

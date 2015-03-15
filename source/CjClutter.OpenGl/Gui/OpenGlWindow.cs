@@ -145,7 +145,6 @@ namespace CjClutter.OpenGl.Gui
 
             _terrain = new Terrain();
             _cube = new Cube();
-
         }
 
         private void ToggleFullScren()
