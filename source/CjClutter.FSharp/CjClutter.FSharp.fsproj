@@ -57,9 +57,9 @@
     <None Include="App.config" />
     <Content Include="packages.config" />
     <Compile Include="AssemblyInfo.fs" />
-    <Content Include="blinn.fs">
+    <None Include="blinn.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
     <Compile Include="primitives.fs" />
     <Compile Include="Rendering.fs" />
     <Compile Include="shader.fs" />
@@ -71,6 +71,12 @@
     <Compile Include="BlinnMaterialTweakBar.fs" />
     <Compile Include="TweakBarViewModel.fs" />
     <Compile Include="Program.fs" />
+    <None Include="AntTweakBar.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="blinn.vs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="AntTweakBar.NET">
