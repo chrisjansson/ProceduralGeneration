@@ -1,0 +1,2417 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AntTweakBar.NET</name>
+    </assembly>
+    <members>
+        <member name="T:AntTweakBar.Group">
+            <summary>
+            An AntTweakBar group, to hierarchically organize variables in bars.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Group.#ctor(AntTweakBar.Bar,System.String)">
+            <summary>
+            Internal constructor used for reconstructing a group from an identifier.
+            </summary>
+            <param name="bar">The parent bar of the new group.</param>
+            <param name="id">The identifier of the new group.</param>
+        </member>
+        <member name="M:AntTweakBar.Group.#ctor(AntTweakBar.Bar)">
+            <summary>
+            Lazily creates a new group in a given bar. The group is not
+            usable until it is assigned to contain at least one variable.
+            </summary>
+            <param name="parentBar">The bar the new group should belong to.</param>
+        </member>
+        <member name="M:AntTweakBar.Group.#ctor(AntTweakBar.Bar,System.String,AntTweakBar.IVariable[])">
+            <summary>
+            Creates a new group in a given bar and puts variables in it.
+            </summary>
+            <param name="parentBar">The bar the new group should belong to.</param>
+            <param name="label">A label to display for the new group.</param>
+            <param name="variables">Variables to put in the new group.</param>
+        </member>
+        <member name="M:AntTweakBar.Group.#ctor(AntTweakBar.Bar,System.String,System.Collections.Generic.IEnumerable{AntTweakBar.IVariable})">
+            <summary>
+            Creates a new group in a given bar and puts variables in it.
+            </summary>
+            <param name="parentBar">The bar the new group should belong to.</param>
+            <param name="label">A label to display for the new group.</param>
+            <param name="variables">Variables to put in the new group.</param>
+        </member>
+        <member name="P:AntTweakBar.Group.ParentBar">
+            <summary>
+            Gets this group's parent bar.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Group.ID">
+            <summary>
+            Gets this group's unique identifier.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Group.Label">
+            <summary>
+            Gets or sets this group's label.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Group.Parent">
+            <summary>
+            Gets the sets the parent group this group is in.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Group.Open">
+            <summary>
+            Gets or sets whether this group is open or closed.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Group.Visible">
+            <summary>
+            Gets or sets whether this group is visible or not.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.TupleList`2">
+            <summary>
+            Helper class for the ListVariable items.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.ListValidationEventArgs`1.Valid">
+            <summary>
+            Whether to accept this list value.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.ListVariable`1">
+            <summary>
+            An AntTweakBar variable which can hold a value from a list.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.Variable">
+            <summary>
+            The base class for all AntTweakBar variables.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.IVariable">
+            <summary>
+            Implemented by all AntTweakBar variables.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.IVariable.ParentBar">
+            <summary>
+            Gets this variable's parent bar.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.IVariable.Group">
+            <summary>
+            Gets or sets this variable's group.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Variable.UnnamedLabel">
+            <summary>
+            The default label for unnamed variables.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Variable.#ctor(AntTweakBar.Bar,System.Action{AntTweakBar.Variable,System.String},System.String,System.Boolean)">
+            <summary>
+            Creates a new variable in a given AntTweakBar bar.
+            </summary>
+            <param name="parent">The bar the variable should be created in.</param>
+            <param name="initFunc">A delegate which will initialize the variable.</param>
+            <param name="def">An optional definition string for the new variable.</param>
+            <param name="initLabel">Whether to initialize the variable's label.</param>
+        </member>
+        <member name="M:AntTweakBar.Variable.SetDefinition(System.String)">
+            <summary>
+            Sets this variable's properties from a definition string.
+            </summary>
+            <param name="def">An AntTweakBar definition string, excluding the name prefix.</param>
+        </member>
+        <member name="M:AntTweakBar.Variable.ThrowIfDisposed">
+            <summary>
+            Throws an ObjectDisposedException if this variable has been disposed.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Variable.ID">
+            <summary>
+            Gets this variable's context-dependent unique identifier.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Variable.ParentBar">
+            <summary>
+            Gets this variable's parent bar.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Variable.Label">
+            <summary>
+            Gets or sets this variable's label.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Variable.Help">
+            <summary>
+            Gets or sets this variable's help text.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Variable.Group">
+            <summary>
+            Gets or sets this variable's group.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Variable.Visible">
+            <summary>
+            Gets or sets whether this variable is visible.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Variable.ReadOnly">
+            <summary>
+            Gets or sets whether this variable is read-only.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Variable.KeyShortcut">
+            <summary>
+            Gets or sets the key shortcut for this variable (if applicable).
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Variable.KeyIncrementShortcut">
+            <summary>
+            Gets or sets the increment key shortcut for this variable (if applicable).
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Variable.KeyDecrementShortcut">
+            <summary>
+            Gets or sets the decrement key shortcut for this variable (if applicable).
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.IValueVariable">
+            <summary>
+            Implemented by all AntTweakBar value variables.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.IValueVariable.OnChanged(System.EventArgs)">
+            <summary>
+            Raises the Changed event.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.IValueVariable.Changed">
+            <summary>
+            Occurs when the user changes this variable's value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.ListVariable`1.OnChanged(System.EventArgs)">
+            <summary>
+            Raises the Changed event.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.ListVariable`1.InitListVariable(AntTweakBar.Variable,System.String,System.Collections.Generic.IList{System.Tuple{`0,System.String}})">
+            <summary>
+            Initialization delegate, which creates the list variable.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.ListVariable`1.#ctor(AntTweakBar.Bar,System.Collections.Generic.IList{System.Tuple{`0,System.String}},`0,System.String)">
+            <summary>
+            Creates a new list variable in a given bar.
+            </summary>
+            <param name="bar">The bar to create the list variable in.</param>
+            <param name="items">The list of items and their descriptions.</param>
+            <param name="initialValue">The initial value of the variable.</param>
+            <param name="def">An optional definition string for the new variable.</param>
+        </member>
+        <member name="M:AntTweakBar.ListVariable`1.IsValid(`0)">
+            <summary>
+            Checks if this variable can hold this value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.ListVariable`1.ValidateAndSet(`0)">
+            <summary>
+            Tries to set this variable's value, validating it.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.ListVariable`1.SetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when the user changes the variable's value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.ListVariable`1.GetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when AntTweakBar needs the variable's value.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.ListVariable`1.Changed">
+            <summary>
+            Occurs when the user changes this variable's value.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.ListVariable`1.Validating">
+            <summary>
+            Occurs when the new value of this variable is validated.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.ListVariable`1.Value">
+            <summary>
+            Gets or sets the value of this variable.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.ListVariable`1.Type">
+            <summary>
+            Gets this list variable's type.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.BarTextColor">
+            <summary>
+            The possible bar text colors.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.BarTextColor.Dark">
+            <summary>
+            Darker text.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.BarTextColor.Light">
+            <summary>
+            Lighter text.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.BarButtonAlignment">
+            <summary>
+            The possible button alignments in a bar.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.BarButtonAlignment.Left">
+            <summary>
+            Left-aligned.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.BarButtonAlignment.Center">
+            <summary>
+            Center-aligned.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.BarButtonAlignment.Right">
+            <summary>
+            Right-aligned.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.BarFontSize">
+            <summary>
+            The possible bar font sizes.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.BarFontSize.Small">
+            <summary>
+            Small font.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.BarFontSize.Medium">
+            <summary>
+            Nedium font.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.BarFontSize.Large">
+            <summary>
+            Large font.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.BarFontStyle">
+            <summary>
+            The possible bar font styles.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.BarFontStyle.Default">
+            <summary>
+            Default (proportional) font.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.BarFontStyle.Fixed">
+            <summary>
+            Fixed (monospace) font.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.BarIconPosition">
+            <summary>
+            THe possible bar icon positions.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.BarIconPosition.BottomLeft">
+            <summary>
+            Icons in the bottom left.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.BarIconPosition.BottomRight">
+            <summary>
+            Icons in the bottom right.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.BarIconPosition.TopLeft">
+            <summary>
+            Icons in the top left.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.BarIconPosition.TopRight">
+            <summary>
+            Icons in the top right.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.BarIconAlignment">
+            <summary>
+            The possible bar icon alignments.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.BarIconAlignment.Vertical">
+            <summary>
+            Bar icons arranged vertically.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.BarIconAlignment.Horizontal">
+            <summary>
+            Bars icons arranged horizontally.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.ColorMode">
+            <summary>
+            The possible color selection modes.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.ColorMode.RGB">
+            <summary>
+            RGB color selection mode.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.ColorMode.HLS">
+            <summary>
+            HLS (HSL) color selection mode.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.AxisOrientation">
+            <summary>
+            The possible (axis-aligned) axis orientations.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.AxisOrientation.PositiveX">
+            <summary>
+            Right axis.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.AxisOrientation.NegativeX">
+            <summary>
+            Left axis.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.AxisOrientation.PositiveY">
+            <summary>
+            Upwards axis.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.AxisOrientation.NegativeY">
+            <summary>
+            Downwards axis.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.AxisOrientation.PositiveZ">
+            <summary>
+            Front axis (towards the viewer).
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.AxisOrientation.NegativeZ">
+            <summary>
+            Back axis (into the screen).
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.Tw">
+            <summary>
+            A low-level wrapper to the AntTweakBar API.
+            </summary>
+            <summary>
+            A low-level wrapper to the AntTweakBar API.
+            </summary>
+            <summary>
+            A low-level wrapper to the AntTweakBar API.
+            </summary>
+            <summary>
+            A low-level wrapper to the AntTweakBar API.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.MaxStringLength">
+            <summary>
+            The maximum static string length.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.GetLastError">
+            <summary>
+            Returns the last error that has occured during a previous AntTweakBar function call.
+            </summary>
+            <returns>A constant string that describes the error.</returns>
+        </member>
+        <member name="M:AntTweakBar.Tw.Init(AntTweakBar.Tw.GraphicsAPI,System.IntPtr)">
+            <summary>
+            This function initializes the AntTweakBar library. It must be called once at the beginning of the program, just after graphic mode is initialized.
+            </summary>
+            <param name="graphicsAPI">This parameter specifies which graphic API is used: OpenGL, OpenGL core profile (3.2 and higher), Direct3D 9, Direct3D 10 or Direct3D 11.</param>
+            <param name="device">Pointer to the Direct3D device, or IntPtr.Zero for OpenGL.</param>
+        </member>
+        <member name="M:AntTweakBar.Tw.Terminate">
+            <summary>
+            Uninitialize the AntTweakBar API. Must be called at the end of the program, before terminating the graphics API.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.Draw">
+            <summary>
+            Draws all the created tweak bars. This function must be called once per frame, after all the other drawing calls and just before the application presents (swaps) the frame buffer.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.WindowSize(System.Int32,System.Int32)">
+            <summary>
+            Call this function to inform AntTweakBar of the size of the application graphics window, or to restore AntTweakBar graphics resources (after a fullscreen switch for instance).
+            </summary>
+            <param name="width">Width of the graphics window.</param>
+            <param name="height">Height of the graphics window.</param>
+        </member>
+        <member name="M:AntTweakBar.Tw.MouseMotion(System.Int32,System.Int32)">
+            <summary>
+            Call this function to inform AntTweakBar that the mouse has moved.
+            </summary>
+            <param name="mouseX">The new X position of the mouse, relative to the left border of the graphics window.</param>
+            <param name="mouseY">The new Y position of the mouse, relative to the top border of the graphics window.</param>
+            <returns>Whether the mouse event has been handled by AntTweakBar.</returns>
+        </member>
+        <member name="M:AntTweakBar.Tw.MouseWheel(System.Int32)">
+            <summary>
+            Call this function to inform AntTweakBar that the mouse wheel has been used.
+            </summary>
+            <param name="pos">The new position of the wheel.</param>
+            <returns>Whether the mouse wheel event has been handled by AntTweakBar.</returns>
+        </member>
+        <member name="M:AntTweakBar.Tw.MouseClick(AntTweakBar.Tw.MouseAction,AntTweakBar.Tw.MouseButton)">
+            <summary>
+            Call this function to inform AntTweakBar that a mouse button is pressed.
+            </summary>
+            <param name="action">Tells if the button is pressed or released. It is one of the <see cref="T:AntTweakBar.Tw.MouseAction"/> constants.</param>
+            <param name="button">Tells which button is pressed. It is one of the <see cref="T:AntTweakBar.Tw.MouseButton"/> constants.</param>
+            <returns>Whether the mouse event has been handled by AntTweakBar.</returns>
+        </member>
+        <member name="M:AntTweakBar.Tw.KeyPressed(System.Char,AntTweakBar.Tw.KeyModifiers)">
+            <summary>
+            Call this function to inform AntTweakBar when a keyboard event occurs.
+            </summary>
+            <param name="key">The ASCII code of the pressed key.</param>
+            <param name="modifiers">One or a combination of the <see cref="T:AntTweakBar.Tw.KeyModifiers"/> constants.</param>
+            <returns>Whether the key event has been handled by AntTweakBar.</returns>
+        </member>
+        <member name="M:AntTweakBar.Tw.KeyPressed(AntTweakBar.Tw.Key,AntTweakBar.Tw.KeyModifiers)">
+            <summary>
+            Call this function to inform AntTweakBar when a keyboard event occurs.
+            </summary>
+            <param name="key">One of the <see cref="T:AntTweakBar.Tw.Key"/> codes.</param>
+            <param name="modifiers">One or a combination of the <see cref="T:AntTweakBar.Tw.KeyModifiers"/> constants.</param>
+            <returns>Whether the key event has been handled by AntTweakBar.</returns>
+        </member>
+        <member name="M:AntTweakBar.Tw.KeyTest(System.Char,AntTweakBar.Tw.KeyModifiers)">
+            <summary>
+            This function checks if a key event would be processed but without processing it. This could be helpful to prevent bad handling report.
+            </summary>
+            <param name="key">The ASCII code of the pressed key.</param>
+            <param name="modifiers">One or a combination of the <see cref="T:AntTweakBar.Tw.KeyModifiers"/> constants.</param>
+            <returns>Whether the key event would have been handled by AntTweakBar.</returns>
+        </member>
+        <member name="M:AntTweakBar.Tw.KeyTest(AntTweakBar.Tw.Key,AntTweakBar.Tw.KeyModifiers)">
+            <summary>
+            This function checks if a key event would be processed but without processing it. This could be helpful to prevent bad handling report.
+            </summary>
+            <param name="key">One of the <see cref="T:AntTweakBar.Tw.Key"/> codes.</param>
+            <param name="modifiers">One or a combination of the <see cref="T:AntTweakBar.Tw.KeyModifiers"/> constants.</param>
+            <returns>Whether the key event would have been handled by AntTweakBar.</returns>
+        </member>
+        <member name="M:AntTweakBar.Tw.EventSFML(System.IntPtr,System.Byte,System.Byte)">
+            <summary>
+            The SFML event handler.
+            </summary>
+            <returns>Whether the event has been handled by AntTweakBar.</returns>
+        </member>
+        <member name="M:AntTweakBar.Tw.EventSDL(System.IntPtr,System.Byte,System.Byte)">
+            <summary>
+            The SDL event handler.
+            </summary>
+            <returns>Whether the event has been handled by AntTweakBar.</returns>
+        </member>
+        <member name="M:AntTweakBar.Tw.EventWin(System.IntPtr,System.Int32,System.IntPtr,System.IntPtr)">
+            <summary>
+            The Windows event handler.
+            </summary>
+            <returns>Whether the event has been handled by AntTweakBar.</returns>
+        </member>
+        <member name="M:AntTweakBar.Tw.EventX11(System.IntPtr)">
+            <summary>
+            The X11 event handler.
+            </summary>
+            <returns>Whether the event has been handled by AntTweakBar.</returns>
+        </member>
+        <member name="M:AntTweakBar.Tw.SetCurrentWindow(System.Int32)">
+            <summary>
+            This function is intended to be used by applications with multiple graphical windows. It tells AntTweakBar to switch its current context to the context associated to the identifier windowID.
+            </summary>
+            <param name="windowID">Window context identifier. This identifier could be any integer.</param>
+        </member>
+        <member name="M:AntTweakBar.Tw.GetCurrentWindow">
+            <summary>
+            Returns the current window context identifier previously set by <see cref="M:AntTweakBar.Tw.SetCurrentWindow(System.Int32)"/>.
+            </summary>
+            <returns>The current window context identifier.</returns>
+        </member>
+        <member name="M:AntTweakBar.Tw.WindowExists(System.Int32)">
+            <summary>
+            Check if a window context associated to the identifier windowID exists. A window context exists if it has previously been created by <see cref="M:AntTweakBar.Tw.SetCurrentWindow(System.Int32)"/>.
+            </summary>
+            <param name="windowID">Window context identifier.</param>
+            <returns>Whether the window context exists.</returns>
+        </member>
+        <member name="M:AntTweakBar.Tw.NewBar(System.String)">
+            <summary>
+            Creates a new tweak bar.
+            </summary>
+            <param name="barName">Name of the new tweak bar.</param>
+            <returns>Tweak bar identifier. It is a pointer to an internal TwBar structure.</returns>
+        </member>
+        <member name="M:AntTweakBar.Tw.DeleteBar(System.IntPtr)">
+            <summary>
+            This function deletes a tweak bar previously created by <see cref="M:AntTweakBar.Tw.NewBar(System.String)"/>.
+            </summary>
+            <param name="bar">Identifier to the tweak bar to delete.</param>
+        </member>
+        <member name="M:AntTweakBar.Tw.DeleteAllBars">
+            <summary>
+            Delete all bars previously created by <see cref="M:AntTweakBar.Tw.NewBar(System.String)"/>.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.SetTopBar(System.IntPtr)">
+            <summary>
+            Set the specified bar as the foreground bar. It will be displayed on top of the other bars.
+            </summary>
+            <param name="bar">Bar identifier.</param>
+        </member>
+        <member name="M:AntTweakBar.Tw.GetTopBar">
+            <summary>
+            Returns the identifier of the current foreground bar (the bar displayed on top of the others).
+            </summary>
+            <returns>Zero if no bar is displayed, otherwise a pointer to the top bar.</returns>
+        </member>
+        <member name="M:AntTweakBar.Tw.SetBottomBar(System.IntPtr)">
+            <summary>
+            Set the specified bar as the background bar. It will be displayed behind the other bars.
+            </summary>
+            <param name="bar">Bar identifier.</param>
+        </member>
+        <member name="M:AntTweakBar.Tw.GetBottomBar">
+            <summary>
+            Returns the identifier of the current background bar (the bar displayed behind the others).
+            </summary>
+            <returns>Zero if no bar is displayed, otherwise a pointer to the bottom bar.</returns>
+        </member>
+        <member name="M:AntTweakBar.Tw.GetBarName(System.IntPtr)">
+            <summary>
+            Returns the name of a given tweak bar.
+            </summary>
+            <param name="bar">Identifier to the tweak bar.</param>
+            <returns>The name of the bar.</returns>
+        </member>
+        <member name="M:AntTweakBar.Tw.GetBarCount">
+            <summary>
+            Returns the number of created bars.
+            </summary>
+            <returns>Number of bars.</returns>
+        </member>
+        <member name="M:AntTweakBar.Tw.GetBarByIndex(System.Int32)">
+            <summary>
+            Returns the bar of a given index.
+            </summary>
+            <param name="barIndex">Index of the requested bar.</param>
+            <returns>The bar identifier, or zero if the index is out of range.</returns>
+        </member>
+        <member name="M:AntTweakBar.Tw.GetBarByName(System.String)">
+            <summary>
+            Returns the bar of a given name.
+            </summary>
+            <param name="barName">Name of the requested bar.</param>
+            <returns>The bar identifier, or zero if the bar is not found.</returns>
+        </member>
+        <member name="M:AntTweakBar.Tw.RefreshBar(System.IntPtr)">
+            <summary>
+            Forces bar content to be updated. By default bar content is periodically refreshed when <see cref="M:AntTweakBar.Tw.Draw"/> is called (the update frequency is defined by the bar parameter refresh).
+            </summary>
+            <param name="bar">Bar identifier.</param>
+        </member>
+        <member name="M:AntTweakBar.Tw.Define(System.String)">
+            <summary>
+            This function defines optional parameters for tweak bars and variables. For instance, it allows you to change the color of a tweak bar, to set a min and a max value for a variable, to add an help message that inform users of the meaning of a variable, and so on...
+            </summary>
+            <param name="def">A string containing one or more parameter assignments (separated by newlines).</param>
+        </member>
+        <member name="M:AntTweakBar.Tw.SetParam(System.IntPtr,System.String,System.String,System.String)">
+            <summary>
+            This function modifies the value(s) of a bar or variable parameter.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.SetParam(System.IntPtr,System.String,System.String,System.Int32[])">
+            <summary>
+            This function modifies the value(s) of a bar or variable parameter.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.SetParam(System.IntPtr,System.String,System.String,System.Single[])">
+            <summary>
+            This function modifies the value(s) of a bar or variable parameter.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.SetParam(System.IntPtr,System.String,System.String,System.Double[])">
+            <summary>
+            This function modifies the value(s) of a bar or variable parameter.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.SetParam(System.IntPtr,System.String,System.String,System.Drawing.Color)">
+            <summary>
+            This function modifies the value(s) of a bar or variable parameter.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.SetParam(System.IntPtr,System.String,System.String,System.Boolean)">
+            <summary>
+            This function modifies the value(s) of a bar or variable parameter.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.SetParam(System.IntPtr,System.String,System.String,System.Drawing.Point)">
+            <summary>
+            This function modifies the value(s) of a bar or variable parameter.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.SetParam(System.IntPtr,System.String,System.String,System.Drawing.Size)">
+            <summary>
+            This function modifies the value(s) of a bar or variable parameter.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.GetStringParam(System.IntPtr,System.String,System.String)">
+            <summary>
+            This function returns the current value of a bar or variable parameter.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.GetIntParam(System.IntPtr,System.String,System.String,System.Int32)">
+            <summary>
+            This function returns the current value of a bar or variable parameter.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.GetSingleParam(System.IntPtr,System.String,System.String,System.Int32)">
+            <summary>
+            This function returns the current value of a bar or variable parameter.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.GetDoubleParam(System.IntPtr,System.String,System.String,System.Int32)">
+            <summary>
+            This function returns the current value of a bar or variable parameter.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.GetColorParam(System.IntPtr,System.String,System.String)">
+            <summary>
+            This function returns the current value of a bar or variable parameter.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.GetBooleanParam(System.IntPtr,System.String,System.String)">
+            <summary>
+            This function returns the current value of a bar or variable parameter.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.GetPointParam(System.IntPtr,System.String,System.String)">
+            <summary>
+            This function returns the current value of a bar or variable parameter.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.GetSizeParam(System.IntPtr,System.String,System.String)">
+            <summary>
+            This function returns the current value of a bar or variable parameter.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.AddVarRO(System.IntPtr,System.String,AntTweakBar.Tw.VariableType,System.IntPtr,System.String)">
+            <summary>
+            This function adds a new variable to a tweak bar by specifying the variable’s pointer. The variable is declared Read-Only (RO), so it could not be modified interactively by the user.
+            </summary>
+            <param name="bar">The tweak bar to which adding a new variable.</param>
+            <param name="name">The name of the variable. It will be displayed in the tweak bar if no label is specified for this variable. It will also be used to refer to this variable in other functions.</param>
+            <param name="type">Type of the variable. It must be one of the <see cref="T:AntTweakBar.Tw.VariableType"/> constants or a user defined type.</param>
+            <param name="var">Pointer to the variable linked to this entry.</param>
+            <param name="def">An optional definition string used to modify the behavior of this new entry.</param>
+        </member>
+        <member name="M:AntTweakBar.Tw.AddVarRW(System.IntPtr,System.String,AntTweakBar.Tw.VariableType,System.IntPtr,System.String)">
+            <summary>
+            This function adds a new variable to a tweak bar by specifying the variable’s pointer. The variable is declared Read-Write (RW), so it could be modified interactively by the user.
+            </summary>
+            <param name="bar">The tweak bar to which adding a new variable.</param>
+            <param name="name">The name of the variable. It will be displayed in the tweak bar if no label is specified for this variable. It will also be used to refer to this variable in other functions.</param>
+            <param name="type">Type of the variable. It must be one of the <see cref="T:AntTweakBar.Tw.VariableType"/> constants or a user defined type.</param>
+            <param name="var">Pointer to the variable linked to this entry.</param>
+            <param name="def">An optional definition string used to modify the behavior of this new entry.</param>
+        </member>
+        <member name="M:AntTweakBar.Tw.AddVarCB(System.IntPtr,System.String,AntTweakBar.Tw.VariableType,AntTweakBar.Tw.SetVarCallback,AntTweakBar.Tw.GetVarCallback,System.IntPtr,System.String)">
+            <summary>
+            This function adds a new variable to a tweak bar by providing CallBack (CB) functions to access it.
+            </summary>
+            <param name="bar">The tweak bar to which adding a new variable.</param>
+            <param name="name">The name of the variable. It will be displayed in the tweak bar if no label is specified for this variable. It will also be used to refer to this variable in other functions.</param>
+            <param name="type">Type of the variable. It must be one of the <see cref="T:AntTweakBar.Tw.VariableType"/> constants or a user defined type.</param>
+            <param name="setCallback">The callback function that will be called by AntTweakBar to change the variable’s value.</param>
+            <param name="getCallback">The callback function that will be called by AntTweakBar to get the variable’s value.</param>
+            <param name="clientData">For your convenience, this is a supplementary pointer that will be passed to the callback functions when they are called.</param>
+            <param name="def">An optional definition string used to modify the behavior of this new entry.</param>
+        </member>
+        <member name="M:AntTweakBar.Tw.AddSeparator(System.IntPtr,System.String,System.String)">
+            <summary>
+            This function adds a horizontal separator line to a tweak bar. It may be useful if one wants to separate several sets of variables inside a same group.
+            </summary>
+            <param name="bar">The tweak bar to which adding the separator.</param>
+            <param name="name">The name of the separator. It is optional, this parameter can be set to NULL.</param>
+            <param name="def">An optional definition string used to modify the behavior of this new entry.</param>
+        </member>
+        <member name="M:AntTweakBar.Tw.AddButton(System.IntPtr,System.String,AntTweakBar.Tw.ButtonCallback,System.IntPtr,System.String)">
+            <summary>
+            This function adds a button entry to a tweak bar. When the button is clicked by a user, the callback function provided to this function is called.
+            </summary>
+            <param name="bar">The tweak bar to which adding a new variable.</param>
+            <param name="name">The name of the button. It will be displayed in the tweak bar if no label is specified for this button. It will also be used to refer to this button in other functions.</param>
+            <param name="callback">The callback function that will be called by AntTweakBar when the button is clicked.</param>
+            <param name="clientData">For your convenience, this is a supplementary pointer that will be passed to the callback function when it is called.</param>
+            <param name="def">An optional definition string used to modify the behavior of this new entry.</param>
+        </member>
+        <member name="M:AntTweakBar.Tw.DefineEnum(System.String,System.Collections.Generic.IDictionary{System.Int32,System.String})">
+            <summary>
+            This function creates a new variable type corresponding to an enum.
+            </summary>
+            <param name="name"> Specify a name for the enum type (must be unique).</param>
+            <param name="labels">A mapping from admissible values to their labels.</param>
+        </member>
+        <member name="M:AntTweakBar.Tw.DefineEnumFromString(System.String,System.String)">
+            <summary>
+            This function creates a new variable type corresponding to an enum.
+            </summary>
+            <param name="name">Specify a name for the enum type (must be unique).</param>
+            <param name="enumString">Comma-separated list of labels.</param>
+        </member>
+        <member name="M:AntTweakBar.Tw.DefineStruct(System.String,System.Collections.Generic.IDictionary{System.String,AntTweakBar.Tw.StructMemberInfo},System.Int32,AntTweakBar.Tw.SummaryCallback,System.IntPtr)">
+            <summary>
+            This function creates a new <see cref="T:AntTweakBar.Tw.VariableType"/> corresponding to a structure.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.RemoveVar(System.IntPtr,System.String)">
+            <summary>
+            This function removes a variable, button or separator from a tweak bar.
+            </summary>
+            <param name="bar">The tweak bar from which to remove a variable.</param>
+            <param name="name">The name of the variable.</param>
+        </member>
+        <member name="M:AntTweakBar.Tw.RemoveAllVars(System.IntPtr)">
+            <summary>
+            This function removes all the variables, buttons and separators previously added to a tweak bar.
+            </summary>
+            <param name="bar">The tweak bar from which to remove all variables.</param>
+        </member>
+        <member name="M:AntTweakBar.Tw.#cctor">
+            <summary>
+            Initializes the AntTweakBar.NET wrapper.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.Tw.Error">
+            <summary>
+            Occurs when an AntTweakBar error occurs.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.Tw.SetVarCallback">
+            <summary>
+            Called by AntTweakBar when the user changes a variable's value.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.Tw.GetVarCallback">
+            <summary>
+            Called by AntTweakBar when AntTweakBar needs a variable's value.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.Tw.ButtonCallback">
+            <summary>
+            Called by AntTweakBar when the user clicks on a button.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.Tw.SummaryCallback">
+            <summary>
+            Called by AntTweakBar to retrieve a summary of a struct variable.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.Tw.ErrorHandler">
+            <summary>
+            Called by AntTweakBar when an error occurs.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.Tw.GraphicsAPI">
+            <summary>
+            The graphics API's AntTweakBar supports.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.GraphicsAPI.Unspecified">
+            <summary>
+            Graphics API previously provided.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.GraphicsAPI.OpenGL">
+            <summary>
+            OpenGL (compatibility profile).
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.GraphicsAPI.D3D9">
+            <summary>
+            Direct3D 9 (requires a IDirect3DDevice9 pointer).
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.GraphicsAPI.D3D10">
+            <summary>
+            Direct3D 10 (requires a ID3D10Device pointer).
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.GraphicsAPI.D3D11">
+            <summary>
+            Direct3D 11 (requires a ID3D11Device pointer).
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.GraphicsAPI.OpenGLCore">
+            <summary>
+            OpenGL (core profile).
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.Tw.ParamValueType">
+            <summary>
+            The valid parameter value types to SetParam.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.ParamValueType.Int32">
+            <summary>
+            A 32-bit signed integer parameter value.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.ParamValueType.Float">
+            <summary>
+            A single-precision floating-point parameter value.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.ParamValueType.Double">
+            <summary>
+            A double-precision floating-point parameter value.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.ParamValueType.CString">
+            <summary>
+            A null-terminated C string (i.e. a char array).
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.Tw.VariableType">
+            <summary>
+            The different possible variable type, excluding enums and structs.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.Undefined">
+            <summary>
+            A variable of an undefined type.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.Bool8">
+            <summary>
+            A boolean variable on 8 bits.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.Bool16">
+            <summary>
+            A boolean variable on 16 bits.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.Bool32">
+            <summary>
+            A boolean variable on 32 bits.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.Char">
+            <summary>
+            A single-byte character variable.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.Int8">
+            <summary>
+            A signed 8-bit integer variable.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.UInt8">
+            <summary>
+            An unsigned 8-bit integer variable.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.Int16">
+            <summary>
+            A signed 16-bit integer variable.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.UInt16">
+            <summary>
+            An unsigned 16-bit integer variable.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.Int32">
+            <summary>
+            A signed 32-bit integer variable.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.UInt32">
+            <summary>
+            An unsigned 32-bit integer variable.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.Float">
+            <summary>
+            A single-precision floating-point variable.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.Double">
+            <summary>
+            A double-precision floating-point variable.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.Color32">
+            <summary>
+            A 32-bit RGBA color variable on 4 bytes.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.Color3F">
+            <summary>
+            A 96-bit RGB floating-point color variable.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.Color4F">
+            <summary>
+            A 128-bit RGBA floating-point color variable.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.CDString">
+            <summary>
+            A null-terminated C dynamically allocated string variable.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.Quat4F">
+            <summary>
+            A quaternion variable on 4 floats (x, y, z, w).
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.Quat4D">
+            <summary>
+            A quaternion variable on 4 doubles (x, y, z, w).
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.Dir3F">
+            <summary>
+            A direction (vector) variable on 3 floats (x, y, z).
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.Dir3D">
+            <summary>
+            A direction (vector) variable on 3 doubles (x, y, z).
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.VariableType.CSString">
+            <summary>
+            A null-terminated C string variable of length <see cref="F:AntTweakBar.Tw.MaxStringLength"/>.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.Tw.StructMemberInfo">
+            <summary>
+            Information about a member of an AntTweakBar struct variable.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.StructMemberInfo.#ctor(AntTweakBar.Tw.VariableType,System.Int32,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AntTweakBar.Tw.StructMemberInfo"/> struct.
+            </summary>
+            <param name="type">The struct member's AntTweakBar type.</param>
+            <param name="offset">The struct member's offset in bytes.</param>
+            <param name="def">A definition string for the struct member.</param>
+        </member>
+        <member name="M:AntTweakBar.Tw.StructMemberInfo.FromStruct``1(System.String,AntTweakBar.Tw.VariableType,System.String)">
+            <summary>
+            Creates a suitable StructMemberInfo from a struct member name.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Tw.StructMemberInfo.Type">
+            <summary>
+            Gets the AntTweakBar type of this member.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Tw.StructMemberInfo.Offset">
+            <summary>
+            Gets the offset in bytes of this member.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Tw.StructMemberInfo.Def">
+            <summary>
+            Gets the definition string to use for this member.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.Tw.MouseAction">
+            <summary>
+            The possible mouse actions recognized by AntTweakBar.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.MouseAction.Released">
+            <summary>
+            The mouse button has been released.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.MouseAction.Pressed">
+            <summary>
+            The mouse button has been pressed.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.Tw.MouseButton">
+            <summary>
+            The possible mouse buttons recognized by AntTweakBar.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.MouseButton.Left">
+            <summary>
+            The left mouse button.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.MouseButton.Middle">
+            <summary>
+            The middle mouse button.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.MouseButton.Right">
+            <summary>
+            The right mouse button.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.Tw.KeyModifiers">
+            <summary>
+            The possible key modifiers recognized by AntTweakBar.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.KeyModifiers.None">
+            <summary>
+            No key modifier.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.KeyModifiers.Shift">
+            <summary>
+            The shift key modifier.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.KeyModifiers.Ctrl">
+            <summary>
+            The ctrl key modifier.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.KeyModifiers.Alt">
+            <summary>
+            The alt key modifier.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Tw.KeyModifiers.Meta">
+            <summary>
+            The meta key modifier.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.Tw.Key">
+            <summary>
+            The possible keys recognized by AntTweakBar.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.Tw.ErrorEventArgs">
+            <summary>
+            Event arguments for an AntTweakBar error.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Tw.ErrorEventArgs.#ctor(System.String)">
+            <summary>
+            Initializes event arguments for an AntTweakBar error.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Tw.ErrorEventArgs.Error">
+            <summary>
+            Gets the error string.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.BoolValidationEventArgs.Valid">
+            <summary>
+            Whether to accept this boolean value.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.BoolVariable">
+            <summary>
+            An AntTweakBar variable which can hold a boolean value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.BoolVariable.OnChanged(System.EventArgs)">
+            <summary>
+            Raises the Changed event.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.BoolVariable.InitBoolVariable(AntTweakBar.Variable,System.String)">
+            <summary>
+            Initialization delegate, which creates the boolean variable.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.BoolVariable.#ctor(AntTweakBar.Bar,System.Boolean,System.String)">
+            <summary>
+            Creates a new boolean variable in a given bar.
+            </summary>
+            <param name="bar">The bar to create the boolean variable in.</param>
+            <param name="initialValue">The initial value of the variable.</param>
+            <param name="def">An optional definition string for the new variable.</param>
+        </member>
+        <member name="M:AntTweakBar.BoolVariable.IsValid(System.Boolean)">
+            <summary>
+            Checks if this variable can hold this value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.BoolVariable.ValidateAndSet(System.Boolean)">
+            <summary>
+            Tries to set this variable's value, validating it.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.BoolVariable.SetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when the user changes the variable's value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.BoolVariable.GetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when AntTweakBar needs the variable's value.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.BoolVariable.Changed">
+            <summary>
+            Occurs when the user changes this variable's value.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.BoolVariable.Validating">
+            <summary>
+            Occurs when the new value of this variable is validated.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.BoolVariable.Value">
+            <summary>
+            Gets or sets the value of this variable.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.BoolVariable.LabelTrue">
+            <summary>
+            Gets or sets the "true" label for this variable.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.BoolVariable.LabelFalse">
+            <summary>
+            Gets or sets the "false" label for this variable.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.Button">
+            <summary>
+            An AntTweakBar button, which can be clicked.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Button.OnClicked(System.EventArgs)">
+            <summary>
+            Raises the Clicked event.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Button.InitButton(AntTweakBar.Variable,System.String)">
+            <summary>
+            Initialization delegate, which creates the button.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Button.#ctor(AntTweakBar.Bar,System.EventHandler,System.String)">
+            <summary>
+            Creates a new button in a given bar.
+            </summary>
+            <param name="bar">The bar to create the button in.</param>
+            <param name="clicked">A handler to call when the button is clicked.</param>
+            <param name="def">An optional definition string for the new button.</param>
+        </member>
+        <member name="M:AntTweakBar.Button.Callback(System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when the user clicks on the button.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.Button.Clicked">
+            <summary>
+            Occurs when this button is clicked by the user.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Color4ValidationEventArgs.Valid">
+            <summary>
+            Whether to accept this RGBA color value.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.Color4Variable">
+            <summary>
+            An AntTweakBar variable which can hold an RGBA color value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Color4Variable.OnChanged(System.EventArgs)">
+            <summary>
+            Raises the Changed event.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Color4Variable.InitColor4Variable(AntTweakBar.Variable,System.String)">
+            <summary>
+            Initialization delegate, which creates the RGBA color variable.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Color4Variable.#ctor(AntTweakBar.Bar,System.Single,System.Single,System.Single,System.Single,System.String)">
+            <summary>
+            Creates a new RGBA color variable in a given bar.
+            </summary>
+            <param name="bar">The bar to create the RGBA color variable in.</param>
+            <param name="r">The initial red channel value of the variable.</param>
+            <param name="g">The initial green channel value of the variable.</param>
+            <param name="b">The initial blue channel value of the variable.</param>
+            <param name="a">The initial alpha channel value of the variable.</param>
+            <param name="def">An optional definition string for the new variable.</param>
+        </member>
+        <member name="M:AntTweakBar.Color4Variable.IsValid(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Checks if this variable can hold this value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Color4Variable.ValidateAndSet(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Tries to set this variable's value, validating it.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Color4Variable.SetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when the user changes the variable's value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Color4Variable.GetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when AntTweakBar needs the variable's value.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.Color4Variable.Changed">
+            <summary>
+            Occurs when the user changes this variable's value.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.Color4Variable.Validating">
+            <summary>
+            Occurs when the new value of this variable is validated.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Color4Variable.R">
+            <summary>
+            Gets or sets this color's red channel component.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Color4Variable.G">
+            <summary>
+            Gets or sets this color's green channel component.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Color4Variable.B">
+            <summary>
+            Gets or sets this color's blue channel component.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Color4Variable.A">
+            <summary>
+            Gets or sets this color's alpha channel component.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Color4Variable.Mode">
+            <summary>
+            Gets or sets this variable's color selection mode.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.ColorValidationEventArgs.Valid">
+            <summary>
+            Whether to accept this RGB color value.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.ColorVariable">
+            <summary>
+            An AntTweakBar variable which can hold an RGB color value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.ColorVariable.OnChanged(System.EventArgs)">
+            <summary>
+            Raises the Changed event.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.ColorVariable.InitColorVariable(AntTweakBar.Variable,System.String)">
+            <summary>
+            Initialization delegate, which creates the RGB color variable.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.ColorVariable.#ctor(AntTweakBar.Bar,System.Single,System.Single,System.Single,System.String)">
+            <summary>
+            Creates a new RGB color variable in a given bar.
+            </summary>
+            <param name="bar">The bar to create the RGB color variable in.</param>
+            <param name="r">The initial red channel value of the variable.</param>
+            <param name="g">The initial green channel value of the variable.</param>
+            <param name="b">The initial blue channel value of the variable.</param>
+            <param name="def">An optional definition string for the new variable.</param>
+        </member>
+        <member name="M:AntTweakBar.ColorVariable.IsValid(System.Single,System.Single,System.Single)">
+            <summary>
+            Checks if this variable can hold this value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.ColorVariable.ValidateAndSet(System.Single,System.Single,System.Single)">
+            <summary>
+            Tries to set this variable's value, validating it.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.ColorVariable.SetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when the user changes the variable's value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.ColorVariable.GetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when AntTweakBar needs the variable's value.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.ColorVariable.Changed">
+            <summary>
+            Occurs when the user changes this variable's value.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.ColorVariable.Validating">
+            <summary>
+            Occurs when the new value of this variable is validated.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.ColorVariable.R">
+            <summary>
+            Gets or sets this color's red channel component.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.ColorVariable.G">
+            <summary>
+            Gets or sets this color's green channel component.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.ColorVariable.B">
+            <summary>
+            Gets or sets this color's blue channel component.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.ColorVariable.Mode">
+            <summary>
+            Gets or sets this variable's color selection mode.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.CoordinateSystem">
+            <summary>
+            An axis-aligned coordinate system.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.CoordinateSystem.#ctor(AntTweakBar.AxisOrientation,AntTweakBar.AxisOrientation,AntTweakBar.AxisOrientation)">
+            <summary>
+            Creates a new CoordinateSystem object.
+            </summary>
+            <param name="axisX">The x-axis orientation.</param>
+            <param name="axisY">The y-axis orientation.</param>
+            <param name="axisZ">The z-axis orientation.</param>
+        </member>
+        <member name="T:AntTweakBar.NativeMethods">
+            <summary>
+            The native AntTweakBar bindings.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.Helpers">
+            <summary>
+            Utility class containing useful functions.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Helpers.StrFromPtr(System.IntPtr)">
+            <summary>
+            Decodes a UTF-8 string from a pointer.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Helpers.PtrFromStr(System.String)">
+            <summary>
+            Allocates a new pointer containing the UTF-8 string.
+            </summary>
+            <remarks>
+            The pointer must be freed later with FreeCoTaskMem.
+            </remarks>
+        </member>
+        <member name="M:AntTweakBar.Helpers.CopyStrToPtr(System.IntPtr,System.String)">
+            <summary>
+            Encodes a UTF-8 string into a pointer.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.DoubleValidationEventArgs.Valid">
+            <summary>
+            Whether to accept this double-precision value.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.DoubleVariable">
+            <summary>
+            An AntTweakBar variable which can hold a double-precision floating-point number.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.DoubleVariable.OnChanged(System.EventArgs)">
+            <summary>
+            Raises the Changed event.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.DoubleVariable.InitDoubleVariable(AntTweakBar.Variable,System.String)">
+            <summary>
+            Initialization delegate, which creates the floating-point variable.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.DoubleVariable.#ctor(AntTweakBar.Bar,System.Double,System.String)">
+            <summary>
+            Creates a new double-precision floating-point variable in a given bar.
+            </summary>
+            <param name="bar">The bar to create the floating-point variable in.</param>
+            <param name="initialValue">The initial value of the variable.</param>
+            <param name="def">An optional definition string for the new variable.</param>
+        </member>
+        <member name="M:AntTweakBar.DoubleVariable.IsValid(System.Double)">
+            <summary>
+            Checks if this variable can hold this value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.DoubleVariable.ValidateAndSet(System.Double)">
+            <summary>
+            Tries to set this variable's value, validating it.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.DoubleVariable.SetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when the user changes the variable's value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.DoubleVariable.GetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when AntTweakBar needs the variable's value.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.DoubleVariable.Changed">
+            <summary>
+            Occurs when the user changes this variable's value.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.DoubleVariable.Validating">
+            <summary>
+            Occurs when the new value of this variable is validated.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.DoubleVariable.Value">
+            <summary>
+            Gets or sets the value of this variable.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.DoubleVariable.Min">
+            <summary>
+            Gets or sets this variable's minimum value.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.DoubleVariable.Max">
+            <summary>
+            Gets or sets this variable's maximum value.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.DoubleVariable.Step">
+            <summary>
+            Gets or sets this variable's step (increment).
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.DoubleVariable.Precision">
+            <summary>
+            Gets or sets this variable's precision.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.FloatValidationEventArgs.Valid">
+            <summary>
+            Whether to accept this single-precision value.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.FloatVariable">
+            <summary>
+            An AntTweakBar variable which can hold a single-precision floating-point number.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.FloatVariable.OnChanged(System.EventArgs)">
+            <summary>
+            Raises the Changed event.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.FloatVariable.InitFloatVariable(AntTweakBar.Variable,System.String)">
+            <summary>
+            Initialization delegate, which creates the floating-point variable.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.FloatVariable.#ctor(AntTweakBar.Bar,System.Single,System.String)">
+            <summary>
+            Creates a new single-precision floating-point variable in a given bar.
+            </summary>
+            <param name="bar">The bar to create the floating-point variable in.</param>
+            <param name="initialValue">The initial value of the variable.</param>
+            <param name="def">An optional definition string for the new variable.</param>
+        </member>
+        <member name="M:AntTweakBar.FloatVariable.IsValid(System.Single)">
+            <summary>
+            Checks if this variable can hold this value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.FloatVariable.ValidateAndSet(System.Single)">
+            <summary>
+            Tries to set this variable's value, validating it.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.FloatVariable.SetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when the user changes the variable's value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.FloatVariable.GetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when AntTweakBar needs the variable's value.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.FloatVariable.Changed">
+            <summary>
+            Occurs when the user changes this variable's value.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.FloatVariable.Validating">
+            <summary>
+            Occurs when the new value of this variable is validated.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.FloatVariable.Value">
+            <summary>
+            Gets or sets the value of this variable.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.FloatVariable.Min">
+            <summary>
+            Gets or sets this variable's minimum value.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.FloatVariable.Max">
+            <summary>
+            Gets or sets this variable's maximum value.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.FloatVariable.Step">
+            <summary>
+            Gets or sets this variable's step (increment).
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.FloatVariable.Precision">
+            <summary>
+            Gets or sets this variable's precision.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.IntValidationEventArgs.Valid">
+            <summary>
+            Whether to accept this integer value.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.IntVariable">
+            <summary>
+            An AntTweakBar variable which can hold an integer.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.IntVariable.OnChanged(System.EventArgs)">
+            <summary>
+            Raises the Changed event.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.IntVariable.InitIntVariable(AntTweakBar.Variable,System.String)">
+            <summary>
+            Initialization delegate, which creates the integer variable.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.IntVariable.#ctor(AntTweakBar.Bar,System.Int32,System.String)">
+            <summary>
+            Creates a new integer variable in a given bar.
+            </summary>
+            <param name="bar">The bar to create the integer variable in.</param>
+            <param name="initialValue">The initial value of the variable.</param>
+            <param name="def">An optional definition string for the new variable.</param>
+        </member>
+        <member name="M:AntTweakBar.IntVariable.IsValid(System.Int32)">
+            <summary>
+            Checks if this variable can hold this value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.IntVariable.ValidateAndSet(System.Int32)">
+            <summary>
+            Tries to set this variable's value, validating it.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.IntVariable.SetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when the user changes the variable's value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.IntVariable.GetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when AntTweakBar needs the variable's value.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.IntVariable.Changed">
+            <summary>
+            Occurs when the user changes this variable's value.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.IntVariable.Validating">
+            <summary>
+            Occurs when the new value of this variable is validated.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.IntVariable.Value">
+            <summary>
+            Gets or sets the value of this variable.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.IntVariable.Min">
+            <summary>
+            Gets or sets this variable's minimum value.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.IntVariable.Max">
+            <summary>
+            Gets or sets this variable's maximum value.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.IntVariable.Hexadecimal">
+            <summary>
+            Gets or sets whether this variable should display in hexadecimal.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.IntVariable.Step">
+            <summary>
+            Gets or sets this variable's step (increment).
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.Separator">
+            <summary>
+            An AntTweakBar separator, which visually separates other variables.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Separator.InitSeparator(AntTweakBar.Variable,System.String)">
+            <summary>
+            Initialization delegate, which creates the separator.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Separator.#ctor(AntTweakBar.Bar,System.String)">
+            <summary>
+            Creates a new separator in a given bar.
+            </summary>
+            <param name="bar">The bar to create the separator in.</param>
+            <param name="def">An optional definition string for the new separator.</param>
+        </member>
+        <member name="T:AntTweakBar.Context">
+            <summary>
+            An AntTweakBar context, which logically maps to a unique window.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Context.size">
+            <summary>
+            Gets this context's last set window size. This is used for release/reset.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Context.RequiresDevicePointer(AntTweakBar.Tw.GraphicsAPI)">
+            <summary>
+            Checks whether a graphics API requires a device pointer.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Context.#ctor(AntTweakBar.Tw.GraphicsAPI,System.IntPtr)">
+            <summary>
+            Creates a new AntTweakBar context. If there are no other active contexts, a graphics API to use must be provided.
+            </summary>
+            <param name="graphicsAPI">The graphics API you need to share with AntTweakBar.</param>
+            <param name="device">For Direct3D interop only, a pointer to the D3D device.</param>
+        </member>
+        <member name="M:AntTweakBar.Context.Draw">
+            <summary>
+            Draws every bar in this context.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Context.ReleaseResources">
+            <summary>
+            Releases all graphics resources used by this context. They can be reset with <see cref="M:AntTweakBar.Context.ResetResources"/>.
+            </summary>
+            <remarks>
+            This does not affect the bars and variables in this context in any way.
+            </remarks>
+        </member>
+        <member name="M:AntTweakBar.Context.ResetResources">
+            <summary>
+            Resets all graphics resources used by this context.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Context.HandleResize(System.Drawing.Size)">
+            <summary>
+            Notifies this context of a change in window size.
+            </summary>
+            <param name="size">The new window size.</param>
+        </member>
+        <member name="M:AntTweakBar.Context.HandleMouseMove(System.Drawing.Point)">
+            <summary>
+            Notifies this context of a mouse movement.
+            </summary>
+            <param name="point">The new cursor location.</param>
+        </member>
+        <member name="M:AntTweakBar.Context.HandleMouseWheel(System.Int32)">
+            <summary>
+            Notifies this context of a mouse scroll.
+            </summary>
+            <param name="pos">The new mouse wheel position.</param>
+        </member>
+        <member name="M:AntTweakBar.Context.HandleMouseClick(AntTweakBar.Tw.MouseAction,AntTweakBar.Tw.MouseButton)">
+            <summary>
+            Notifies this context of a mouse click.
+            </summary>
+            <param name="action">The kind of mouse action.</param>
+            <param name="button">The mouse button pressed.</param>
+        </member>
+        <member name="F:AntTweakBar.Context.SpecialKeys">
+            <summary>
+            All the special keys supported by AntTweakBar.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Context.HandleKeyPress(System.Char)">
+            <summary>
+            Notifies this context that a character has been typed.
+            </summary>
+            <param name="character">The character typed.</param>
+        </member>
+        <member name="M:AntTweakBar.Context.HandleKeyDown(AntTweakBar.Tw.Key,AntTweakBar.Tw.KeyModifiers)">
+            <summary>
+            Notifies this context that a key has been pressed.
+            </summary>
+            <param name="key">The key pressed.</param>
+            <param name="modifiers">The key modifiers.</param>
+        </member>
+        <member name="M:AntTweakBar.Context.HandleKeyUp(AntTweakBar.Tw.Key,AntTweakBar.Tw.KeyModifiers)">
+            <summary>
+            Notifies this context that a key has been released.
+            </summary>
+            <param name="key">The key released.</param>
+            <param name="modifiers">The key modifiers.</param>
+        </member>
+        <member name="M:AntTweakBar.Context.EventHandlerSFML(System.IntPtr,System.Byte,System.Byte)">
+            <summary>
+            The SFML event handler.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Context.EventHandlerSDL(System.IntPtr,System.Byte,System.Byte)">
+            <summary>
+            The SDL event handler.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Context.EventHandlerWin(System.IntPtr,System.Int32,System.IntPtr,System.IntPtr)">
+            <summary>
+            The Windows event handle (for use in WndProc).
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Context.ShowHelpBar(System.Boolean)">
+            <summary>
+            Shows or hides the help bar for this context.
+            </summary>
+            <param name="visible">Whether the help bar should be visible.</param>
+        </member>
+        <member name="M:AntTweakBar.Context.SetOverlap(System.Boolean)">
+            <summary>
+            Sets whether to draw or clip overlapping bars.
+            </summary>
+            <param name="overlap">If false, clips the contents of overlapping region (default).</param>
+        </member>
+        <member name="M:AntTweakBar.Context.SetIconPosition(AntTweakBar.BarIconPosition)">
+            <summary>
+            Sets the icon position for all bars.
+            </summary>
+            <param name="position">The icon position (default is bottom left).</param>
+        </member>
+        <member name="M:AntTweakBar.Context.SetIconAlignment(AntTweakBar.BarIconAlignment)">
+            <summary>
+            Sets the icon alignment for all bars.
+            </summary>
+            <param name="alignment">The icon alignment (default is vertical).</param>
+        </member>
+        <member name="M:AntTweakBar.Context.SetIconMargin(System.Drawing.Size)">
+            <summary>
+            Sets the icon margin for all bars.
+            </summary>
+            <param name="margin">The icon margin as an x-y offset in pixels.</param>
+        </member>
+        <member name="M:AntTweakBar.Context.SetFontSize(AntTweakBar.BarFontSize)">
+            <summary>
+            Sets the font size for all bars. Note the fixed style font is not resizable.
+            </summary>
+            <param name="fontSize">The font size to use (default is medium).</param>
+        </member>
+        <member name="M:AntTweakBar.Context.SetFontStyle(AntTweakBar.BarFontStyle)">
+            <summary>
+            Sets the font style for all bars.
+            </summary>
+            <param name="fontStyle">The font style to use.</param>
+        </member>
+        <member name="M:AntTweakBar.Context.SetFontResizable(System.Boolean)">
+            <summary>
+            Sets whether the bar font can be resized by the user.
+            </summary>
+            <param name="resizable">Whether the font can be resized.</param>
+        </member>
+        <member name="M:AntTweakBar.Context.SetFontScaling(System.Double)">
+            <summary>
+            Sets a font scaling coefficient. Must be called once before initializing the first context.
+            </summary>
+            <param name="scale">The font scale to use.</param>
+        </member>
+        <member name="M:AntTweakBar.Context.Clear">
+            <summary>
+            Removes all bars in this context.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Context.ThrowIfDisposed">
+            <summary>
+            Throws an ObjectDisposedException if this context has been disposed.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Context.Identifier">
+            <summary>
+            Gets this context's unique identifier, used to switch between contexts.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.Bar">
+            <summary>
+            An AntTweakBar bar, which holds a set of variables.
+            </summary>
+        </member>
+        <member name="F:AntTweakBar.Bar.UnnamedLabel">
+            <summary>
+            The default label for unnamed bars.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Bar.#ctor(AntTweakBar.Context,System.String)">
+            <summary>
+            Creates a new bar in a a given AntTweakBar context.
+            </summary>
+            <param name="parent">The context the bar should be created in.</param>
+            <param name="def">An optional definition string for the new bar.</param>
+        </member>
+        <member name="M:AntTweakBar.Bar.SetDefinition(System.String)">
+            <summary>
+            Sets this bar's properties from a definition string.
+            </summary>
+            <param name="def">An AntTweakBar definition string, excluding the name prefix.</param>
+        </member>
+        <member name="M:AntTweakBar.Bar.BringToFront">
+            <summary>
+            Brings this bar in front of all others.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Bar.SendToBack">
+            <summary>
+            Sends this bar behind all others.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Bar.Clear">
+            <summary>
+            Removes all variables in this bar.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.Bar.ThrowIfDisposed">
+            <summary>
+            Throws an ObjectDisposedException if this bar has been disposed.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Bar.ID">
+            <summary>
+            Gets this bar's context-dependent unique identifier.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Bar.Pointer">
+            <summary>
+            Gets this bar's unmanaged AntTweakBar pointer.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Bar.ParentContext">
+            <summary>
+            Gets this bar's parent context.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Bar.Label">
+            <summary>
+            Gets or sets this bar's label.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Bar.Help">
+            <summary>
+            Gets or sets this bar's help text.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Bar.Color">
+            <summary>
+            Gets or sets this bar's color.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Bar.Alpha">
+            <summary>
+            Gets or sets this bar's alpha value (opacity).
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Bar.TextColor">
+            <summary>
+            Gets or sets this bar's text color.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Bar.Position">
+            <summary>
+            Gets or sets this bar's position.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Bar.Size">
+            <summary>
+            Gets or sets this bar's size.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Bar.ValueColumnWidth">
+            <summary>
+            Gets or sets the width in pixels of this bar's value column. Set to zero for auto-fit.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Bar.RefreshRate">
+            <summary>
+            Gets or sets this bar's refresh rate in seconds.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Bar.ButtonAlignment">
+            <summary>
+            Gets or sets the alignment of buttons in this bar.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Bar.Iconified">
+            <summary>
+            Gets or sets whether this bar is iconified.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Bar.Iconifiable">
+            <summary>
+            Gets or sets whether this bar can be iconified by the user.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Bar.Movable">
+            <summary>
+            Gets or sets whether this bar can be moved by the user.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Bar.Resizable">
+            <summary>
+            Gets or sets whether this bar can be resized by the user.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Bar.Contained">
+            <summary>
+            Gets or sets whether this bar is constrained to the window.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Bar.Visible">
+            <summary>
+            Gets or sets whether this bar is visible.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Bar.AlwaysFront">
+            <summary>
+            Gets or sets whether this bar is always at the front.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.Bar.AlwaysBack">
+            <summary>
+            Gets or sets whether this bar is always at the back.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.AntTweakBarException">
+            <summary>
+            The exception that is thrown when an error occurs in the AntTweakBar library.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.AntTweakBarException.#ctor(System.String)">
+            <summary>
+            Initializes a new AntTweakBar exception with an error message.
+            </summary>
+            <param name="message">A descriptive error message.</param>
+        </member>
+        <member name="P:AntTweakBar.AntTweakBarException.Details">
+            <summary>
+            Gets a detailed description of the error from AntTweakBar.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.QuaternionValidationEventArgs.Valid">
+            <summary>
+            Whether to accept this quaternion value.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.QuaternionVariable">
+            <summary>
+            An AntTweakBar variable which can hold a quaternion.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.QuaternionVariable.OnChanged(System.EventArgs)">
+            <summary>
+            Raises the Changed event.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.QuaternionVariable.InitQuaternionVariable(AntTweakBar.Variable,System.String)">
+            <summary>
+            Initialization delegate, which creates the quaternion variable.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.QuaternionVariable.#ctor(AntTweakBar.Bar,System.Single,System.Single,System.Single,System.Single,System.String)">
+            <summary>
+            Creates a new quaternion variable in a given bar.
+            </summary>
+            <param name="bar">The bar to create the quaternion variable in.</param>
+            <param name="x">The initial X-component value of the variable.</param>
+            <param name="y">The initial Y-component value of the variable.</param>
+            <param name="z">The initial Z-component value of the variable.</param>
+            <param name="w">The initial W-component value of the variable.</param>
+            <param name="def">An optional definition string for the new variable.</param>
+        </member>
+        <member name="M:AntTweakBar.QuaternionVariable.IsValid(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Checks if this variable can hold this value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.QuaternionVariable.ValidateAndSet(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Tries to set this variable's value, validating it.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.QuaternionVariable.SetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when the user changes the variable's value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.QuaternionVariable.GetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when AntTweakBar needs the variable's value.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.QuaternionVariable.Changed">
+            <summary>
+            Occurs when the user changes this variable's value.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.QuaternionVariable.Validating">
+            <summary>
+            Occurs when the new value of this variable is validated.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.QuaternionVariable.X">
+            <summary>
+            Gets or sets this quaternion's X-component.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.QuaternionVariable.Y">
+            <summary>
+            Gets or sets this quaternion's Y-component.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.QuaternionVariable.Z">
+            <summary>
+            Gets or sets this quaternion's Z-component.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.QuaternionVariable.W">
+            <summary>
+            Gets or sets this quaternion's W-component.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.QuaternionVariable.ArrowColor">
+            <summary>
+            Gets or sets this variable's arrow color.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.QuaternionVariable.ShowValue">
+            <summary>
+            Shows or hides this variable's numerical value.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.QuaternionVariable.Coordinates">
+            <summary>
+            Gets or sets this variable's coordinate system.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.EnumValidationEventArgs`1.Valid">
+            <summary>
+            Whether to accept this enum value.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.EnumVariable`1">
+            <summary>
+            An AntTweakBar variable which can hold an enum.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.EnumVariable`1.OnChanged(System.EventArgs)">
+            <summary>
+            Raises the Changed event.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.EnumVariable`1.InitEnumVariable(AntTweakBar.Variable,System.String)">
+            <summary>
+            Initialization delegate, which creates the enum variable.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.EnumVariable`1.#ctor(AntTweakBar.Bar,`0,System.String)">
+            <summary>
+            Creates a new enum variable in a given bar.
+            </summary>
+            <param name="bar">The bar to create the enum variable in.</param>
+            <param name="initialValue">The initial value of the variable.</param>
+            <param name="def">An optional definition string for the new variable.</param>
+        </member>
+        <member name="M:AntTweakBar.EnumVariable`1.IsValid(`0)">
+            <summary>
+            Checks if this variable can hold this value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.EnumVariable`1.ValidateAndSet(`0)">
+            <summary>
+            Tries to set this variable's value, validating it.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.EnumVariable`1.SetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when the user changes the variable's value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.EnumVariable`1.GetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when AntTweakBar needs the variable's value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.EnumVariable`1.GetEnumLabels">
+            <summary>
+            Returns the enum type's values and labels/descriptions.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.EnumVariable`1.Changed">
+            <summary>
+            Occurs when the user changes this variable's value.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.EnumVariable`1.Validating">
+            <summary>
+            Occurs when the new value of this variable is validated.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.EnumVariable`1.Value">
+            <summary>
+            Gets or sets the value of this variable.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.EnumVariable`1.Type">
+            <summary>
+            Gets this enum variable's type.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.StringValidationEventArgs.Valid">
+            <summary>
+            Whether to accept this string value.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.StringVariable">
+            <summary>
+            An AntTweakBar variable which can hold a string.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.StringVariable.OnChanged(System.EventArgs)">
+            <summary>
+            Raises the Changed event.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.StringVariable.InitStringVariable(AntTweakBar.Variable,System.String)">
+            <summary>
+            Initialization delegate, which creates the string variable.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.StringVariable.#ctor(AntTweakBar.Bar,System.String,System.String)">
+            <summary>
+            Creates a new string variable in a given bar.
+            </summary>
+            <param name="bar">The bar to create the string variable in.</param>
+            <param name="initialValue">The initial value of the variable.</param>
+            <param name="def">An optional definition string for the new variable.</param>
+        </member>
+        <member name="M:AntTweakBar.StringVariable.IsValid(System.String)">
+            <summary>
+            Checks if this variable can hold this value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.StringVariable.ValidateAndSet(System.String)">
+            <summary>
+            Tries to set this variable's value, validating it.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.StringVariable.SetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when the user changes the variable's value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.StringVariable.GetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when AntTweakBar needs the variable's value.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.StringVariable.Changed">
+            <summary>
+            Occurs when the user changes this variable's value.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.StringVariable.Validating">
+            <summary>
+            Occurs when the new value of this variable is validated.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.StringVariable.Value">
+            <summary>
+            Gets or sets the value of this variable.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.VectorValidationEventArgs.Valid">
+            <summary>
+            Whether to accept this vector value.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.VectorVariable">
+            <summary>
+            An AntTweakBar variable which can hold a 3D vector.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.VectorVariable.OnChanged(System.EventArgs)">
+            <summary>
+            Raises the Changed event.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.VectorVariable.InitVectorVariable(AntTweakBar.Variable,System.String)">
+            <summary>
+            Initialization delegate, which creates the vector variable.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.VectorVariable.#ctor(AntTweakBar.Bar,System.Single,System.Single,System.Single,System.String)">
+            <summary>
+            Creates a new vector variable in a given bar.
+            </summary>
+            <param name="bar">The bar to create the vector variable in.</param>
+            <param name="x">The initial X-component value of the variable.</param>
+            <param name="y">The initial Y-component value of the variable.</param>
+            <param name="z">The initial Z-component value of the variable.</param>
+            <param name="def">An optional definition string for the new variable.</param>
+        </member>
+        <member name="M:AntTweakBar.VectorVariable.IsValid(System.Single,System.Single,System.Single)">
+            <summary>
+            Checks if this variable can hold this value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.VectorVariable.ValidateAndSet(System.Single,System.Single,System.Single)">
+            <summary>
+            Tries to set this variable's value, validating it.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.VectorVariable.SetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when the user changes the variable's value.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.VectorVariable.GetCallback(System.IntPtr,System.IntPtr)">
+            <summary>
+            Called by AntTweakBar when AntTweakBar needs the variable's value.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.VectorVariable.Changed">
+            <summary>
+            Occurs when the user changes this variable's value.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.VectorVariable.Validating">
+            <summary>
+            Occurs when the new value of this variable is validated.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.VectorVariable.X">
+            <summary>
+            Gets or sets this vector's X-component.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.VectorVariable.Y">
+            <summary>
+            Gets or sets this vector's Y-component.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.VectorVariable.Z">
+            <summary>
+            Gets or sets this vector's Z-component.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.VectorVariable.ArrowColor">
+            <summary>
+            Gets or sets this variable's arrow color.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.VectorVariable.ShowValue">
+            <summary>
+            Shows or hides this variable's numerical value.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.VectorVariable.Coordinates">
+            <summary>
+            Gets or sets this variable's coordinate system.
+            </summary>
+        </member>
+        <member name="T:AntTweakBar.StructVariable`1">
+            <summary>
+            A pseudo-variable acting as a container for a structured group of related variables.
+            </summary>
+            <typeparam name="T">The type of this variable's value.</typeparam>
+        </member>
+        <member name="M:AntTweakBar.StructVariable`1.OnChanged(System.EventArgs)">
+            <summary>
+            Raises the Changed event.
+            </summary>
+        </member>
+        <member name="M:AntTweakBar.StructVariable`1.#ctor(AntTweakBar.Bar,AntTweakBar.IValueVariable[])">
+            <summary>
+            Creates a new struct variable in a given bar.
+            </summary>
+            <param name="bar">The bar to create the struct variable in.</param>
+            <param name="members">The set of member variables.</param>
+        </member>
+        <member name="M:AntTweakBar.StructVariable`1.ThrowIfDisposed">
+            <summary>
+            Throws an ObjectDisposedException if this variable has been disposed.
+            </summary>
+        </member>
+        <member name="E:AntTweakBar.StructVariable`1.Changed">
+            <summary>
+            Occurs when the user changes this variable's value.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.StructVariable`1.ParentBar">
+            <summary>
+            Gets this variable's parent bar.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.StructVariable`1.Value">
+            <summary>
+            Gets or sets the value of this variable.
+            </summary>
+        </member>
+        <member name="P:AntTweakBar.StructVariable`1.Group">
+            <summary>
+            Gets or sets the group this variable represents.
+            </summary>
+        </member>
+    </members>
+</doc>
