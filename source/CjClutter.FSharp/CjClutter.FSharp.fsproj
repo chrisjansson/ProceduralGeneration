@@ -70,6 +70,7 @@
     <Compile Include="TweakBarGui.fs" />
     <Compile Include="BlinnMaterialTweakBar.fs" />
     <Compile Include="TweakBarViewModel.fs" />
+    <Compile Include="LOD.fs" />
     <Compile Include="Program.fs" />
     <None Include="AntTweakBar.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -111,6 +112,13 @@
       <HintPath>..\packages\Rx-PlatformServices.2.2.5\lib\net45\System.Reactive.PlatformServices.dll</HintPath>
       <Private>True</Private>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CjClutter.OpenGl\CjClutter.OpenGl.csproj">
+      <Name>CjClutter.OpenGl</Name>
+      <Project>{f8718fbf-110a-42a2-9ca0-e35ae8222c08}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
