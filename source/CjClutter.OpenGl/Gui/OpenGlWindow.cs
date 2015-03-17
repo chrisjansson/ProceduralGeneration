@@ -143,7 +143,7 @@ namespace CjClutter.OpenGl.Gui
                 terrainSystem.SetTerrainSettings(new NoiseFactory.RidgedMultiFractal().Create(settings));
             };
 
-            _terrain = new Terrain();
+            _terrain = new Terrain(new ChunkedLod());
             _cube = new Cube();
         }
 

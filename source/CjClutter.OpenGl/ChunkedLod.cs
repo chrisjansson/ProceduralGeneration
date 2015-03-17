@@ -4,7 +4,7 @@ using OpenTK;
 
 namespace CjClutter.OpenGl
 {
-    public class ChunkedLod
+    public class ChunkedLod : IChunkedLod
     {
         private List<ChunkedLodTreeFactory.ChunkedLodTreeNode> _visibleNodes;
         private Vector3d _cameraPosition;

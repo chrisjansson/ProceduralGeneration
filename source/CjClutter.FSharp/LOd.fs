@@ -24,6 +24,33 @@ let calculateScreenSpaceError (node:ChunkedLodTreeFactory.ChunkedLodTreeNode) (v
     let distance = (node.Bounds.Center - viewPoint).Length
     (node.GeometricError / distance) * k
 
-let findVisibleNodes (node:ChunkedLodTreeFactory.ChunkedLodTreeNode) (frustum:Frustum) viewWidth horizontalFov =
+let findVisibleNodes (node:ChunkedLodTreeFactory.ChunkedLodTreeNode) (frustum:Frustum) viewWidth horizontalFov viewPoint allowedScreenSpaceError =
     let isInsideViewVolume = isSphereInsideViewVolume frustum
     let k = calculateK viewWidth horizontalFov
+
+    let isDetailedEnough node =
+        let screenSpaceError = calculateScreenSpaceError node viewPoint k
+        screenSpaceError <= allowedScreenSpaceError
+
+    let rec findVisibleNodesRec (node:ChunkedLodTreeFactory.ChunkedLodTreeNode) = 
+        let center = node.Bounds.Center;
+        let delta = node.Bounds.Max - node.Bounds.Min;
+        let side = max delta.X delta.Y
+        let radius = sqrt side*side + side*side;
+        let sphere = { Center = center; Radius = radius }
+        let m = (isInsideViewVolume sphere, node.IsLeaf(), isDetailedEnough node)
+        match m with
+        | (false, _, _) -> [||]
+        | (_, true, _) -> [| node |]
+        | (_, _, true) -> [| node |]
+        | (_, _, false) -> Array.collect (fun n -> findVisibleNodesRec n) node.Nodes
+        
+    findVisibleNodesRec node
+
+type ChunkedLod() = 
+    interface CjClutter.OpenGl.IChunkedLod with
+        member this.Calculate(root, viewportWidth, horizontalFov, cameraPosition, allowedScreenSpacePosition, frustumPlanes) =
+            let a = (findVisibleNodes root frustumPlanes viewportWidth horizontalFov cameraPosition allowedScreenSpacePosition)
+            new System.Collections.Generic.List<ChunkedLodTreeFactory.ChunkedLodTreeNode>(a)
+    
+    

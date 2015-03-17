@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using CjClutter.OpenGl.Camera;
 using CjClutter.OpenGl.EntityComponent;
 using CjClutter.OpenGl.Gui;
@@ -13,15 +14,26 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace CjClutter.OpenGl
 {
+    public interface IChunkedLod
+    {
+        List<ChunkedLodTreeFactory.ChunkedLodTreeNode> Calculate(
+            ChunkedLodTreeFactory.ChunkedLodTreeNode root, 
+            double viewportWidth, 
+            double horizontalFieldOfView, 
+            Vector3d cameraPosition, 
+            double allowedScreenSpaceError, 
+            Vector4d[] frustumPlanes);
+    }
+
     public class Terrain
     {
         private readonly ChunkedLodTreeFactory.ChunkedLodTreeNode _tree;
-        private readonly ChunkedLod _chunkedLod;
+        private readonly IChunkedLod _chunkedLod;
 
-        public Terrain()
+        public Terrain(IChunkedLod chunkedLod)
         {
             _tree = CreateTree();
-            _chunkedLod = new ChunkedLod();
+            _chunkedLod = chunkedLod;
             _simpleMaterial = new SimpleMaterial();
             _simpleMaterial.Create();
             _normalDebugProgram = new NormalDebugProgram();

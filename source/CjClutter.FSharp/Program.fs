@@ -120,6 +120,8 @@ type FysicsWindow() =
 
     let mutable vm : ViewModel = defaultVm
     let mutable cameraPosition : Vector3 = new Vector3(0.0f, 0.0f, 5.0f)
+    let terrain = new CjClutter.OpenGl.Terrain(new LOD.ChunkedLod())
+    let camera = new CjClutter.OpenGl.Camera.LookAtCamera()
 
     override this.OnLoad(e) =
         transferMeshWithNormals unitCubeWithNormals
@@ -132,7 +134,47 @@ type FysicsWindow() =
         GL.LineWidth(1.0f)
         GL.ClearColor(Color.WhiteSmoke)
         GL.Enable(EnableCap.DepthTest)
-        this.VSync <- VSyncMode.On
+        this.VSync <- VSyncMode.
+
+        this.Context.MakeCurrent(null)
+        let contextReady = new System.Threading.AutoResetEvent(false)
+        let t =
+            let window = new OpenTK.NativeWindow()
+            let context = new OpenTK.Graphics.GraphicsContext(this.Context.GraphicsMode, window.WindowInfo)
+            context.MakeCurrent(window.WindowInfo)
+            contextReady.Set() |> ignore
+
+            while true do
+                let work = CjClutter.OpenGl.Gui.JobDispatcher.Instance.Dequeue()
+                work.Invoke()
+
+        let thread = new System.Threading.Thread(t)
+        thread.IsBackground <- true
+        thread.Start
+        contextReady.WaitOne
+        this.MakeCurrent
+
+//            Context.MakeCurrent(null);
+//            var contextReady = new AutoResetEvent(false);
+//            var thread = new Thread(() =>
+//            {
+//                var window = new NativeWindow();
+//                var context = new GraphicsContext(Context.GraphicsMode, window.WindowInfo);
+//                context.MakeCurrent(window.WindowInfo);
+//                contextReady.Set();
+//
+//                while (true)
+//                {
+//                    var action = JobDispatcher.Instance.Dequeue();
+//                    action();
+//                }
+//            });
+//
+//            thread.IsBackground = true;
+//            thread.Start();
+//            contextReady.WaitOne();
+//            MakeCurrent();
+
 
     override this.OnClosing(e) =
         this.tweakbarContext.Dispose()
@@ -172,14 +214,16 @@ type FysicsWindow() =
     override this.OnResize(e) =
         GL.Viewport(0, 0, this.Width, this.Height)
         this.tweakbarContext.HandleResize(this.ClientSize)
+        camera.Width <- float this.Width
+        camera.Height <- float this.Height
 
     override this.OnRenderFrame(e) =
         GL.Clear(ClearBufferMask.ColorBufferBit ||| ClearBufferMask.DepthBufferBit)
-        let aspectRatio = (float)this.Width / (float)this.Height
-        let projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(2.0f, float32 aspectRatio, 0.1f, 100.0f)
-        let cameraMatrix = Matrix4.LookAt(cameraPosition, Vector3.Zero, Vector3.UnitY)
-
-        let blinnMaterial = vm.BlinnMaterial
+//        let aspectRatio = (float)this.Width / (float)this.Height
+//        let projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(2.0f, float32 aspectRatio, 0.1f, 100.0f)
+//        let cameraMatrix = Matrix4.LookAt(cameraPosition, Vector3.Zero, Vector3.UnitY)
+//
+//        let blinnMaterial = vm.BlinnMaterial
 
 //        let staticRenderContext = {
 //                ProjectionMatrix = projectionMatrix
@@ -194,7 +238,9 @@ type FysicsWindow() =
 //        render this.program renderJob
 //        render this.program2 renderJob
 
-        this.tweakbarContext.Draw()
+//        this.tweakbarContext.Draw()
+
+        terrain.Render(camera, camera, new Vector3d(0.0, 20.0, 0.0))
 
         this.SwapBuffers();
 
