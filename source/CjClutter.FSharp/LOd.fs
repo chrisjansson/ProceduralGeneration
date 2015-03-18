@@ -18,7 +18,7 @@ let isSphereInsideViewVolume frustum sphere =
     Array.forall (fun p -> distanceToPlane p sphere.Center >= -sphere.Radius) frustum
 
 let calculateK viewWidth horizontalfov =
-    viewWidth / (tan horizontalfov / 2.0)
+    viewWidth / (tan (horizontalfov / 2.0))
         
 let calculateScreenSpaceError (node:ChunkedLodTreeFactory.ChunkedLodTreeNode) (viewPoint:Vector3d) k =
     let distance = (node.Bounds.Center - viewPoint).Length
