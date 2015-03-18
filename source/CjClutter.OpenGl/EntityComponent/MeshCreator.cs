@@ -73,7 +73,7 @@ namespace CjClutter.OpenGl.EntityComponent
                 }
             }
 
-            return new Mesh3V3N(vertices, faces).Transformed(Matrix4.CreateTranslation(-columns / 2, 0, -rows / 2) * Matrix4.CreateScale((float)(1.0 / columns), 1, (float)(1.0 / rows)));
+            return new Mesh3V3N(vertices, faces).Transformed(Matrix4.CreateTranslation(-columns / 2f, 0, -rows / 2f) * Matrix4.CreateScale((float)(1.0 / columns), 1, (float)(1.0 / rows)));
         }
 
         private class FlatHeightMap : IHeightMap
