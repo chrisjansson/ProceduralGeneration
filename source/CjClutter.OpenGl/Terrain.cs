@@ -197,12 +197,12 @@ namespace CjClutter.OpenGl
                 //return 
             }
 
-            public Vector2d CalculatePosition(int column, int row)
+            private Vector2d CalculatePosition(double column, double row)
             {
                 var delta = _bounds.Max - _bounds.Min;
 
-                var columnFraction = column / (double)_columns;
-                var rowFraction = row / (double)_rows;
+                var columnFraction = column / _columns;
+                var rowFraction = row / _rows;
 
                 var x = _bounds.Min.X + delta.X * columnFraction;
                 var y = _bounds.Min.Y + delta.Y * rowFraction;
