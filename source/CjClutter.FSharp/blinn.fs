@@ -12,7 +12,7 @@ out vec4 outColor;
 in vec3 vNormal;
 in vec3 vPosition;
 
-const vec4 lightPosition = vec4(1.0);
+const vec4 lightPosition = vec4(50.0, 300.0, 0.0, 1.0);
 const float specularExp = 150.0;
 
 vec3 calculateDiffuse(vec3 diffuseColor, vec3 dirToLight, vec3 normal) {

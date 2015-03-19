@@ -62,7 +62,7 @@ namespace CjClutter.OpenGl.SceneGraph
                 Vertices.Select(x => new Vertex3V3N
                 {
                     Position = Vector3.Transform(x.Position, transform),
-                    Normal = Vector3.TransformNormal(x.Normal, transform).Normalized()
+                    Normal = x.Normal//Vector3.TransformNormal(x.Normal, transform).Normalized()
                 }),
                 _faces);
         }

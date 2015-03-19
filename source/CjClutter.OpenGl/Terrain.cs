@@ -184,10 +184,17 @@ namespace CjClutter.OpenGl
             {
                 var center = CalculatePosition(column, row);
 
-                var leftRight = new Vector3d(_dx * 2, _noiseGenerator.Noise(center.X + 1, center.Y) - _noiseGenerator.Noise(center.X - 1, center.Y), 0);
-                var bottomTop = new Vector3d(0, _noiseGenerator.Noise(center.X, center.Y + 1) - _noiseGenerator.Noise(center.X, center.Y - 1), _dy * 2);
+                double d = 0.0001;
+                var leftRight = new Vector3d(d * 2, _noiseGenerator.Noise(center.X + d, center.Y) - _noiseGenerator.Noise(center.X - d, center.Y), 0);
+                var bottomTop = new Vector3d(0, _noiseGenerator.Noise(center.X, center.Y - d) - _noiseGenerator.Noise(center.X, center.Y + d), d * 2);
 
-                return -(Vector3d.Cross(leftRight.Normalized(), bottomTop.Normalized()).Normalized());
+                var normal = -(Vector3d.Cross(leftRight.Normalized(), bottomTop.Normalized()).Normalized());
+                return normal;
+
+                //var leftRight = new Vector3d(_dx * 2, _noiseGenerator.Noise(center.X + 1, center.Y) - _noiseGenerator.Noise(center.X - 1, center.Y), 0);
+                //var bottomTop = new Vector3d(0, _noiseGenerator.Noise(center.X, center.Y + 1) - _noiseGenerator.Noise(center.X, center.Y - 1), _dy * 2);
+
+                //return 
             }
 
             public Vector2d CalculatePosition(int column, int row)

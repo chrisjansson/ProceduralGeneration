@@ -97,6 +97,18 @@ let configureTweakBar c defaultValue =
     bar.Contained <- true
     makeViewModel bar defaultValue
         
+let makeRenderJob mesh cameraMatrix =
+    let translation = Matrix4.Identity
+    let (modelToProjection:Matrix4) = translation * cameraMatrix;
+    let normalMatrix = new Matrix3(Matrix4.Transpose(modelToProjection.Inverted()))
+    {
+        Mesh = mesh
+        IndividualContext = {
+                            ModelMatrix = translation
+                            NormalMatrix = normalMatrix
+            }
+        }
+
 let fsaaSamples = 8
 let windowGraphicsMode =
     new Graphics.GraphicsMode(
@@ -119,12 +131,25 @@ type FysicsWindow() =
     let defaultVm = { IntegrationSpeed = 1.0; BlinnMaterial = defaultBlinnMaterial }
 
     let mutable vm : ViewModel = defaultVm
-    let mutable cameraPosition : Vector3 = new Vector3(0.0f, 0.0f, 5.0f)
+    let mutable cameraPosition : Vector3 = new Vector3(0.0f, 100.0f, 50.0f)
     let terrain = new CjClutter.OpenGl.Terrain(new LOD.ChunkedLod())
     let camera = new CjClutter.OpenGl.Camera.LookAtCamera()
+    let factory = new CjClutter.OpenGl.TerrainChunkFactory()
+    let makeMesh =
+        let m = factory.Create(new CjClutter.OpenGl.EntityComponent.Box3D(new Vector3d(-256.0, -256.0, 0.0), new Vector3d(256.0, 256.0, 0.0))).Transformed(Matrix4.CreateScale(new Vector3(512.0f, 1.0f, 512.0f)))
+        m.CalculateNormals()
+        m
+    let mesh = makeMesh
+    
+    let vertices = Array.collect (fun (f:CjClutter.OpenGl.SceneGraph.Face3) -> [| mesh.Vertices.[f.V0];mesh.Vertices.[f.V1];mesh.Vertices.[f.V2] |]) mesh.Faces
+                        |> Array.map (fun v -> new V3N3(v.Position, v.Normal))
+        
+    let newMesh = { 
+            vertices = vertices
+        }
 
     override this.OnLoad(e) =
-        transferMeshWithNormals unitCubeWithNormals
+        transferMeshWithNormals newMesh
         this.program <- BlinnShaderProgram BlinnShaderProgram.makeBlinnShaderProgram
 //        this.program <- SimpleShaderProgram SimpleShaderProgram.makeSimpleShaderProgram
         this.program2 <- NormalDebugShaderProgram NormalDebugShaderProgram.makeSimpleShaderProgram
@@ -165,6 +190,10 @@ type FysicsWindow() =
             cameraPosition <- Vector3.Transform(cameraPosition, Matrix4.CreateRotationY(float32 -e.Time))
         if this.Keyboard.[Key.D] then do
             cameraPosition <- Vector3.Transform(cameraPosition, Matrix4.CreateRotationY(float32 e.Time))
+        if this.Keyboard.[Key.W] then do
+            cameraPosition <- cameraPosition - cameraPosition * (float32 e.Time)
+        if this.Keyboard.[Key.S] then do
+            cameraPosition <- cameraPosition + cameraPosition * (float32 e.Time)
 
     override this.OnKeyUp(e) =
         match convertKeyEvent e with
@@ -198,28 +227,27 @@ type FysicsWindow() =
 
     override this.OnRenderFrame(e) =
         GL.Clear(ClearBufferMask.ColorBufferBit ||| ClearBufferMask.DepthBufferBit)
-//        let aspectRatio = (float)this.Width / (float)this.Height
-//        let projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(2.0f, float32 aspectRatio, 0.1f, 100.0f)
-//        let cameraMatrix = Matrix4.LookAt(cameraPosition, Vector3.Zero, Vector3.UnitY)
-//
-//        let blinnMaterial = vm.BlinnMaterial
+        let aspectRatio = (float)this.Width / (float)this.Height
+        let projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(2.0f, float32 aspectRatio, 0.1f, 1000.0f)
+        let cameraMatrix = Matrix4.LookAt(cameraPosition, Vector3.Zero, Vector3.UnitY)
 
-//        let staticRenderContext = {
-//                ProjectionMatrix = projectionMatrix
-//                ViewMatrix = cameraMatrix
-//            }
-//        let renderJob = {
-//                StaticContext = staticRenderContext
+        let blinnMaterial = vm.BlinnMaterial
+
+        let staticRenderContext = {
+                ProjectionMatrix = projectionMatrix
+                ViewMatrix = cameraMatrix
+            }
+        let renderJob = {
+                StaticContext = staticRenderContext
+                RenderJobs = [ makeRenderJob newMesh cameraMatrix ]
 //                RenderJobs = particles |> List.map (fun p -> makeRenderJob p unitCubeWithNormals cameraMatrix)
-//                Material = Blinn({ Rendering.BlinnMaterial.AmbientColor = blinnMaterial.AmbientColor; DiffuseColor = blinnMaterial.DiffuseColor; SpecularColor = blinnMaterial.SpecularColor})
-//            }
-//
-//        render this.program renderJob
-//        render this.program2 renderJob
+                Material = Blinn({ Rendering.BlinnMaterial.AmbientColor = blinnMaterial.AmbientColor; DiffuseColor = blinnMaterial.DiffuseColor; SpecularColor = blinnMaterial.SpecularColor})
+            }
 
-//        this.tweakbarContext.Draw()
+        render this.program renderJob
+        render this.program2 renderJob
 
-        terrain.Render(camera, camera, new Vector3d(0.0, 20.0, 0.0))
+        this.tweakbarContext.Draw()
 
         this.SwapBuffers();
 
