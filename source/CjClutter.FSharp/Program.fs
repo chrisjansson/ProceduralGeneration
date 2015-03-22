@@ -135,9 +135,8 @@ type FysicsWindow() =
     let terrain = new CjClutter.OpenGl.Terrain(new LOD.ChunkedLod())
     let camera = new CjClutter.OpenGl.Camera.LookAtCamera()
     let factory = new CjClutter.OpenGl.TerrainChunkFactory()
-    let makeMesh =
-        let m = factory.Create(new CjClutter.OpenGl.EntityComponent.Box3D(new Vector3d(-256.0, -256.0, 0.0), new Vector3d(256.0, 256.0, 0.0))).Transformed(Matrix4.CreateScale(new Vector3(512.0f, 1.0f, 512.0f)))
-        m
+    let makeMesh = factory.Create(new CjClutter.OpenGl.EntityComponent.Box3D(new Vector3d(-256.0, -256.0, 0.0), new Vector3d(256.0, 256.0, 0.0))).Transformed(Matrix4.CreateScale(new Vector3(512.0f, 1.0f, 512.0f)))
+       
     let mesh = makeMesh
     
     let vertices = Array.collect (fun (f:CjClutter.OpenGl.SceneGraph.Face3) -> [| mesh.Vertices.[f.V0];mesh.Vertices.[f.V1];mesh.Vertices.[f.V2] |]) mesh.Faces
