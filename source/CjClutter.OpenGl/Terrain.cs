@@ -45,14 +45,15 @@ namespace CjClutter.OpenGl
         {
             var chunkedLodTreeFactory = new ChunkedLodTreeFactory();
 
+            double width = 8192;
             var bounds = new Box3D(
-                new Vector3d(-4096, -4096, 0),
-                new Vector3d(4096, 4096, 0));
+                new Vector3d(-width / 2, -width / 2, 0),
+                new Vector3d(width / 2, width / 2, 0));
 
-            var levels = Math.Log((8192 / 128), 2);
+            var chunkResolution = 32;
+            var depth = (int)Math.Log((width / chunkResolution), 2);
 
-            //calculate depth so that one square is one meter as maximum resolution
-            return chunkedLodTreeFactory.Create(bounds, (int)8);
+            return chunkedLodTreeFactory.Create(bounds, depth);
         }
 
         public void Render(ICamera camera, ICamera lodCamera, Vector3d lightPosition)
@@ -183,7 +184,7 @@ namespace CjClutter.OpenGl
             public Vector3d GetNormal(int column, int row)
             {
                 var center = CalculatePosition(column, row);
-                double d = 0.1;
+                double d = 1;
                 var leftRight = new Vector3d(d * 2, _noiseGenerator.Noise(center.X + d, center.Y) - _noiseGenerator.Noise(center.X - d, center.Y), 0);
                 var bottomTop = new Vector3d(0, _noiseGenerator.Noise(center.X, center.Y - d) - _noiseGenerator.Noise(center.X, center.Y + d), d * 2);
 
