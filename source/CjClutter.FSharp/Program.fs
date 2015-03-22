@@ -137,7 +137,6 @@ type FysicsWindow() =
     let factory = new CjClutter.OpenGl.TerrainChunkFactory()
     let makeMesh =
         let m = factory.Create(new CjClutter.OpenGl.EntityComponent.Box3D(new Vector3d(-256.0, -256.0, 0.0), new Vector3d(256.0, 256.0, 0.0))).Transformed(Matrix4.CreateScale(new Vector3(512.0f, 1.0f, 512.0f)))
-        m.CalculateNormals()
         m
     let mesh = makeMesh
     
@@ -240,12 +239,11 @@ type FysicsWindow() =
         let renderJob = {
                 StaticContext = staticRenderContext
                 RenderJobs = [ makeRenderJob newMesh cameraMatrix ]
-//                RenderJobs = particles |> List.map (fun p -> makeRenderJob p unitCubeWithNormals cameraMatrix)
                 Material = Blinn({ Rendering.BlinnMaterial.AmbientColor = blinnMaterial.AmbientColor; DiffuseColor = blinnMaterial.DiffuseColor; SpecularColor = blinnMaterial.SpecularColor})
             }
 
         render this.program renderJob
-        render this.program2 renderJob
+//        render this.program2 renderJob
 
         this.tweakbarContext.Draw()
 
