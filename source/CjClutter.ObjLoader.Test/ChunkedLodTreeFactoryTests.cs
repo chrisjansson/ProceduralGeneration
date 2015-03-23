@@ -19,6 +19,7 @@ namespace ObjLoader.Test
             Assert.AreEqual(expectedBounds, result.Bounds);
             Assert.AreEqual(1, result.GeometricError);
             Assert.IsEmpty(result.Nodes);
+            Assert.IsNull(result.Parent);
         }
 
         [Test]

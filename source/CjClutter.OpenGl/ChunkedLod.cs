@@ -13,11 +13,11 @@ namespace CjClutter.OpenGl
         private Vector4d[] _frustumPlanes;
 
         public List<ChunkedLodTreeFactory.ChunkedLodTreeNode> Calculate(
-            ChunkedLodTreeFactory.ChunkedLodTreeNode root, 
-            double viewportWidth, 
-            double horizontalFieldOfView, 
-            Vector3d cameraPosition, 
-            double allowedScreenSpaceError, 
+            ChunkedLodTreeFactory.ChunkedLodTreeNode root,
+            double viewportWidth,
+            double horizontalFieldOfView,
+            Vector3d cameraPosition,
+            double allowedScreenSpaceError,
             Vector4d[] frustumPlanes)
         {
             _frustumPlanes = frustumPlanes;
@@ -61,7 +61,7 @@ namespace CjClutter.OpenGl
             var center = node.Bounds.Center;
             var delta = node.Bounds.Max - node.Bounds.Min;
             var side = Math.Max(delta.X, delta.Y);
-            var radius = Math.Sqrt(side*side + side*side);
+            var radius = Math.Sqrt(side * side + side * side);
 
             for (var i = 0; i < _frustumPlanes.Length; i++)
             {
@@ -77,7 +77,7 @@ namespace CjClutter.OpenGl
 
         private double PlaneDistance(Vector4d plane, Vector3d pt)
         {
-            return plane.X*pt.X + plane.Y*pt.Y + plane.Z*pt.Z + plane.W;
+            return plane.X * pt.X + plane.Y * pt.Y + plane.Z * pt.Z + plane.W;
         }
     }
 }

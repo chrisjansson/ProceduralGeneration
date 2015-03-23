@@ -8,7 +8,7 @@ namespace CjClutter.OpenGl
     {
         public ChunkedLodTreeNode Create(Box3D bounds, int depth)
         {
-            return new ChunkedLodTreeNode(bounds, GetLeafs(bounds, depth), CalculateGeometricError(depth));
+            return CreateChunkedLodTreeNode(bounds, depth, CalculateGeometricError(depth));
         }
 
         private double CalculateGeometricError(int depth)
@@ -31,29 +31,43 @@ namespace CjClutter.OpenGl
             var second = new Box3D(new Vector3d(center.X, min.Y, min.Z), new Vector3d(max.X, center.Y, max.Z));
             var third = new Box3D(new Vector3d(min.X, center.Y, min.Z), new Vector3d(center.X, max.Y, max.Z));
             var fourth = new Box3D(new Vector3d(center.X, center.Y, min.Z), max);
-            var nextDepth = depth -1;
-            var geometricError = CalculateGeometricError(depth - 1); 
+            var nextDepth = depth - 1;
+            var geometricError = CalculateGeometricError(depth - 1);
             return new[]
             {
-                new ChunkedLodTreeNode(first, GetLeafs(first, nextDepth), geometricError),
-                new ChunkedLodTreeNode(second, GetLeafs(second, nextDepth), geometricError),
-                new ChunkedLodTreeNode(third, GetLeafs(third, nextDepth), geometricError),
-                new ChunkedLodTreeNode(fourth, GetLeafs(fourth, nextDepth), geometricError)
+                CreateChunkedLodTreeNode(first, nextDepth, geometricError),
+                CreateChunkedLodTreeNode(second, nextDepth, geometricError),
+                CreateChunkedLodTreeNode(third, nextDepth, geometricError),
+                CreateChunkedLodTreeNode(fourth, nextDepth, geometricError)
             };
+        }
+
+        private ChunkedLodTreeNode CreateChunkedLodTreeNode(Box3D first, int nextDepth, double geometricError)
+        {
+            var chunkedLodTreeNode = new ChunkedLodTreeNode(first, null, geometricError);
+            chunkedLodTreeNode.SetNodes(GetLeafs(first, nextDepth));
+            return chunkedLodTreeNode;
         }
 
         public class ChunkedLodTreeNode
         {
-            public ChunkedLodTreeNode(Box3D bounds, ChunkedLodTreeNode[] nodes, double geometricError)
+            public ChunkedLodTreeNode(Box3D bounds, ChunkedLodTreeNode parent, double geometricError)
             {
                 Bounds = bounds;
-                Nodes = nodes;
+                Parent = parent;
+                Nodes = new ChunkedLodTreeNode[0];
                 GeometricError = geometricError;
             }
 
             public Box3D Bounds { get; private set; }
+            public ChunkedLodTreeNode Parent { get; set; }
             public ChunkedLodTreeNode[] Nodes { get; private set; }
             public double GeometricError { get; private set; }
+
+            public void SetNodes(ChunkedLodTreeNode[] nodes)
+            {
+                Nodes = nodes;
+            }
         }
     }
 }
