@@ -33,6 +33,7 @@ namespace ObjLoader.Test
             Assert.AreEqual(expectedBounds, result.Bounds);
             Assert.AreEqual(2, result.GeometricError);
             Assert.AreEqual(4, result.Nodes.Length);
+            Assert.AreEqual(result, result.Nodes[0].Parent);
         }
 
         [Test]

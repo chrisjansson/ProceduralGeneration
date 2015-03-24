@@ -8,7 +8,7 @@ namespace CjClutter.OpenGl
     {
         public ChunkedLodTreeNode Create(Box3D bounds, int depth)
         {
-            return CreateChunkedLodTreeNode(bounds, depth, CalculateGeometricError(depth));
+            return CreateChunkedLodTreeNode(bounds, null, depth, CalculateGeometricError(depth));
         }
 
         private double CalculateGeometricError(int depth)
@@ -16,7 +16,14 @@ namespace CjClutter.OpenGl
             return Math.Pow(2, depth);
         }
 
-        private ChunkedLodTreeNode[] GetLeafs(Box3D bounds, int depth)
+        private ChunkedLodTreeNode CreateChunkedLodTreeNode(Box3D first, ChunkedLodTreeNode parent, int nextDepth, double geometricError)
+        {
+            var chunkedLodTreeNode = new ChunkedLodTreeNode(first, parent, geometricError);
+            chunkedLodTreeNode.SetNodes(GetLeafs(first, chunkedLodTreeNode, nextDepth));
+            return chunkedLodTreeNode;
+        }
+
+        private ChunkedLodTreeNode[] GetLeafs(Box3D bounds, ChunkedLodTreeNode parent, int depth)
         {
             if (depth == 0)
             {
@@ -35,18 +42,11 @@ namespace CjClutter.OpenGl
             var geometricError = CalculateGeometricError(depth - 1);
             return new[]
             {
-                CreateChunkedLodTreeNode(first, nextDepth, geometricError),
-                CreateChunkedLodTreeNode(second, nextDepth, geometricError),
-                CreateChunkedLodTreeNode(third, nextDepth, geometricError),
-                CreateChunkedLodTreeNode(fourth, nextDepth, geometricError)
+                CreateChunkedLodTreeNode(first, parent, nextDepth, geometricError),
+                CreateChunkedLodTreeNode(second, parent, nextDepth, geometricError),
+                CreateChunkedLodTreeNode(third, parent, nextDepth, geometricError),
+                CreateChunkedLodTreeNode(fourth, parent, nextDepth, geometricError)
             };
-        }
-
-        private ChunkedLodTreeNode CreateChunkedLodTreeNode(Box3D first, int nextDepth, double geometricError)
-        {
-            var chunkedLodTreeNode = new ChunkedLodTreeNode(first, null, geometricError);
-            chunkedLodTreeNode.SetNodes(GetLeafs(first, nextDepth));
-            return chunkedLodTreeNode;
         }
 
         public class ChunkedLodTreeNode
