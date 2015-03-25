@@ -71,6 +71,7 @@
     <Compile Include="BlinnMaterialTweakBar.fs" />
     <Compile Include="TweakBarViewModel.fs" />
     <Compile Include="LOD.fs" />
+    <Compile Include="LODCache.fs" />
     <Compile Include="Program.fs" />
     <None Include="AntTweakBar.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
