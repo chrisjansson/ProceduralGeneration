@@ -9,10 +9,10 @@ type LODCache = {
         get : node -> primitives.meshWithNormals
     }
 
-let getNodesToDraw cache (requestedNodes:node array) =
+let getNodesToDrawAndCache cache (requestedNodes:node array) =
     let rec getNodesToDrawInternal (requested, notCached) =
         let allAreCached = requested |> Array.forall (fun n -> cache.contains n)
-        let isRoot = requestedNodes.Length = 1
+        let isRoot = requestedNodes.Length = 1 && requestedNodes.[0].Parent = null
         match allAreCached || isRoot with
         | true -> (requestedNodes, notCached)
         | _ -> 
@@ -24,5 +24,19 @@ let getNodesToDraw cache (requestedNodes:node array) =
             getNodesToDrawInternal (nodesToRequest, Array.concat [notCachedNodes; notCached])
 
     getNodesToDrawInternal (requestedNodes, [||])
+
+let queueNodes cache (nodes: node array) =
+    let largestFirst = nodes |> Array.sortBy (fun n -> n.GeometricError)
+    for n in largestFirst do
+        cache.beginCache n
+
+let getMeshesFromCache cache (requestedNodes:node array) =
+    requestedNodes |> Array.map (fun n -> cache.get n)
+
+let getMeshesToDraw cache (requestedNodes:node array) = 
+    let (nodesToDraw, nodesToCache) = getNodesToDrawAndCache cache requestedNodes
+    queueNodes cache nodesToCache
+    getMeshesFromCache cache nodesToDraw
+    
 
 

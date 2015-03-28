@@ -53,4 +53,3 @@ type ChunkedLod() =
             let a = (findVisibleNodes root frustumPlanes viewportWidth horizontalFov cameraPosition allowedScreenSpacePosition)
             new System.Collections.Generic.List<ChunkedLodTreeFactory.ChunkedLodTreeNode>(a)
     
-    
