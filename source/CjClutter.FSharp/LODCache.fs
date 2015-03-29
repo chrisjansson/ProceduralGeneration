@@ -38,5 +38,10 @@ let getMeshesToDraw cache (requestedNodes:node array) =
     queueNodes cache nodesToCache
     getMeshesFromCache cache nodesToDraw
     
+let makeCache (chunkFactory : node -> primitives.meshWithNormals) =
+    let dict = new System.Collections.Concurrent.ConcurrentDictionary<node,primitives.meshWithNormals>()
+
+
+
 
 
