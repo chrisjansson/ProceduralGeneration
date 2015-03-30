@@ -38,9 +38,30 @@ let getMeshesToDraw cache (requestedNodes:node array) =
     queueNodes cache nodesToCache
     getMeshesFromCache cache nodesToDraw
     
+type CachedNode = {
+        mutable mesh : option<primitives.meshWithNormals>
+    }
+   
 let makeCache (chunkFactory : node -> primitives.meshWithNormals) =
-    let dict = new System.Collections.Concurrent.ConcurrentDictionary<node,primitives.meshWithNormals>()
+    let dict = new System.Collections.Concurrent.ConcurrentDictionary<node, CachedNode>()
 
+    let contains node = dict.ContainsKey(node)
+    let get node = 
+        let m = dict.[node].mesh
+        match m with
+        | Some mesh -> mesh
+        | _ -> failwith "Something went wrong!"
+    let beginCache node = 
+        let cn = { CachedNode.mesh = None }
+        dict.TryAdd(node, cn) |> ignore
+        let work = 
+            let mesh = chunkFactory node
+            cn.mesh <- Some mesh
+
+
+        ()
+
+    ()
 
 
 
