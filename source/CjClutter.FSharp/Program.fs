@@ -62,10 +62,10 @@ let render program renderJob =
         GL.UseProgram p.ProgramId
         p.ProjectionMatrixUniform.set renderJob.StaticContext.ProjectionMatrix
         p.ViewMatrix.set renderJob.StaticContext.ViewMatrix
-        for j in renderJob.RenderJobs do
-            p.ModelMatrix.set j.IndividualContext.ModelMatrix
-            p.NormalMatrix.set j.IndividualContext.NormalMatrix
-            drawMesh j.Mesh PrimitiveType.Triangles
+//        for j in renderJob.RenderJobs do
+//            p.ModelMatrix.set j.IndividualContext.ModelMatrix
+//            p.NormalMatrix.set j.IndividualContext.NormalMatrix
+//            drawMesh j.Mesh PrimitiveType.Triangles
     | BlinnShaderProgram p ->
         GL.UseProgram p.ProgramId
         p.ProjectionMatrixUniform.set renderJob.StaticContext.ProjectionMatrix
@@ -77,18 +77,18 @@ let render program renderJob =
             p.SpecularColor.set m.SpecularColor
             ()
         | _ -> ()
-        for j in renderJob.RenderJobs do
-            p.ModelMatrix.set j.IndividualContext.ModelMatrix
-            p.NormalMatrix.set j.IndividualContext.NormalMatrix
-            drawMesh j.Mesh PrimitiveType.Triangles
+//        for j in renderJob.RenderJobs do
+//            p.ModelMatrix.set j.IndividualContext.ModelMatrix
+//            p.NormalMatrix.set j.IndividualContext.NormalMatrix
+//            drawMesh j.Mesh PrimitiveType.Triangles
     | NormalDebugShaderProgram p ->
         GL.UseProgram p.ProgramId
         p.ProjectionMatrixUniform.set renderJob.StaticContext.ProjectionMatrix
         p.ViewMatrix.set renderJob.StaticContext.ViewMatrix
-        for j in renderJob.RenderJobs do
-            p.ModelMatrix.set j.IndividualContext.ModelMatrix
-            p.NormalMatrix.set j.IndividualContext.NormalMatrix
-            drawMesh j.Mesh PrimitiveType.Points
+//        for j in renderJob.RenderJobs do
+//            p.ModelMatrix.set j.IndividualContext.ModelMatrix
+//            p.NormalMatrix.set j.IndividualContext.NormalMatrix
+//            drawMesh j.Mesh PrimitiveType.Points
 
 let configureTweakBar c defaultValue =
     let bar = new Bar(c)
@@ -233,13 +233,13 @@ type FysicsWindow() =
                 ProjectionMatrix = projectionMatrix
                 ViewMatrix = cameraMatrix
             }
-        let renderJob = {
-                StaticContext = staticRenderContext
-                RenderJobs = [ makeRenderJob newMesh cameraMatrix ]
-                Material = Blinn({ Rendering.BlinnMaterial.AmbientColor = blinnMaterial.AmbientColor; DiffuseColor = blinnMaterial.DiffuseColor; SpecularColor = blinnMaterial.SpecularColor})
-            }
+//        let renderJob = {
+//                StaticContext = staticRenderContext
+//                RenderJobs = [ makeRenderJob newMesh cameraMatrix ]
+//                Material = Blinn({ Rendering.BlinnMaterial.AmbientColor = blinnMaterial.AmbientColor; DiffuseColor = blinnMaterial.DiffuseColor; SpecularColor = blinnMaterial.SpecularColor})
+//            }
 
-        render this.program renderJob
+//        render this.program renderJob
 //        render this.program2 renderJob
 
         this.tweakbarContext.Draw()

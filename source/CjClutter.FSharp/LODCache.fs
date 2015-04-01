@@ -7,7 +7,7 @@ type node = ChunkedLodTreeFactory.ChunkedLodTreeNode
 type LODCache = {
         contains : node -> bool
         beginCache : node -> unit
-        get : node -> primitives.meshWithNormals
+        get : node -> Rendering.AllocatedMesh
     }
 
 let getNodesToDrawAndCache cache (requestedNodes:node array) =
@@ -40,7 +40,7 @@ let getMeshesToDraw cache (requestedNodes:node array) =
     getMeshesFromCache cache nodesToDraw
     
 type CachedNode = {
-        mutable mesh : option<primitives.meshWithNormals>
+        mutable mesh : option<Rendering.AllocatedMesh>
     }
    
 let makeCache (chunkFactory : node -> Rendering.AllocatedMesh) =
