@@ -2,6 +2,11 @@
 open OpenTK
 open primitives
 
+
+type AllocatedMesh = {
+            bind : unit -> unit
+        }
+
 type StaticRenderContext = {
         ViewMatrix : Matrix4
         ProjectionMatrix : Matrix4
@@ -14,7 +19,7 @@ type IndividualRenderContext = {
 
 type IndividualRenderJob = {
         IndividualContext : IndividualRenderContext
-        Mesh : meshWithNormals
+        Mesh : AllocatedMesh
     }
 
 type BlinnMaterial = {
