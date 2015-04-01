@@ -43,7 +43,7 @@ type CachedNode = {
         mutable mesh : option<primitives.meshWithNormals>
     }
    
-let makeCache (chunkFactory : node -> primitives.meshWithNormals) =
+let makeCache (chunkFactory : node -> Rendering.AllocatedMesh) =
     let dict = new System.Collections.Concurrent.ConcurrentDictionary<node, CachedNode>()
 
     let contains node = 
