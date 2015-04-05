@@ -13,7 +13,7 @@ type LODCache = {
 let getNodesToDrawAndCache cache (requestedNodes:node array) =
     let rec getNodesToDrawInternal (requested, notCached) =
         let allAreCached = requested |> Array.forall (fun n -> cache.contains n)
-        let isRoot = requestedNodes.Length = 1 && requestedNodes.[0].Parent = null
+        let isRoot = requestedNodes.Length = 1 && requestedNodes.[0].Parent = null //needs a better check
         match allAreCached || isRoot with
         | true -> (requestedNodes, notCached)
         | _ -> 
