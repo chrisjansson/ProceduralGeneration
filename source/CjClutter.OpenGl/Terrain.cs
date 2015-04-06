@@ -41,7 +41,7 @@ namespace CjClutter.OpenGl
             _cache = new TerrainChunkCache(new TerrainChunkFactory(), new ResourceAllocator(new OpenGlResourceFactory()));
         }
 
-        private static ChunkedLodTreeFactory.ChunkedLodTreeNode CreateTree()
+        public static ChunkedLodTreeFactory.ChunkedLodTreeNode CreateTree()
         {
             var chunkedLodTreeFactory = new ChunkedLodTreeFactory();
 

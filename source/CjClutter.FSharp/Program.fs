@@ -13,37 +13,37 @@ open TweakBarGuiViewModel
 open System.Reactive.Linq
 open System.Linq
 
-let transferMesh (m:mesh) =
-    let vbos = Array.zeroCreate<int> 2
-    GL.GenBuffers(2, vbos)
+//let transferMesh (m:mesh) =
+//    let vbos = Array.zeroCreate<int> 2
+//    GL.GenBuffers(2, vbos)
+//
+//    GL.BindBuffer(BufferTarget.ArrayBuffer, vbos.[0])
+//    GL.BufferData(BufferTarget.ArrayBuffer, (nativeint)m.verticesSize, m.vertices, BufferUsageHint.StaticDraw)
+//
+//    GL.BindBuffer(BufferTarget.ElementArrayBuffer, vbos.[1])
+//    GL.BufferData(BufferTarget.ElementArrayBuffer, (nativeint)m.elementSize, m.indices, BufferUsageHint.StaticDraw)
+//
+//    GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0)
+//    GL.EnableVertexAttribArray(0)
+//    GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, sizeof<float32> * 6, sizeof<Vector3>)
+//    GL.EnableVertexAttribArray(1)
+//
+//let transferMeshWithNormals (m:meshWithNormals) =
+//    let vbo = GL.GenBuffer()
+//
+//    GL.BindBuffer(BufferTarget.ArrayBuffer, vbo)
+//    GL.BufferData(BufferTarget.ArrayBuffer, (nativeint)(m.vertices.Length * sizeof<V3N3>), m.vertices, BufferUsageHint.StaticDraw)
+//
+//    GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, sizeof<float32> * 6, 0)
+//    GL.EnableVertexAttribArray(0)
+//    GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, sizeof<float32> * 6, sizeof<Vector3>)
+//    GL.EnableVertexAttribArray(1)
 
-    GL.BindBuffer(BufferTarget.ArrayBuffer, vbos.[0])
-    GL.BufferData(BufferTarget.ArrayBuffer, (nativeint)m.verticesSize, m.vertices, BufferUsageHint.StaticDraw)
-
-    GL.BindBuffer(BufferTarget.ElementArrayBuffer, vbos.[1])
-    GL.BufferData(BufferTarget.ElementArrayBuffer, (nativeint)m.elementSize, m.indices, BufferUsageHint.StaticDraw)
-
-    GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0)
-    GL.EnableVertexAttribArray(0)
-    GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, sizeof<float32> * 6, sizeof<Vector3>)
-    GL.EnableVertexAttribArray(1)
-
-let transferMeshWithNormals (m:meshWithNormals) =
-    let vbo = GL.GenBuffer()
-
-    GL.BindBuffer(BufferTarget.ArrayBuffer, vbo)
-    GL.BufferData(BufferTarget.ArrayBuffer, (nativeint)(m.vertices.Length * sizeof<V3N3>), m.vertices, BufferUsageHint.StaticDraw)
-
-    GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, sizeof<float32> * 6, 0)
-    GL.EnableVertexAttribArray(0)
-    GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, sizeof<float32> * 6, sizeof<Vector3>)
-    GL.EnableVertexAttribArray(1)
-
-let drawCube m =
-    GL.DrawElements(BeginMode.Triangles, m.indices.Length, DrawElementsType.UnsignedShort, 0)
-
-let drawMesh (m:meshWithNormals) (primitiveType:PrimitiveType) =
-    GL.DrawArrays(primitiveType, 0, m.vertices.Length)
+//let drawCube m =
+//    GL.DrawElements(BeginMode.Triangles, m.indices.Length, DrawElementsType.UnsignedShort, 0)
+//
+//let drawMesh (m:meshWithNormals) (primitiveType:PrimitiveType) =
+//    GL.DrawArrays(primitiveType, 0, m.vertices.Length)
 
 let clamp min max v =
     match v with
@@ -136,16 +136,16 @@ type FysicsWindow() =
     let camera = new CjClutter.OpenGl.Camera.LookAtCamera()
     let factory = new CjClutter.OpenGl.TerrainChunkFactory()
     let mesh = factory.Create(new CjClutter.OpenGl.EntityComponent.Box3D(new Vector3d(-256.0, -256.0, 0.0), new Vector3d(256.0, 256.0, 0.0))).Transformed(Matrix4.CreateScale(new Vector3(512.0f, 1.0f, 512.0f)))
-    
-    let vertices = Array.collect (fun (f:CjClutter.OpenGl.SceneGraph.Face3) -> [| mesh.Vertices.[f.V0];mesh.Vertices.[f.V1];mesh.Vertices.[f.V2] |]) mesh.Faces
-                        |> Array.map (fun v -> new V3N3(v.Position, v.Normal))
-        
-    let newMesh = { 
-            vertices = vertices
-        }
+//    
+//    let vertices = Array.collect (fun (f:CjClutter.OpenGl.SceneGraph.Face3) -> [| mesh.Vertices.[f.V0];mesh.Vertices.[f.V1];mesh.Vertices.[f.V2] |]) mesh.Faces
+//                        |> Array.map (fun v -> new V3N3(v.Position, v.Normal))
+//        
+//    let newMesh = { 
+//            vertices = vertices
+//        }
 
     override this.OnLoad(e) =
-        transferMeshWithNormals newMesh
+//        transferMeshWithNormals newMesh
         this.program <- BlinnShaderProgram BlinnShaderProgram.makeBlinnShaderProgram
 //        this.program <- SimpleShaderProgram SimpleShaderProgram.makeSimpleShaderProgram
         this.program2 <- NormalDebugShaderProgram NormalDebugShaderProgram.makeSimpleShaderProgram

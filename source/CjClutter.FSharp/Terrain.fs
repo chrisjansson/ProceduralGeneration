@@ -4,6 +4,7 @@ open Rendering
 open CjClutter.OpenGl
 open CjClutter.OpenGl.OpenGl
 open CjClutter.OpenGl.Gui
+open CjClutter.OpenGl.EntityComponent
 
 type node = ChunkedLodTreeFactory.ChunkedLodTreeNode
 
@@ -17,3 +18,6 @@ let allocate (node:node) =
         allocatedMesh.CreateVAO()
         allocatedMesh.VertexArrayObject.Bind()
     { bind = bind }
+
+let makeTerrainLodTree =
+    CjClutter.OpenGl.Terrain.CreateTree()
