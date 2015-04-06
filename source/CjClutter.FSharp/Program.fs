@@ -12,6 +12,9 @@ open BlinnMaterialTweakBar
 open TweakBarGuiViewModel
 open System.Reactive.Linq
 open System.Linq
+open LOD
+open LODCache
+open Terrain
 
 //let transferMesh (m:mesh) =
 //    let vbos = Array.zeroCreate<int> 2
@@ -129,6 +132,8 @@ type FysicsWindow() =
         SpecularColor = new Vector3(1.0f, 1.0f, 1.0f); 
         SpecularExp = 150.0 }
     let defaultVm = { IntegrationSpeed = 1.0; BlinnMaterial = defaultBlinnMaterial }
+    let tree = makeTerrainLodTree
+    let nodeCache = makeCache allocate
 
     let mutable vm : ViewModel = defaultVm
     let mutable cameraPosition : Vector3 = new Vector3(0.0f, 100.0f, 50.0f)
@@ -226,6 +231,10 @@ type FysicsWindow() =
         let aspectRatio = (float)this.Width / (float)this.Height
         let projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(2.0f, float32 aspectRatio, 0.1f, 1000.0f)
         let cameraMatrix = Matrix4.LookAt(cameraPosition, Vector3.Zero, Vector3.UnitY)
+
+        let frustum = CjClutter.OpenGl.Camera.FrustumPlaneExtractor.ExtractRowMajor(camera)
+        let visibleNodes = findVisibleNodes tree frustum (float this.Width) camera.HorizontalFieldOfView camera.Position 30.0
+        let nodesToDraw = getNodesToDrawAndCache nodeCache visibleNodes
 
         let blinnMaterial = vm.BlinnMaterial
 
