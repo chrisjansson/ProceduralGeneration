@@ -3,10 +3,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath>bin\x86\Debug\</OutputPath>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath>bin\x86\Release\</OutputPath>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>ObjLoader.Test.OpenGlTestProgram</StartupObject>
@@ -33,7 +35,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ObjLoader.Test</RootNamespace>
     <AssemblyName>CjClutter.ObjLoader.Test</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -47,6 +49,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -56,11 +59,13 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FluentAssertions, Version=1.7.1.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentAssertions.1.7.1.1\Lib\net40\FluentAssertions.dll</HintPath>
     </Reference>
+    <Reference Include="FSharp.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="nunit.framework, Version=2.6.0.12051, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.2.6.0.12054\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -86,6 +91,7 @@
     <Compile Include="CoordinateSystems\GuiToRelativeCoordinateTransformerTests.cs" />
     <Compile Include="DiamondSquareTests.cs" />
     <Compile Include="ImplicitChunkHeightmapTests.cs" />
+    <Compile Include="LODCacheTests.cs" />
     <Compile Include="MeshCreatorTests.cs" />
     <Compile Include="MidpointDisplacementTests.cs" />
     <Compile Include="KeyArgTests.cs" />
@@ -103,6 +109,10 @@
     <ProjectReference Include="..\CjClutter.Commons\CjClutter.Commons.csproj">
       <Project>{ff713732-f7a4-40c8-b136-8eaa52a443fd}</Project>
       <Name>CjClutter.Commons</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CjClutter.FSharp\CjClutter.FSharp.fsproj">
+      <Project>{b2a23f04-9a30-4148-962b-322739d377f3}</Project>
+      <Name>CjClutter.FSharp</Name>
     </ProjectReference>
     <ProjectReference Include="..\CjClutter.OpenGl\CjClutter.OpenGl.csproj">
       <Project>{F8718FBF-110A-42A2-9CA0-E35AE8222C08}</Project>
