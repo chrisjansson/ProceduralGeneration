@@ -13,24 +13,34 @@ type LODCache = {
 let getNodesToDrawAndCache cache (requestedNodes:node array) =
 
     let rec isDescendantOf (r:node) (n:node) =
-        match n.Parent with
-        | r -> true
-        | _ when r.Parent <> null -> isDescendantOf r.Parent n
-        | _ -> false
+        if n.Parent <> null && n.Parent.Equals(r) then
+            true
+        else if n.Parent <> null then
+            isDescendantOf r n.Parent
+        else
+            false
+//        match n.Parent with
+//        | r -> true
+//        | _ when n.Parent <> null -> isDescendantOf r n.Parent
+//        | _ -> false
 
+    let removeDescendantsWhenParentIsRequested nodes =
+        let hasAncestorIn nodes n =
+            nodes |> Array.exists (fun root -> isDescendantOf root n)
+        nodes |> Array.where (fun n -> not(hasAncestorIn nodes n))
+        
     let cacheContainsNode n = cache.contains n
     let rec getNodesToDrawInternal (requested, notCached) =
         let allAreCached = requested |> Array.forall cacheContainsNode
-        let isRoot = requestedNodes.Length = 1 && requestedNodes.[0].Parent = null //needs a better check
-        match allAreCached || isRoot with
-        | true -> (requestedNodes, notCached)
+//        let isRoot = requested.Length = 1 && requestedNodes.[0].Parent = null //needs a better check
+        match allAreCached with
+        | true -> (requested, notCached)
         | _ -> 
-            let notCachedNodes = requestedNodes |> Array.filter (fun n -> not (cacheContainsNode n))
-            let notCachedNodesParents = notCachedNodes |> Array.map (fun n -> n.Parent) |> Array.distinct 
+            let notCachedNodes = requested |> Array.filter (fun n -> not (cacheContainsNode n))
+            let notCachedNodesParents = notCachedNodes |> Array.map (fun n -> n.Parent) |> Array.filter (fun n -> n <> null) |> Array.distinct 
             let cachedNodes = requestedNodes |> Array.filter cacheContainsNode //This should check descendants, not only parents
-            let a n = Array.Exists(notCachedNodesParents, (fun p -> isDescendantOf p n))
-            let cachedNodesNotDescendedFromRequestedParent = Array.filter a cachedNodes
-            let nodesToRequest = Array.concat [cachedNodesNotDescendedFromRequestedParent; notCachedNodesParents]
+//            let cachedNodesNotDescendedFromRequestedParent = Array.filter a cachedNodes
+            let nodesToRequest = Array.concat [cachedNodes; notCachedNodesParents] |> removeDescendantsWhenParentIsRequested
             let nodesToCache = Array.concat [notCachedNodes; notCached]
             getNodesToDrawInternal (nodesToRequest, nodesToCache)
 
