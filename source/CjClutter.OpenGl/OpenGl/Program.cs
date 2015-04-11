@@ -83,7 +83,7 @@ namespace CjClutter.OpenGl.OpenGl
         public int GetNumberOfActiveUniforms()
         {
             int numberOfActiveUniforms;
-            GL.GetProgram(ProgramId, ProgramParameter.ActiveUniforms, out numberOfActiveUniforms);
+            GL.GetProgram(ProgramId, GetProgramParameterName.ActiveUniforms, out numberOfActiveUniforms);
 
             return numberOfActiveUniforms;
         }

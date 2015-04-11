@@ -42,6 +42,11 @@ namespace CjClutter.Commons.Reflection
         private struct InnerStruct
         {
             public readonly float FirstField;
+
+            public InnerStruct(float firstField)
+            {
+                FirstField = firstField;
+            }
         }
     }
 }

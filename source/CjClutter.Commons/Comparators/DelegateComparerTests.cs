@@ -1,11 +1,13 @@
 ﻿using System;
 using NUnit.Framework;
 
+
 namespace CjClutter.Commons.Comparators
 {
     [TestFixture]
     public class DelegateComparerTests
     {
+        #pragma warning disable CS0219
         private DelegateComparer _comparer;
 
         [SetUp]
@@ -61,5 +63,6 @@ namespace CjClutter.Commons.Comparators
         {
             var b = 4;
         }
+        #pragma warning restore CS0219
     }
 }

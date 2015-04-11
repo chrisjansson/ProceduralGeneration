@@ -116,7 +116,6 @@ namespace CjClutter.OpenGl
         }
 
         private SimpleMaterial _simpleMaterial;
-        private int _count;
         private NormalDebugProgram _normalDebugProgram;
         private TerrainChunkCache _cache;
     }
