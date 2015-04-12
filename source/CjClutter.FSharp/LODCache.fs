@@ -83,12 +83,14 @@ let makeCache (chunkFactory : node -> Rendering.AllocatedMesh) =
 
     let beginCache node = 
         let cn = { CachedNode.mesh = None }
-        dict.TryAdd(node, cn) |> ignore
-        let work() = 
-            let mesh = chunkFactory node
-            cn.mesh <- Some mesh
-        ()
-        CjClutter.OpenGl.Gui.JobDispatcher.Instance.Enqueue(Action work)
+        match dict.TryAdd(node, cn) with
+        | true -> 
+            let work() = 
+                let mesh = chunkFactory node
+                cn.mesh <- Some mesh
+                ()
+            CjClutter.OpenGl.Gui.JobDispatcher.Instance.Enqueue(Action work)
+        | _ -> ()
     {
         contains = contains
         get = get
