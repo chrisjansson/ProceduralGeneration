@@ -3,9 +3,6 @@ open OpenTK
 open primitives
 
 
-type AllocatedMesh = {
-            bind : unit -> unit
-        }
 
 type StaticRenderContext = {
         ViewMatrix : Matrix4
@@ -16,6 +13,12 @@ type IndividualRenderContext = {
         ModelMatrix : Matrix4
         NormalMatrix : Matrix3 //To view space
     }
+
+type AllocatedMesh = {
+            bind : unit -> unit
+            faces : int
+            renderContext : IndividualRenderContext
+        }
 
 type IndividualRenderJob = {
         IndividualContext : IndividualRenderContext
