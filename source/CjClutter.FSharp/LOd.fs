@@ -38,7 +38,7 @@ let findVisibleNodes (node:ChunkedLodTreeFactory.ChunkedLodTreeNode) (frustum:Fr
         let delta = node.Bounds.Max - node.Bounds.Min;
         let side = max (max delta.X delta.Y) (60.0)
         let radius = sqrt (side*side + side*side);
-        let sphere = { Center = center; Radius = radius }
+        let sphere = { Center = center; Radius = radius * 1.2    }
         let m = (isInsideViewVolume sphere, node.IsLeaf(), isDetailedEnough node)
         match m with
         | (false, _, _) -> [||]
