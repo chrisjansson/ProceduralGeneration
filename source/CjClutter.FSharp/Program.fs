@@ -240,9 +240,8 @@ type FysicsWindow() =
         let projectionMatrix = CjClutter.OpenGl.OpenTk.Matrix4dExtensions.ToMatrix4(camera.ComputeProjectionMatrix())
         let cameraMatrix = CjClutter.OpenGl.OpenTk.Matrix4dExtensions.ToMatrix4(camera.ComputeCameraMatrix())
 
-        let transformation = new Matrix4d( new OpenTK.Vector4d(1.0, 0.0, 0.0, 0.0), new OpenTK.Vector4d(0.0, 0.0, 1.0, 0.0), new OpenTK.Vector4d(0.0, 1.0, 0.0, 1.0), new OpenTK.Vector4d(0.0, 0.0, 0.0, 1.0));
         let frustum = CjClutter.OpenGl.Camera.FrustumPlaneExtractor.ExtractRowMajor(lodCamera)
-        let visibleNodes = findVisibleNodes tree frustum (float this.Width) lodCamera.HorizontalFieldOfView (OpenTK.Vector3d.Transform(lodCamera.Position, transformation)) 20.0
+        let visibleNodes = findVisibleNodes tree frustum (float this.Width) lodCamera.HorizontalFieldOfView lodCamera.Position 20.0
         let (nodesToDraw, nodesToCache) = getNodesToDrawAndCache nodeCache visibleNodes
 
         for n in nodesToCache |> Array.sortBy(fun n -> n.GeometricError) |> Array.rev do
