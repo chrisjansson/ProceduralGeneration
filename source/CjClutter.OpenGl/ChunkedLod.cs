@@ -50,7 +50,8 @@ namespace CjClutter.OpenGl
 
         private bool IsDetailedEnough(ChunkedLodTreeFactory.ChunkedLodTreeNode node)
         {
-            var distanceToCamera = (node.Bounds.Center - _cameraPosition).Length;
+            var nodeCenter = new Vector3d(node.Bounds.Center.X, node.Bounds.Center.Y, 0);
+            var distanceToCamera = (nodeCenter - _cameraPosition).Length;
             var screenSpaceError = (node.GeometricError / distanceToCamera) * _k;
 
             return screenSpaceError <= _allowedScreenSpaceError;
@@ -58,7 +59,7 @@ namespace CjClutter.OpenGl
 
         private bool IsVisible(ChunkedLodTreeFactory.ChunkedLodTreeNode node)
         {
-            var center = node.Bounds.Center;
+            var center = new Vector3d(node.Bounds.Center.X, node.Bounds.Center.Y, 0);
             var delta = node.Bounds.Max - node.Bounds.Min;
             var side = Math.Max(delta.X, delta.Y);
             var radius = Math.Sqrt(side * side + side * side);

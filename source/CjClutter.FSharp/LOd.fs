@@ -21,7 +21,8 @@ let calculateK viewWidth horizontalfov =
     viewWidth / (tan (horizontalfov / 2.0))
         
 let calculateScreenSpaceError (node:ChunkedLodTreeFactory.ChunkedLodTreeNode) (viewPoint:Vector3d) k =
-    let distance = (node.Bounds.Center - viewPoint).Length
+    let nodeCenter = new Vector3d(node.Bounds.Center.X, node.Bounds.Center.Y, 0.0)
+    let distance = (nodeCenter - viewPoint).Length
     (node.GeometricError / distance) * k
 
 let findVisibleNodes (node:ChunkedLodTreeFactory.ChunkedLodTreeNode) (frustum:Frustum) viewWidth horizontalFov viewPoint allowedScreenSpaceError =
@@ -33,9 +34,9 @@ let findVisibleNodes (node:ChunkedLodTreeFactory.ChunkedLodTreeNode) (frustum:Fr
         screenSpaceError <= allowedScreenSpaceError
 
     let rec findVisibleNodesRec (node:ChunkedLodTreeFactory.ChunkedLodTreeNode) = 
-        let center = node.Bounds.Center;
+        let center = new Vector3d(node.Bounds.Center.X, node.Bounds.Center.Y, 0.0)
         let delta = node.Bounds.Max - node.Bounds.Min;
-        let side = max (max delta.X delta.Y) delta.Z
+        let side = max (max delta.X delta.Y) (60.0)
         let radius = sqrt (side*side + side*side);
         let sphere = { Center = center; Radius = radius }
         let m = (isInsideViewVolume sphere, node.IsLeaf(), isDetailedEnough node)

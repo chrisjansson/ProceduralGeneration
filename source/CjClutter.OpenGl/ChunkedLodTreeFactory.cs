@@ -6,7 +6,7 @@ namespace CjClutter.OpenGl
 {
     public class ChunkedLodTreeFactory
     {
-        public ChunkedLodTreeNode Create(Box3D bounds, int depth)
+        public ChunkedLodTreeNode Create(Bounds2D bounds, int depth)
         {
             return CreateChunkedLodTreeNode(bounds, null, depth, CalculateGeometricError(depth));
         }
@@ -16,14 +16,14 @@ namespace CjClutter.OpenGl
             return Math.Pow(2, depth);
         }
 
-        private ChunkedLodTreeNode CreateChunkedLodTreeNode(Box3D first, ChunkedLodTreeNode parent, int nextDepth, double geometricError)
+        private ChunkedLodTreeNode CreateChunkedLodTreeNode(Bounds2D first, ChunkedLodTreeNode parent, int nextDepth, double geometricError)
         {
             var chunkedLodTreeNode = new ChunkedLodTreeNode(first, parent, geometricError);
             chunkedLodTreeNode.SetNodes(GetLeafs(first, chunkedLodTreeNode, nextDepth));
             return chunkedLodTreeNode;
         }
 
-        private ChunkedLodTreeNode[] GetLeafs(Box3D bounds, ChunkedLodTreeNode parent, int depth)
+        private ChunkedLodTreeNode[] GetLeafs(Bounds2D bounds, ChunkedLodTreeNode parent, int depth)
         {
             if (depth == 0)
             {
@@ -34,10 +34,10 @@ namespace CjClutter.OpenGl
             var max = bounds.Max;
             var center = bounds.Center;
 
-            var first = new Box3D(min, new Vector3d(center.X, center.Y, max.Z));
-            var second = new Box3D(new Vector3d(center.X, min.Y, min.Z), new Vector3d(max.X, center.Y, max.Z));
-            var third = new Box3D(new Vector3d(min.X, center.Y, min.Z), new Vector3d(center.X, max.Y, max.Z));
-            var fourth = new Box3D(new Vector3d(center.X, center.Y, min.Z), max);
+            var first = new Bounds2D(min, new Vector2d(center.X, center.Y));
+            var second = new Bounds2D(new Vector2d(center.X, min.Y), new Vector2d(max.X, center.Y));
+            var third = new Bounds2D(new Vector2d(min.X, center.Y), new Vector2d(center.X, max.Y));
+            var fourth = new Bounds2D(new Vector2d(center.X, center.Y), max);
             var nextDepth = depth - 1;
             var geometricError = CalculateGeometricError(depth - 1);
             return new[]
@@ -51,7 +51,7 @@ namespace CjClutter.OpenGl
 
         public class ChunkedLodTreeNode
         {
-            public ChunkedLodTreeNode(Box3D bounds, ChunkedLodTreeNode parent, double geometricError)
+            public ChunkedLodTreeNode(Bounds2D bounds, ChunkedLodTreeNode parent, double geometricError)
             {
                 Bounds = bounds;
                 Parent = parent;
@@ -59,7 +59,7 @@ namespace CjClutter.OpenGl
                 GeometricError = geometricError;
             }
 
-            public Box3D Bounds { get; private set; }
+            public Bounds2D Bounds { get; private set; }
             public ChunkedLodTreeNode Parent { get; set; }
             public ChunkedLodTreeNode[] Nodes { get; private set; }
             public double GeometricError { get; private set; }

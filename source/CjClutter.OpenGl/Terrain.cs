@@ -46,9 +46,9 @@ namespace CjClutter.OpenGl
             var chunkedLodTreeFactory = new ChunkedLodTreeFactory();
 
             double width = 8192 * 2 * 2;
-            var bounds = new Box3D(
-                new Vector3d(-width / 2, 0, -width / 2),
-                new Vector3d(width / 2, 0, width / 2));
+            var bounds = new Bounds2D(
+                new Vector2d(-width/2, -width/2),
+                new Vector2d(width/2, width/2));
 
             var chunkResolution = 32;
             var depth = (int)Math.Log((width / chunkResolution), 2);
@@ -122,7 +122,7 @@ namespace CjClutter.OpenGl
 
     public class TerrainChunkFactory
     {
-        public Mesh3V3N Create(Box3D bounds)
+        public Mesh3V3N Create(Bounds2D bounds)
         {
             var meshDimensions = 128;
             var implicintHeightMap = new ImplicitChunkHeightMap(bounds, meshDimensions, meshDimensions, new ScaledNoiseGenerator());
@@ -153,14 +153,14 @@ namespace CjClutter.OpenGl
 
         public class ImplicitChunkHeightMap : IHeightMap
         {
-            private Box3D _bounds;
+            private Bounds2D _bounds;
             private readonly INoiseGenerator _noiseGenerator;
             private readonly int _columns;
             private readonly int _rows;
             private double _dx;
             private double _dy;
 
-            public ImplicitChunkHeightMap(Box3D bounds, int columns, int rows, INoiseGenerator noiseGenerator)
+            public ImplicitChunkHeightMap(Bounds2D bounds, int columns, int rows, INoiseGenerator noiseGenerator)
             {
                 _noiseGenerator = noiseGenerator;
                 _rows = rows;
