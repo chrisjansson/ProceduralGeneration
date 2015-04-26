@@ -142,6 +142,8 @@ type FysicsWindow() =
     let lodCamera = new CjClutter.OpenGl.Camera.LookAtCamera()
     let factory = new CjClutter.OpenGl.TerrainChunkFactory()
     let mutable synchronizeCameras = true
+    let mutable nodesInCache = 0
+    let mutable cacheSize = 1
 
     override this.OnLoad(e) =
         this.program <- BlinnShaderProgram BlinnShaderProgram.makeBlinnShaderProgram
@@ -198,6 +200,7 @@ type FysicsWindow() =
         match e.Key with
         | Key.N -> synchronizeCameras <- false
         | Key.M -> synchronizeCameras <- true
+        | Key.Space -> cacheSize <- cacheSize + 1
         | _ -> ()
         match convertKeyEvent e with
         | Some keys -> 
@@ -244,7 +247,8 @@ type FysicsWindow() =
         let visibleNodes = findVisibleNodes tree frustum (float this.Width) lodCamera.HorizontalFieldOfView lodCamera.Position 20.0
         let (nodesToDraw, nodesToCache) = getNodesToDrawAndCache nodeCache visibleNodes
 
-        for n in nodesToCache |> Array.sortBy(fun n -> n.GeometricError) |> Array.rev do
+        for n in nodesToCache |> Array.sortBy(fun n -> n.GeometricError) |> Array.rev |> Array.take (cacheSize - nodesInCache) do
+            nodesInCache <- nodesInCache + 1
             nodeCache.beginCache n
 
         let blinnMaterial = vm.BlinnMaterial
