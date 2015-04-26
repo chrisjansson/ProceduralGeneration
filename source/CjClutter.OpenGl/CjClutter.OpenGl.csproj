@@ -108,6 +108,7 @@
     <Compile Include="CoordinateSystems\IInterfaceSize.cs" />
     <Compile Include="Cube.cs" />
     <Compile Include="DiamondSquare.cs" />
+    <Compile Include="EntityComponent\Bounds2D.cs" />
     <Compile Include="EntityComponent\Box3d.cs" />
     <Compile Include="EntityComponent\ChunkedLODSystem.cs" />
     <Compile Include="EntityComponent\Entity.cs" />
