@@ -45,10 +45,10 @@ namespace CjClutter.OpenGl
         {
             var chunkedLodTreeFactory = new ChunkedLodTreeFactory();
 
-            double width = 8192;
+            double width = 8192*2*2; 
             var bounds = new Box3D(
-                new Vector3d(-width / 2, -width / 2, 0),
-                new Vector3d(width / 2, width / 2, 0));
+                new Vector3d(-width / 2, -width / 2, -30),
+                new Vector3d(width / 2, width / 2, 30));
 
             var chunkResolution = 32;
             var depth = (int)Math.Log((width / chunkResolution), 2);

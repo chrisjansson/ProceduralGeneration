@@ -139,7 +139,9 @@ type FysicsWindow() =
     let mutable vm : ViewModel = defaultVm
     let terrain = new CjClutter.OpenGl.Terrain(new LOD.ChunkedLod())
     let camera = new CjClutter.OpenGl.Camera.LookAtCamera()
+    let lodCamera = new CjClutter.OpenGl.Camera.LookAtCamera()
     let factory = new CjClutter.OpenGl.TerrainChunkFactory()
+    let mutable synchronizeCameras = true
 
     override this.OnLoad(e) =
         this.program <- BlinnShaderProgram BlinnShaderProgram.makeBlinnShaderProgram
@@ -152,7 +154,7 @@ type FysicsWindow() =
         GL.Enable(EnableCap.DepthTest)
         this.VSync <- VSyncMode.On
 
-        let startWorkerThread =
+        let startWorkerThread _ =
             this.Context.MakeCurrent(null)
             let contextReady = new System.Threading.AutoResetEvent(false)
             let t = new System.Threading.ParameterizedThreadStart(fun o -> 
@@ -170,12 +172,12 @@ type FysicsWindow() =
             thread.IsBackground <- true
             thread.Start()
             contextReady.WaitOne() |> ignore
-            this.MakeCurrent()
+            this.MakeCurrent() |> ignore
 
-        startWorkerThread
-        startWorkerThread
-        startWorkerThread
-        startWorkerThread
+        startWorkerThread () |> ignore
+        startWorkerThread () |> ignore
+        startWorkerThread () |> ignore
+        startWorkerThread () |> ignore
 
     override this.OnClosing(e) =
         this.tweakbarContext.Dispose()
@@ -193,6 +195,10 @@ type FysicsWindow() =
             camera.Position <- camera.Position + camera.Position * (e.Time)
 
     override this.OnKeyUp(e) =
+        match e.Key with
+        | Key.N -> synchronizeCameras <- false
+        | Key.M -> synchronizeCameras <- true
+        | _ -> ()
         match convertKeyEvent e with
         | Some keys -> 
             this.tweakbarContext.HandleKeyUp(keys.Key, keys.Modifiers) |> ignore
@@ -223,12 +229,20 @@ type FysicsWindow() =
         camera.Height <- float this.Height
 
     override this.OnRenderFrame(e) =
+        if synchronizeCameras then do
+            lodCamera.Position <- camera.Position
+            lodCamera.Target <- camera.Target
+            lodCamera.Up <- camera.Up
+            lodCamera.Width <- camera.Width
+            lodCamera.Height <- camera.Height
+
         GL.Clear(ClearBufferMask.ColorBufferBit ||| ClearBufferMask.DepthBufferBit)
         let projectionMatrix = CjClutter.OpenGl.OpenTk.Matrix4dExtensions.ToMatrix4(camera.ComputeProjectionMatrix())
         let cameraMatrix = CjClutter.OpenGl.OpenTk.Matrix4dExtensions.ToMatrix4(camera.ComputeCameraMatrix())
 
-        let frustum = CjClutter.OpenGl.Camera.FrustumPlaneExtractor.ExtractRowMajor(camera)
-        let visibleNodes = findVisibleNodes tree frustum (float this.Width) camera.HorizontalFieldOfView camera.Position 30.0
+        let transformation = new Matrix4d( new OpenTK.Vector4d(1.0, 0.0, 0.0, 0.0), new OpenTK.Vector4d(0.0, 0.0, 1.0, 0.0), new OpenTK.Vector4d(0.0, 1.0, 0.0, 1.0), new OpenTK.Vector4d(0.0, 0.0, 0.0, 1.0));
+        let frustum = CjClutter.OpenGl.Camera.FrustumPlaneExtractor.ExtractRowMajor(lodCamera)
+        let visibleNodes = findVisibleNodes tree frustum (float this.Width) lodCamera.HorizontalFieldOfView (OpenTK.Vector3d.Transform(lodCamera.Position, transformation)) 20.0
         let (nodesToDraw, nodesToCache) = getNodesToDrawAndCache nodeCache visibleNodes
 
         for n in nodesToCache |> Array.sortBy(fun n -> n.GeometricError) |> Array.rev do
