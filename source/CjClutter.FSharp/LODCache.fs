@@ -33,7 +33,7 @@ let getNodesToDrawAndCache cache (requestedNodes:node array) =
         | _ -> 
             let notCachedNodes = requested |> Array.filter (fun n -> not (cacheContainsNode n))
             let notCachedNodesParents = notCachedNodes |> Array.map (fun n -> n.Parent) |> Array.filter (fun n -> n <> null) |> Array.distinct 
-            let cachedNodes = requestedNodes |> Array.filter cacheContainsNode //This should check descendants, not only parents
+            let cachedNodes = requested |> Array.filter cacheContainsNode //This should check descendants, not only parents
             let nodesToRequest = Array.concat [cachedNodes; notCachedNodesParents] |> removeDescendantsWhenParentIsRequested
             let nodesToCache = Array.concat [notCachedNodes; notCached]
             getNodesToDrawInternal (nodesToRequest, nodesToCache)
