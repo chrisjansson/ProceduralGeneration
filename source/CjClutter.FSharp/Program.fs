@@ -247,7 +247,11 @@ type FysicsWindow() =
         let visibleNodes = findVisibleNodes tree frustum (float this.Width) lodCamera.HorizontalFieldOfView lodCamera.Position 20.0
         let (nodesToDraw, nodesToCache) = getNodesToDrawAndCache nodeCache visibleNodes
 
-        for n in nodesToCache |> Array.sortBy(fun n -> n.GeometricError) |> Array.rev |> Array.take (cacheSize - nodesInCache) do
+        let takeMax n array =
+            let elementsToTake = min (Array.length array) n
+            Array.take elementsToTake array
+
+        for n in nodesToCache |> Array.sortBy(fun n -> n.GeometricError) |> Array.rev |> takeMax (cacheSize - nodesInCache) do
             nodesInCache <- nodesInCache + 1
             nodeCache.beginCache n
 
