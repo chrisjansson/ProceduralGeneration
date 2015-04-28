@@ -34,11 +34,12 @@ let getNodesToDrawAndCache cache (requestedNodes:node array) =
             let notCachedNodes = requested |> Array.filter (fun n -> not (cacheContainsNode n))
             let notCachedNodesParents = notCachedNodes |> Array.map (fun n -> n.Parent) |> Array.filter (fun n -> n <> null) |> Array.distinct 
             let cachedNodes = requested |> Array.filter cacheContainsNode //This should check descendants, not only parents
-            let nodesToRequest = Array.concat [cachedNodes; notCachedNodesParents] |> removeDescendantsWhenParentIsRequested
+            let nodesToRequest = Array.concat [cachedNodes |> removeDescendantsWhenParentIsRequested; notCachedNodesParents]
             let nodesToCache = Array.concat [notCachedNodes; notCached]
             getNodesToDrawInternal (nodesToRequest, nodesToCache)
 
-    getNodesToDrawInternal (requestedNodes, [||])
+    let (a, b) = getNodesToDrawInternal (requestedNodes, [||])
+    (a |> removeDescendantsWhenParentIsRequested, b)
 
 let queueNodes cache (nodes: node array) =
     let largestFirst = nodes |> Array.sortBy (fun n -> n.GeometricError)
