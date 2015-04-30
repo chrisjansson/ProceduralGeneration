@@ -24,6 +24,23 @@ let getNodesToDrawAndCache cache (requestedNodes:node array) =
         let hasAncestorIn nodes n =
             nodes |> Array.exists (fun root -> isDescendantOf root n)
         nodes |> Array.where (fun n -> not(hasAncestorIn nodes n))
+
+    let rec traverse (node:node) level =
+        if node.Level < level then 
+            node
+        else 
+            if node.Parent = null then
+                node
+            else 
+                traverse node.Parent level
+        
+    let promote (toDraw : node array, toCache : node array) =
+        if Array.isEmpty toDraw || Array.isEmpty toCache then
+            (toDraw, toCache)
+        else
+            let lowestLevelRequested = toCache |> Array.map(fun n -> n.Level) |> Array.min
+            let newToDraw = toDraw |> Array.map (fun n -> (traverse n lowestLevelRequested)) |> Array.distinct |> removeDescendantsWhenParentIsRequested
+            (newToDraw, toCache)
         
     let cacheContainsNode n = cache.contains n
     let rec getNodesToDrawInternal (requested, notCached) =
@@ -39,7 +56,7 @@ let getNodesToDrawAndCache cache (requestedNodes:node array) =
             getNodesToDrawInternal (nodesToRequest, nodesToCache)
 
     let (a, b) = getNodesToDrawInternal (requestedNodes, [||])
-    (a |> removeDescendantsWhenParentIsRequested, b)
+    (a |> removeDescendantsWhenParentIsRequested, b)// |> promote
 
 let queueNodes cache (nodes: node array) =
     let largestFirst = nodes |> Array.sortBy (fun n -> n.GeometricError)
