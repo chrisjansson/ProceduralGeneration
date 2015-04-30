@@ -57,12 +57,22 @@ namespace CjClutter.OpenGl
                 Parent = parent;
                 Nodes = new ChunkedLodTreeNode[0];
                 GeometricError = geometricError;
+                if (Parent == null)
+                {
+                    Level = 0;
+                }
+                else
+                {
+                    Level = parent.Level + 1;
+                }
             }
 
             public Bounds2D Bounds { get; private set; }
             public ChunkedLodTreeNode Parent { get; set; }
             public ChunkedLodTreeNode[] Nodes { get; private set; }
             public double GeometricError { get; private set; }
+
+            public int Level { get; set; }
 
             public void SetNodes(ChunkedLodTreeNode[] nodes)
             {
