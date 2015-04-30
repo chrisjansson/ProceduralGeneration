@@ -30,7 +30,7 @@ namespace ObjLoader.Test
         [Test]
         public void No_nodes_are_requested_if_the_root_is_not_cached()
         {
-            var root = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Box3D(), null, 0);
+            var root = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Bounds2D(), null, 0);
             var cache = GetCache();
 
             var result = LODCache.getNodesToDrawAndCache(cache, new ChunkedLodTreeFactory.ChunkedLodTreeNode[] { root });
@@ -42,8 +42,8 @@ namespace ObjLoader.Test
         [Test]
         public void No_nodes_are_requested_if_the_root_is_not_cached_when_requesting_child()
         {
-            var root = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Box3D(), null, 0);
-            var child = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Box3D(), root, 0);
+            var root = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Bounds2D(), null, 0);
+            var child = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Bounds2D(), root, 0);
             var cache = GetCache();
 
             var result = LODCache.getNodesToDrawAndCache(cache, new[] { child });
@@ -55,10 +55,10 @@ namespace ObjLoader.Test
         [Test]
         public void All_nodes_are_requested_when_all_are_cached()
         {
-            var node0 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Box3D(), null, 0);
-            var node1 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Box3D(), node0, 0);
-            var node2 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Box3D(), node1, 0);
-            var node3 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Box3D(), null, 0);
+            var node0 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Bounds2D(), null, 0);
+            var node1 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Bounds2D(), node0, 0);
+            var node2 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Bounds2D(), node1, 0);
+            var node3 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Bounds2D(), null, 0);
             CacheNodes(node0, node1, node2, node3);
 
             var cache = GetCache();
@@ -71,8 +71,8 @@ namespace ObjLoader.Test
         [Test]
         public void Requests_nodes_parent_if_originally_requested_node_is_not_cached_but_when_parent_is()
         {
-            var parent = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Box3D(), null, 0);
-            var child = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Box3D(), parent, 0);
+            var parent = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Bounds2D(), null, 0);
+            var child = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Bounds2D(), parent, 0);
             CacheNode(parent);
 
             var cache = GetCache();
@@ -85,9 +85,9 @@ namespace ObjLoader.Test
         [Test]
         public void Does_not_request_child_unless_all_children_are_cached()
         {
-            var parent = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Box3D(), null, 0);
-            var firstChild = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Box3D(), parent, 0);
-            var secondChild = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Box3D(), parent, 0);
+            var parent = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Bounds2D(), null, 0);
+            var firstChild = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Bounds2D(), parent, 0);
+            var secondChild = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Bounds2D(), parent, 0);
             CacheNode(parent);
             CacheNode(firstChild);
 
@@ -101,10 +101,10 @@ namespace ObjLoader.Test
         [Test]
         public void Do_not_request_descendants_when_the_ancestor_is_also_requested_even_when_the_descendant_is_cached()
         {
-            var level0 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Box3D(), null, 0);
-            var level10 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Box3D(), level0, 0);
-            var level11 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Box3D(), level0, 0);
-            var level20 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Box3D(), level10, 0);
+            var level0 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Bounds2D(), null, 0);
+            var level10 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Bounds2D(), level0, 0);
+            var level11 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Bounds2D(), level0, 0);
+            var level20 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Bounds2D(), level10, 0);
 
             CacheNode(level0);
             CacheNode(level20);
@@ -119,10 +119,10 @@ namespace ObjLoader.Test
         [Test]
         public void Do_not_request_descendants_when_the_ancestor_is_also_requested()
         {
-            var level0 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Box3D(), null, 0);
-            var level10 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Box3D(), level0, 0);
-            var level11 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Box3D(), level0, 0);
-            var level20 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Box3D(), level10, 0);
+            var level0 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Bounds2D(), null, 0);
+            var level10 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Bounds2D(), level0, 0);
+            var level11 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Bounds2D(), level0, 0);
+            var level20 = new ChunkedLodTreeFactory.ChunkedLodTreeNode(new Bounds2D(), level10, 0);
 
             CacheNode(level0);
 

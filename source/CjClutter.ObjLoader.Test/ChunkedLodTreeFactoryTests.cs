@@ -12,7 +12,7 @@ namespace ObjLoader.Test
         public void Creates_root_node_with_no_leafs_at_zero_depth()
         {
             var sut = new ChunkedLodTreeFactory();
-            var expectedBounds = new Box3D(new Vector3d(-1, -2, -3), new Vector3d(1, 2, 3));
+            var expectedBounds = new Bounds2D(new Vector2d(-1, -2), new Vector2d(1, 2));
 
             var result = sut.Create(expectedBounds, 0);
 
@@ -26,7 +26,7 @@ namespace ObjLoader.Test
         public void Creates_root_node_with_four_children_at_depth_one()
         {
             var sut = new ChunkedLodTreeFactory();
-            var expectedBounds = new Box3D(new Vector3d(-1, -1, -1), new Vector3d(1, 1, 1));
+            var expectedBounds = new Bounds2D(new Vector2d(-1, -1), new Vector2d(1, 1));
 
             var result = sut.Create(expectedBounds, 1);
 
@@ -40,7 +40,7 @@ namespace ObjLoader.Test
         public void Creates_children_with_correct_bounds_and_are_leafs_at_depth_one()
         {
             var sut = new ChunkedLodTreeFactory();
-            var expectedBounds = new Box3D(new Vector3d(-1, -1, -1), new Vector3d(1, 1, 1));
+            var expectedBounds = new Bounds2D(new Vector2d(-1, -1), new Vector2d(1, 1));
 
             var result = sut.Create(expectedBounds, 1);
 
@@ -54,7 +54,7 @@ namespace ObjLoader.Test
         public void Creates_tree_for_depth_of_two()
         {
             var sut = new ChunkedLodTreeFactory();
-            var expectedBounds = new Box3D(new Vector3d(-1, -1, -1), new Vector3d(1, 1, 1));
+            var expectedBounds = new Bounds2D(new Vector2d(-1, -1), new Vector2d(1, 1));
 
             var result = sut.Create(expectedBounds, 2);
             Assert.AreEqual(4, result.GeometricError);

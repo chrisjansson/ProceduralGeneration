@@ -22,7 +22,7 @@ namespace ObjLoader.Test
         {
             _noiseGenerator.Stub(x => x.Noise(-2, 8)).Return(47);
 
-            var sut = new TerrainChunkFactory.ImplicitChunkHeightMap(new Box3D(new Vector3d(-5, 5, 0), new Vector3d(5, 10, 0)), 10, 20, _noiseGenerator);
+            var sut = new TerrainChunkFactory.ImplicitChunkHeightMap(new Bounds2D(new Vector2d(-5, 5), new Vector2d(5, 10)), 10, 20, _noiseGenerator);
             var result = sut.GetHeight(3, 12);
 
             Assert.AreEqual(47, result);
@@ -36,7 +36,7 @@ namespace ObjLoader.Test
             _noiseGenerator.Stub(x => x.Noise(-2, 7)).Return(10);
             _noiseGenerator.Stub(x => x.Noise(-2, 9)).Return(15);
 
-            var sut = new TerrainChunkFactory.ImplicitChunkHeightMap(new Box3D(new Vector3d(-5, 5, 0), new Vector3d(5, 10, 0)), 10, 20, _noiseGenerator);
+            var sut = new TerrainChunkFactory.ImplicitChunkHeightMap(new Bounds2D(new Vector2d(-5, 5), new Vector2d(5, 10)), 10, 20, _noiseGenerator);
             var result = sut.GetNormal(3, 12);
 
 
