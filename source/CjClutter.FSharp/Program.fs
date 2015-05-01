@@ -16,39 +16,9 @@ open LOD
 open LODCache
 open Terrain
 
-//let transferMesh (m:mesh) =
-//    let vbos = Array.zeroCreate<int> 2
-//    GL.GenBuffers(2, vbos)
-//
-//    GL.BindBuffer(BufferTarget.ArrayBuffer, vbos.[0])
-//    GL.BufferData(BufferTarget.ArrayBuffer, (nativeint)m.verticesSize, m.vertices, BufferUsageHint.StaticDraw)
-//
-//    GL.BindBuffer(BufferTarget.ElementArrayBuffer, vbos.[1])
-//    GL.BufferData(BufferTarget.ElementArrayBuffer, (nativeint)m.elementSize, m.indices, BufferUsageHint.StaticDraw)
-//
-//    GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 0, 0)
-//    GL.EnableVertexAttribArray(0)
-//    GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, sizeof<float32> * 6, sizeof<Vector3>)
-//    GL.EnableVertexAttribArray(1)
-//
-//let transferMeshWithNormals (m:meshWithNormals) =
-//    let vbo = GL.GenBuffer()
-//
-//    GL.BindBuffer(BufferTarget.ArrayBuffer, vbo)
-//    GL.BufferData(BufferTarget.ArrayBuffer, (nativeint)(m.vertices.Length * sizeof<V3N3>), m.vertices, BufferUsageHint.StaticDraw)
-//
-//    GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, sizeof<float32> * 6, 0)
-//    GL.EnableVertexAttribArray(0)
-//    GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, sizeof<float32> * 6, sizeof<Vector3>)
-//    GL.EnableVertexAttribArray(1)
-
-//let drawCube m =
-//    GL.DrawElements(BeginMode.Triangles, m.indices.Length, DrawElementsType.UnsignedShort, 0)
-//
 let drawMesh (m:Rendering.AllocatedMesh) (primitiveType:PrimitiveType) =
     m.bind()
     GL.DrawElements(BeginMode.Triangles, m.faces * 3, DrawElementsType.UnsignedInt, 0);
-//    GL.DrawArrays(primitiveType, 0, m.vertices.Length)
 
 let clamp min max v =
     match v with
@@ -67,10 +37,6 @@ let render program renderJob =
         GL.UseProgram p.ProgramId
         p.ProjectionMatrixUniform.set renderJob.StaticContext.ProjectionMatrix
         p.ViewMatrix.set renderJob.StaticContext.ViewMatrix
-//        for j in renderJob.RenderJobs do
-//            p.ModelMatrix.set j.IndividualContext.ModelMatrix
-//            p.NormalMatrix.set j.IndividualContext.NormalMatrix
-//            drawMesh j.Mesh PrimitiveType.Triangles
     | BlinnShaderProgram p ->
         GL.UseProgram p.ProgramId
         p.ProjectionMatrixUniform.set renderJob.StaticContext.ProjectionMatrix
@@ -89,10 +55,6 @@ let render program renderJob =
         GL.UseProgram p.ProgramId
         p.ProjectionMatrixUniform.set renderJob.StaticContext.ProjectionMatrix
         p.ViewMatrix.set renderJob.StaticContext.ViewMatrix
-//        for j in renderJob.RenderJobs do
-//            p.ModelMatrix.set j.IndividualContext.ModelMatrix
-//            p.NormalMatrix.set j.IndividualContext.NormalMatrix
-//            drawMesh j.Mesh PrimitiveType.Points
 
 let configureTweakBar c defaultValue =
     let bar = new Bar(c)
@@ -143,7 +105,7 @@ type FysicsWindow() =
     let factory = new CjClutter.OpenGl.TerrainChunkFactory()
     let mutable synchronizeCameras = true
     let mutable nodesInCache = 0
-    let mutable cacheSize = 1
+    let mutable cacheSize = 10000000
 
     override this.OnLoad(e) =
         this.program <- BlinnShaderProgram BlinnShaderProgram.makeBlinnShaderProgram
@@ -269,7 +231,6 @@ type FysicsWindow() =
             }
 
         render this.program renderJob
-//        render this.program2 renderJob
 
         this.tweakbarContext.Draw()
 
