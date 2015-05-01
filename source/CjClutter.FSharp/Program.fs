@@ -112,30 +112,8 @@ type FysicsWindow() =
         GL.Enable(EnableCap.DepthTest)
         this.VSync <- VSyncMode.On
 
-        let startWorkerThread _ =
-            this.Context.MakeCurrent(null)
-            let contextReady = new System.Threading.AutoResetEvent(false)
-            let t = new System.Threading.ParameterizedThreadStart(fun o -> 
-                    let window = new OpenTK.NativeWindow()
-                    let context = new OpenTK.Graphics.GraphicsContext(this.Context.GraphicsMode, window.WindowInfo)
-                    context.MakeCurrent(window.WindowInfo)
-                    contextReady.Set() |> ignore
-
-                    while true do
-                        let work = CjClutter.OpenGl.Gui.JobDispatcher.Instance.Dequeue()
-                        work.Invoke()
-                )
-
-            let thread = new System.Threading.Thread(t)
-            thread.IsBackground <- true
-            thread.Start()
-            contextReady.WaitOne() |> ignore
-            this.MakeCurrent() |> ignore
-
-        startWorkerThread () |> ignore
-        startWorkerThread () |> ignore
-        startWorkerThread () |> ignore
-        startWorkerThread () |> ignore
+        for i = 1 to 4 do
+            BackgroundWorker.startWorkerThread this |> ignore
 
     override this.OnClosing(e) =
         this.tweakbarContext.Dispose()
