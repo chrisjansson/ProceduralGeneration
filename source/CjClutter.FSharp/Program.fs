@@ -20,12 +20,6 @@ let drawMesh (m:Rendering.AllocatedMesh) (primitiveType:PrimitiveType) =
     m.bind()
     GL.DrawElements(BeginMode.Triangles, m.faces * 3, DrawElementsType.UnsignedInt, 0);
 
-let clamp min max v =
-    match v with
-    | _ when v < min -> min
-    | _ when v > max -> max
-    | _ -> v
-
 type ShaderProgram =
     | SimpleShaderProgram of SimpleShaderProgram.SimpleProgram
     | NormalDebugShaderProgram of NormalDebugShaderProgram.SimpleProgram

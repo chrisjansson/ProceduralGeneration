@@ -97,6 +97,7 @@
     <Compile Include="LOD.fs" />
     <Compile Include="LODCache.fs" />
     <Compile Include="Terrain.fs" />
+    <Compile Include="Math.fs" />
     <Compile Include="Program.fs" />
     <None Include="AntTweakBar.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
