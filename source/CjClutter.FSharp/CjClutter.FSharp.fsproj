@@ -99,6 +99,7 @@
     <Compile Include="Terrain.fs" />
     <Compile Include="Math.fs" />
     <Compile Include="BackgroundWorker.fs" />
+    <Compile Include="Input.fs" />
     <Compile Include="Program.fs" />
     <None Include="AntTweakBar.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

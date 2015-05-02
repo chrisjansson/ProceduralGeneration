@@ -15,6 +15,7 @@ open System.Linq
 open LOD
 open LODCache
 open Terrain
+open Input
 
 let drawMesh (m:Rendering.AllocatedMesh) (primitiveType:PrimitiveType) =
     m.bind()
@@ -97,6 +98,7 @@ type FysicsWindow() =
     let camera = new CjClutter.OpenGl.Camera.LookAtCamera()
     let lodCamera = new CjClutter.OpenGl.Camera.LookAtCamera()
     let factory = new CjClutter.OpenGl.TerrainChunkFactory()
+    let keyboard = new CjClutter.OpenGl.Input.Keboard.KeyboardInputProcessor()
     let mutable synchronizeCameras = true
     let mutable nodesInCache = 0
     let mutable cacheSize = 10000000
@@ -119,16 +121,20 @@ type FysicsWindow() =
         this.tweakbarContext.Dispose()
 
     override this.OnUpdateFrame(e) =
+        keyboard.Update(OpenTK.Input.Keyboard.GetState())
         if this.Keyboard.[Key.Escape] then do
             this.Exit()
-        if this.Keyboard.[Key.A] then do
-            camera.Position <- Vector3d.Transform(camera.Position, Matrix4d.CreateRotationY(-e.Time))
-        if this.Keyboard.[Key.D] then do
-            camera.Position <- Vector3d.Transform(camera.Position, Matrix4d.CreateRotationY(e.Time))
-        if this.Keyboard.[Key.W] then do
-            camera.Position <- camera.Position - camera.Position * (e.Time)
-        if this.Keyboard.[Key.S] then do
-            camera.Position <- camera.Position + camera.Position * (e.Time)
+        let transform = convert keyboard e.Time
+        applyTransform camera transform
+//        let transform = convert keyboard e.Time
+//        if this.Keyboard.[Key.A] then do
+//            camera.Position <- Vector3d.Transform(camera.Position, Matrix4d.CreateRotationY(-e.Time))
+//        if this.Keyboard.[Key.D] then do
+//            camera.Position <- Vector3d.Transform(camera.Position, Matrix4d.CreateRotationY(e.Time))
+//        if this.Keyboard.[Key.W] then do
+//            camera.Position <- camera.Position - camera.Position * (e.Time)
+//        if this.Keyboard.[Key.S] then do
+//            camera.Position <- camera.Position + camera.Position * (e.Time)
 
     override this.OnKeyUp(e) =
         match e.Key with
