@@ -21,10 +21,26 @@ let backward keyboard = translateOnKey keyboard backwardKey Vector3d.UnitZ
 let left keyboard = translateOnKey keyboard leftKey Vector3d.UnitX
 let right keyboard = translateOnKey keyboard rightKey -Vector3d.UnitX
 
+let pitchUpKey = Key.Down
+let pitchDownKey = Key.Up
+
+let pitchUp (keyboard:Keyboard) =
+    match keyboard.IsButtonDown pitchUpKey with
+    | true -> 1.0
+    | false -> 0.0
+
+let pitchDown (keyboard:Keyboard) =
+    match keyboard.IsButtonDown pitchDownKey with
+    | true -> -1.0
+    | false -> 0.0
+
+let speed = 2000.0
+
 let convert (keyboard:Keyboard) (dt:float) =
     let translation = 
-        (forward keyboard + backward keyboard + left keyboard + right keyboard) * dt
-    Matrix4d.CreateTranslation(translation)
+        (forward keyboard + backward keyboard + left keyboard + right keyboard) * dt * speed
+    let xRot = pitchUp keyboard * dt + pitchDown keyboard * dt
+    Matrix4d.CreateTranslation(translation) * Matrix4d.CreateRotationX(xRot)
 
 type Camera = CjClutter.OpenGl.Camera.ICamera
 
