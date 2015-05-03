@@ -3,14 +3,20 @@ open OpenTK
 open OpenTK.Input
 open CjClutter.OpenGl.Input.Keboard
 
-type Keyboard = KeyboardInputProcessor
-
 let forwardKey = Key.W
 let backwardKey = Key.S
 let leftKey = Key.D
 let rightKey = Key.A
-let zero = Vector3d.Zero
+let pitchUpKey = Key.Down
+let pitchDownKey = Key.Up
+let yawLeftKey = Key.Left
+let yawRightKey = Key.Right
+let rollLeftKey = Key.Q
+let rollRightKey = Key.E
 
+type Keyboard = KeyboardInputProcessor
+
+let zero = Vector3d.Zero
 let translateOnKey (keyboard:Keyboard) key direction =
     match keyboard.IsButtonDown key with
     | true -> direction
@@ -21,12 +27,6 @@ let backward keyboard = translateOnKey keyboard backwardKey Vector3d.UnitZ
 let left keyboard = translateOnKey keyboard leftKey Vector3d.UnitX
 let right keyboard = translateOnKey keyboard rightKey -Vector3d.UnitX
 
-let pitchUpKey = Key.Down
-let pitchDownKey = Key.Up
-let yawLeftKey = Key.Left
-let yawRightKey = Key.Right
-let rollLeftKey = Key.Q
-let rollRightKey = Key.E
 
 let rotateOnKey isButtonDown key rotationDirection =
     match isButtonDown key with
