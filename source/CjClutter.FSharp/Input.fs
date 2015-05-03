@@ -23,24 +23,32 @@ let right keyboard = translateOnKey keyboard rightKey -Vector3d.UnitX
 
 let pitchUpKey = Key.Down
 let pitchDownKey = Key.Up
+let yawLeftKey = Key.Left
+let yawRightKey = Key.Right
+let rollLeftKey = Key.Q
+let rollRightKey = Key.E
 
-let pitchUp (keyboard:Keyboard) =
-    match keyboard.IsButtonDown pitchUpKey with
-    | true -> 1.0
+let rotateOnKey isButtonDown key rotationDirection =
+    match isButtonDown key with
+    | true -> rotationDirection
     | false -> 0.0
 
-let pitchDown (keyboard:Keyboard) =
-    match keyboard.IsButtonDown pitchDownKey with
-    | true -> -1.0
-    | false -> 0.0
+let pitchUp isButtonDown = rotateOnKey isButtonDown pitchUpKey 1.0
+let pitchDown isButtonDown = rotateOnKey isButtonDown pitchDownKey -1.0
+let yawLeft isButtonDown = rotateOnKey isButtonDown yawLeftKey 1.0
+let yawRight isButtonDown = rotateOnKey isButtonDown yawRightKey -1.0
+let rollLeft isButtonDown = rotateOnKey isButtonDown rollLeftKey 1.0
+let rollRight isButtonDown = rotateOnKey isButtonDown rollRightKey -1.0
 
 let speed = 2000.0
 
 let convert (keyboard:Keyboard) (dt:float) =
     let translation = 
         (forward keyboard + backward keyboard + left keyboard + right keyboard) * dt * speed
-    let xRot = pitchUp keyboard * dt + pitchDown keyboard * dt
-    Matrix4d.CreateTranslation(translation) * Matrix4d.CreateRotationX(xRot)
+    let xRot = pitchUp keyboard.IsButtonDown * dt + pitchDown keyboard.IsButtonDown * dt
+    let yRot = yawLeft keyboard.IsButtonDown * dt + yawRight keyboard.IsButtonDown * dt
+    let zRot = rollLeft keyboard.IsButtonDown * dt + rollRight keyboard.IsButtonDown * dt
+    Matrix4d.CreateTranslation(translation) * Matrix4d.CreateRotationX(xRot) * Matrix4d.CreateRotationY(yRot) * Matrix4d.CreateRotationZ(zRot)
 
 type Camera = CjClutter.OpenGl.Camera.ICamera
 
