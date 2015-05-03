@@ -27,7 +27,6 @@ let backward keyboard = translateOnKey keyboard backwardKey Vector3d.UnitZ
 let left keyboard = translateOnKey keyboard leftKey Vector3d.UnitX
 let right keyboard = translateOnKey keyboard rightKey -Vector3d.UnitX
 
-
 let rotateOnKey isButtonDown key rotationDirection =
     match isButtonDown key with
     | true -> rotationDirection
