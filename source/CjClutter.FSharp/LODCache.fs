@@ -62,7 +62,6 @@ let queueNodes cache (nodes: node array) =
     let largestFirst = nodes |> Array.sortBy (fun n -> n.GeometricError)
     for n in largestFirst do
         cache.beginCache n
-
 let getMeshesFromCache cache (requestedNodes:node array) =
     requestedNodes |> Array.map (fun n -> cache.get n)
 
@@ -101,7 +100,9 @@ let makeCache (chunkFactory : node -> Rendering.AllocatedMesh) =
                 let mesh = chunkFactory node
                 cn.mesh <- Some mesh
                 ()
-            CjClutter.OpenGl.Gui.JobDispatcher.Instance.Enqueue(Action work)
+            match CjClutter.OpenGl.Gui.JobDispatcher.Instance.TryEnqueue(Action work) with
+            | true -> ()
+            | false -> dict.TryRemove(node) |> ignore
         | _ -> ()
     {
         contains = contains

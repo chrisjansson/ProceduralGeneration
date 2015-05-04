@@ -9,12 +9,17 @@ namespace CjClutter.OpenGl.Gui
 
         private JobDispatcher()
         {
-            _jobs = new BlockingCollection<Action>();
+            _jobs = new BlockingCollection<Action>(10);
         }
 
         public void Enqueue(Action action)
         {
             _jobs.Add(action);
+        }
+
+        public bool TryEnqueue(Action action)
+        {
+            return _jobs.TryAdd(action, 0);
         }
 
         public Action Dequeue()
