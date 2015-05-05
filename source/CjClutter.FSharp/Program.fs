@@ -73,8 +73,8 @@ let makeRenderJob mesh cameraMatrix =
 let fsaaSamples = 8
 let windowGraphicsMode =
     new Graphics.GraphicsMode(
-            Graphics.GraphicsMode.Default.ColorFormat, 
-            Graphics.GraphicsMode.Default.Depth, 
+            Graphics.GraphicsMode.Default.ColorFormat,
+            24, 
             Graphics.GraphicsMode.Default.Stencil,
             fsaaSamples)
 type FysicsWindow() = 
