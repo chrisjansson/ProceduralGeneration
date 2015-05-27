@@ -22,7 +22,8 @@ let compileShader shaderType source =
     let shaderId = GL.CreateShader shaderType
     GL.ShaderSource(shaderId, source)
     GL.CompileShader(shaderId)
-    getShaderCompilationStatus shaderId
+    let shaderStatus = getShaderCompilationStatus shaderId
+    shaderStatus
 
 type shadersCompilationResult =
     | Success of shaderIds : list<int>

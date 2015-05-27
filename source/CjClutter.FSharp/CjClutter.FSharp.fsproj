@@ -90,6 +90,7 @@
     <Compile Include="BlinnShaderProgram.fs" />
     <Compile Include="NormalDebugShaderProgram.fs" />
     <Compile Include="SimpleShaderProgram.fs" />
+    <Compile Include="NoiseShaderProgram.fs" />
     <Compile Include="TweakBar.fs" />
     <Compile Include="TweakBarGui.fs" />
     <Compile Include="BlinnMaterialTweakBar.fs" />

@@ -114,6 +114,9 @@ type FysicsWindow() =
         GL.Enable(EnableCap.DepthTest)
         this.VSync <- VSyncMode.On
 
+        let version = GL.GetString(StringName.Version)
+        let noiseProgram = NoiseShaderProgram.makeNoiseShader
+
         for i = 1 to 4 do
             BackgroundWorker.startWorkerThread this |> ignore
 
