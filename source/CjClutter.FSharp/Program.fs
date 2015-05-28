@@ -117,6 +117,14 @@ type FysicsWindow() =
         let version = GL.GetString(StringName.Version)
         let noiseProgram = NoiseShaderProgram.makeNoiseShader
 
+        let storageBuffer = GL.GenBuffer()
+        GL.BindBuffer(BufferTarget.ShaderStorageBuffer, storageBuffer)
+        let numberOfPoints = 1024 * 1024
+        let a:int[] = null
+        let size:nativeint = nativeint(sizeof<float32> * numberOfPoints)
+        GL.BufferData(BufferTarget.ShaderStorageBuffer, size, a, BufferUsageHint.StaticDraw)
+
+
         for i = 1 to 4 do
             BackgroundWorker.startWorkerThread this |> ignore
 

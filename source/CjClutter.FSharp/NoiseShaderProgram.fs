@@ -7,7 +7,7 @@ open OpenTK.Graphics.OpenGL
     
 let computeShaderSource = 
     "#version 430
-uniform image2D destTex;
+
 
 void main() {
     
