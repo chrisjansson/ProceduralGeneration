@@ -22,7 +22,6 @@ vec3 permute(vec3 x0,vec3 p) {
 	return floor(  mod( (x1 + p.z) *x0, p.x ));
 }
 
-
 float simplex_noise2(vec2 v) {
 	const vec2 C = vec2(0.211324865405187134, // (3.0-sqrt(3.0))/6.;
 		                0.366025403784438597); // 0.5*(sqrt(3.0)-1.);

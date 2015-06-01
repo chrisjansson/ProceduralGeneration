@@ -119,21 +119,32 @@ type FysicsWindow() =
 
         let storageBuffer = GL.GenBuffer()
         GL.BindBuffer(BufferTarget.ShaderStorageBuffer, storageBuffer)
-        let numberOfPoints = 1024 * 1024
+        let numberOfPoints = 128 * 128
         let a:int[] = null
         let size:nativeint = nativeint(sizeof<float32> * numberOfPoints)
         GL.BufferData(BufferTarget.ShaderStorageBuffer, size, a, BufferUsageHint.StaticDraw)
         GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 4, storageBuffer)
+
+        let sw = new System.Diagnostics.Stopwatch();
+        sw.Start() 
 
         GL.UseProgram(noiseProgram)
         GL.DispatchCompute(numberOfPoints / 128, 1, 1)
         GL.MemoryBarrier(MemoryBarrierFlags.ShaderStorageBarrierBit)
 
         let source = GL.MapBuffer(BufferTarget.ShaderStorageBuffer, BufferAccess.ReadOnly)
+        let destination = Array.zeroCreate<float32> numberOfPoints
 
         let source2 = NativeInterop.NativePtr.ofNativeInt<float32> source
-        for i = 0 to 1024 do
-            NativeInterop.NativePtr.get source2 (i * sizeof<float32>) |> printfn "%A"
+        for i = 0 to numberOfPoints - 1 do
+            destination.[i] <- NativeInterop.NativePtr.get source2 (i * sizeof<float32>)
+
+        sw.Stop()
+        printfn "%A" sw.Elapsed
+
+//        let source2 = NativeInterop.NativePtr.ofNativeInt<float32> source
+//        for i = 0 to 1024 do
+//            NativeInterop.NativePtr.get source2 (i * sizeof<float32>) |> printfn "%A"
 
         GL.UnmapBuffer(BufferTarget.ShaderStorageBuffer)
 
