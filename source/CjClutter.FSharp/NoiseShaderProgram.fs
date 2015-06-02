@@ -97,7 +97,51 @@ float ridgedMultiFractal(vec3 pos) {
     return result;
 }
 
+int width = 128;
+int height = width;
+
+vec2 max = vec2(0.0);
+vec2 min = vec2(0.0);
+
+vec2 getPosition(int x, int y) {
+    vec2 delta = max - min;
+
+    float columnFraction = float(x) / float(width);
+    float rowFraction = float(y) / float(height);
+
+    return vec2(
+        min.x + delta.x * columnFraction,
+        min.y + delta.y * rowFraction);
+}
+
+float getHeight(int x, int y) {
+    vec2 position = getPosition(x, y);
+    return ridgedMultiFractal(vec3(position, 0.0));
+}
+
+vec3 getNormal(int x, int y) {
+    vec2 center = CalculatePosition(x, y);
+}
+//            public Vector3d GetNormal(int column, int row)
+//            {
+//                var center = CalculatePosition(column, row);
+//                double d = 1;
+//                var leftRight = new Vector3d(d * 2, _noiseGenerator.Noise(center.X + d, center.Y) - _noiseGenerator.Noise(center.X - d, center.Y), 0);
+//                var bottomTop = new Vector3d(0, _noiseGenerator.Noise(center.X, center.Y - d) - _noiseGenerator.Noise(center.X, center.Y + d), d * 2);
+//
+//                var normal = -(Vector3d.Cross(leftRight.Normalized(), bottomTop.Normalized()).Normalized());
+//                return normal;
+//            }
+
 void main() {
+    for(int x = 0; x <= width; x++) {
+        for(int y = 0; y <= height; y++) {
+            vec3 pos = vec3(x, getHeight(x, y), y);
+            //vec3 normal = getNormal(x, y);
+            //transform pos and normal
+            //save
+        }
+    }
     Positions[gl_GlobalInvocationID.x] = ridgedMultiFractal(vec3(gl_GlobalInvocationID.x, 0.0, 0.0));
 }
 "
