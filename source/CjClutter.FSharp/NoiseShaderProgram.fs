@@ -119,25 +119,25 @@ float getHeight(int x, int y) {
     return ridgedMultiFractal(vec3(position, 0.0));
 }
 
-vec3 getNormal(int x, int y) {
-    vec2 center = CalculatePosition(x, y);
+float noise123(float x, float y) {
+   return ridgedMultiFractal(vec3(x, y, 0.0));
 }
-//            public Vector3d GetNormal(int column, int row)
-//            {
-//                var center = CalculatePosition(column, row);
-//                double d = 1;
-//                var leftRight = new Vector3d(d * 2, _noiseGenerator.Noise(center.X + d, center.Y) - _noiseGenerator.Noise(center.X - d, center.Y), 0);
-//                var bottomTop = new Vector3d(0, _noiseGenerator.Noise(center.X, center.Y - d) - _noiseGenerator.Noise(center.X, center.Y + d), d * 2);
-//
-//                var normal = -(Vector3d.Cross(leftRight.Normalized(), bottomTop.Normalized()).Normalized());
-//                return normal;
-//            }
+
+vec3 getNormal(int x, int y) {
+    vec2 center = getPosition(x, y);
+    float d = 1.0;
+    vec3 leftRight = vec3(d * 2.0, noise123(center.x + d, center.y) - noise123(center.x - d, center.y), 0.0);
+    vec3 bottomRight = vec3(0.0, noise123(center.x, center.y - d) - noise123(center.x, center.y + d), d * 2.0);
+
+    vec3 normal = -cross(normalize(leftRight), normalize(bottomRight));
+    return normal;
+}
 
 void main() {
     for(int x = 0; x <= width; x++) {
         for(int y = 0; y <= height; y++) {
             vec3 pos = vec3(x, getHeight(x, y), y);
-            //vec3 normal = getNormal(x, y);
+            vec3 normal = getNormal(x, y);
             //transform pos and normal
             //save
         }
