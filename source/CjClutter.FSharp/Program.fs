@@ -120,8 +120,8 @@ type FysicsWindow() =
         let storageBuffer = GL.GenBuffer()
         GL.BindBuffer(BufferTarget.ShaderStorageBuffer, storageBuffer)
         let numberOfPoints = 128 * 128
-        let a:int[] = null
-        let size:nativeint = nativeint(sizeof<float32> * numberOfPoints)
+        let a:float32[] = null
+        let size:nativeint = nativeint(sizeof<float32> * 6 * numberOfPoints)
         GL.BufferData(BufferTarget.ShaderStorageBuffer, size, a, BufferUsageHint.StaticDraw)
         GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 4, storageBuffer)
 

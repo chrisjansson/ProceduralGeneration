@@ -8,9 +8,15 @@ open OpenTK.Graphics.OpenGL
 let computeShaderSource = 
     "#version 430
 
+struct Vertex
+{
+    vec3 position;
+    vec3 normal;
+};
+
 layout(std140, binding = 4) buffer Pos
 {
-    float Positions[];
+    Vertex Vertices[];
 };
 
 layout(local_size_x = 128, local_size_y = 1, local_size_z = 1) in;
@@ -138,11 +144,13 @@ void main() {
         for(int y = 0; y <= height; y++) {
             vec3 pos = vec3(x, getHeight(x, y), y);
             vec3 normal = getNormal(x, y);
+            Vertices[y * width + x].position = pos;
+            Vertices[y * width + x].normal = normal;
             //transform pos and normal
             //save
         }
     }
-    Positions[gl_GlobalInvocationID.x] = ridgedMultiFractal(vec3(gl_GlobalInvocationID.x, 0.0, 0.0));
+//    Positions[gl_GlobalInvocationID.x] = ridgedMultiFractal(vec3(gl_GlobalInvocationID.x, 0.0, 0.0));
 }
 "
 
