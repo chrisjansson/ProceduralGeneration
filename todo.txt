@@ -3,3 +3,4 @@ add sources of dependencies so that they can be built if needed
 read and render heightmap from file
 shadows
 gl debug extensions
+refactor  makeShader to return Result discriminated union
