@@ -158,8 +158,8 @@ let rawShader = [ (ShaderType.ComputeShader, computeShaderSource) ]
 
 let makeNoiseShader =
     match makeProgram rawShader with
-    | Some programId -> programId
-    | _ -> failwith "Program compilation failed"
+    | Result.Success programId -> programId
+    | Result.Failure message -> failwith ("Program compilation failed" + message)
 
 
 

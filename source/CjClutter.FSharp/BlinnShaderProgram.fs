@@ -22,7 +22,7 @@ type BlinnPhongProgram = {
 
 let makeBlinnShaderProgram =
     match makeProgram rawShaders with
-    | Some programId -> 
+    | Result.Success programId -> 
         { 
             ProgramId = programId; 
             ProjectionMatrixUniform = makeMatrixUniform programId "projectionMatrix"

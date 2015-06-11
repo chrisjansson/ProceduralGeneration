@@ -1,5 +1,6 @@
 ﻿module shader
 
+open Result
 open OpenTK
 open OpenTK.Graphics.OpenGL
 
@@ -22,8 +23,7 @@ let compileShader shaderType source =
     let shaderId = GL.CreateShader shaderType
     GL.ShaderSource(shaderId, source)
     GL.CompileShader(shaderId)
-    let shaderStatus = getShaderCompilationStatus shaderId
-    shaderStatus
+    getShaderCompilationStatus shaderId
 
 type shadersCompilationResult =
     | Success of shaderIds : list<int>
@@ -50,8 +50,8 @@ let linkProgram shaders =
 
 let makeProgram shaders =
     match compileShaders shaders with
-    | Success shaderIds -> Some (linkProgram shaderIds)
-    | Error messages -> failwith (messages |> List.reduce (fun l r -> l + " " + r))
+    | Success shaderIds -> Result.Success (linkProgram shaderIds)
+    | Error messages -> Failure (messages |> List.reduce (fun l r -> l + " " + r))
 
 let glSetUniform uniformId (matrix:Matrix4d byref) =
     GL.UniformMatrix4(uniformId, false, &matrix)

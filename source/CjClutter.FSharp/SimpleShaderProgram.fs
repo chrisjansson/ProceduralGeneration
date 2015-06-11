@@ -59,7 +59,7 @@ type SimpleProgram = {
 
 let makeSimpleShaderProgram =
     match makeProgram rawShaders with
-    | Some programId -> 
+    | Result.Success programId -> 
         { 
             ProgramId = programId; 
             ProjectionMatrixUniform = makeMatrixUniform programId "projectionMatrix"
@@ -67,5 +67,5 @@ let makeSimpleShaderProgram =
             ModelMatrix = makeMatrixUniform programId "modelMatrix"
             NormalMatrix = makeMatrix3Uniform programId "normalMatrix"
         }
-    | _ -> failwith "Program compilation failed"
+    | Result.Failure message -> failwith ("Program compilation failed" + message)
 
