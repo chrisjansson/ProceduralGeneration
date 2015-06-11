@@ -80,6 +80,7 @@
     <None Include="App.config" />
     <Content Include="packages.config" />
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Result.fs" />
     <Compile Include="Func.fs" />
     <None Include="blinn.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
