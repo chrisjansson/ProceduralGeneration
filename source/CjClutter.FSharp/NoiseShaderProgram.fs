@@ -23,6 +23,9 @@ layout(local_size_x = 128, local_size_y = 1, local_size_z = 1) in;
 
 uniform vec4 pParam = vec4(289.0, 34.0, 1.0, 7.0);
 
+uniform vec2 minBounds = vec2(0.0);
+uniform vec2 maxBounds = vec2(0.0);
+
 vec3 permute(vec3 x0,vec3 p) { 
 	vec3 x1 = mod(x0 * p.y, p.x);
 	return floor(  mod( (x1 + p.z) *x0, p.x ));
@@ -106,18 +109,15 @@ float ridgedMultiFractal(vec3 pos) {
 int width = 128;
 int height = width;
 
-vec2 max = vec2(0.0);
-vec2 min = vec2(0.0);
-
 vec2 getPosition(int x, int y) {
-    vec2 delta = max - min;
+    vec2 delta = maxBounds - minBounds;
 
     float columnFraction = float(x) / float(width);
     float rowFraction = float(y) / float(height);
 
     return vec2(
-        min.x + delta.x * columnFraction,
-        min.y + delta.y * rowFraction);
+        minBounds.x + delta.x * columnFraction,
+        minBounds.y + delta.y * rowFraction);
 }
 
 float getHeight(int x, int y) {
@@ -156,9 +156,20 @@ void main() {
 
 let rawShader = [ (ShaderType.ComputeShader, computeShaderSource) ]
 
+type NoiseShader = {
+        ProgramId : int
+        Min : Vector2Uniform
+        Max : Vector2Uniform
+    }
+
 let makeNoiseShader =
     match makeProgram rawShader with
-    | Result.Success programId -> programId
+    | Result.Success programId -> 
+        { 
+            ProgramId = programId
+            Min = makeVector2Uniform programId "minBounds"
+            Max = makeVector2Uniform programId "maxBounds"
+        }
     | Result.Failure message -> failwith ("Program compilation failed" + message)
 
 

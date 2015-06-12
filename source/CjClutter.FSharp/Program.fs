@@ -128,7 +128,7 @@ type FysicsWindow() =
         let sw = new System.Diagnostics.Stopwatch();
         sw.Start() 
 
-        GL.UseProgram(noiseProgram)
+        GL.UseProgram(noiseProgram.ProgramId)
         GL.DispatchCompute(numberOfPoints / 128, 1, 1)
         GL.MemoryBarrier(MemoryBarrierFlags.ShaderStorageBarrierBit)
 
