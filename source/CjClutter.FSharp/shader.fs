@@ -84,4 +84,10 @@ let makeVector3Uniform (programId:int) uniformName =
     let uniformLocation = GL.GetUniformLocation(programId, uniformName)
     { Vector3Uniform.set = fun v -> GL.Uniform3(uniformLocation, v) }
 
+type Vector2Uniform = { set : OpenTK.Vector2 -> unit }
+
+let makeVector2Uniform (programId:int) uniformName =
+    let uniformLocation = GL.GetUniformLocation(programId, uniformName)
+    { Vector2Uniform.set = fun v -> GL.Uniform2(uniformLocation, v) }
+
     
