@@ -108,7 +108,7 @@ float ridgedMultiFractal(vec3 pos) {
     return result;
 }
 
-int width = 128;
+int width = 127;
 int height = width;
 
 vec2 getPosition(int x, int y) {
@@ -142,6 +142,7 @@ vec3 getNormal(int x, int y) {
 }
 
 void main() {
+    //replace one loop for invocation id
     for(int x = 0; x <= width; x++) {
         for(int y = 0; y <= height; y++) {
             vec3 pos = vec3(x, getHeight(x, y), y);
