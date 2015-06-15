@@ -160,6 +160,8 @@ type NoiseShader = {
         ProgramId : int
         Min : Vector2Uniform
         Max : Vector2Uniform
+        Transform : MatrixUniform
+        NormalTransform : Matrix3Uniform
     }
 
 let makeNoiseShader =
@@ -169,6 +171,8 @@ let makeNoiseShader =
             ProgramId = programId
             Min = makeVector2Uniform programId "minBounds"
             Max = makeVector2Uniform programId "maxBounds"
+            Transform = makeMatrixUniform programId "transform"
+            NormalTransform = makeMatrix3Uniform programId "normalTransform"
         }
     | Result.Failure message -> failwith ("Program compilation failed" + message)
 
