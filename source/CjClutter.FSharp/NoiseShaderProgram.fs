@@ -25,6 +25,8 @@ uniform vec4 pParam = vec4(289.0, 34.0, 1.0, 7.0);
 
 uniform vec2 minBounds = vec2(0.0);
 uniform vec2 maxBounds = vec2(0.0);
+uniform mat4 transform;
+uniform mat3 normalTransform;
 
 vec3 permute(vec3 x0,vec3 p) { 
 	vec3 x1 = mod(x0 * p.y, p.x);
@@ -144,13 +146,11 @@ void main() {
         for(int y = 0; y <= height; y++) {
             vec3 pos = vec3(x, getHeight(x, y), y);
             vec3 normal = getNormal(x, y);
-            Vertices[y * width + x].position = pos;
-            Vertices[y * width + x].normal = normal;
-            //transform pos and normal
-            //save
+
+            Vertices[y * width + x].position = (transform * vec4(pos, 1.0)).xyz;
+            Vertices[y * width + x].normal = normalTransform * normal;
         }
     }
-//    Positions[gl_GlobalInvocationID.x] = ridgedMultiFractal(vec3(gl_GlobalInvocationID.x, 0.0, 0.0));
 }
 "
 
