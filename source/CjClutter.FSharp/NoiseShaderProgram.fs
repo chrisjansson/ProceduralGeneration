@@ -142,16 +142,14 @@ vec3 getNormal(int x, int y) {
 }
 
 void main() {
-    //replace one loop for invocation id
-    for(int x = 0; x <= width; x++) {
-        for(int y = 0; y <= height; y++) {
-            vec3 pos = vec3(x, getHeight(x, y), y);
-            vec3 normal = getNormal(x, y);
-
-            Vertices[y * width + x].position = (transform * vec4(pos, 1.0)).xyz;
-            Vertices[y * width + x].normal = normalTransform * normal;
-        }
-    }
+    int x = gl_GlobalInvocationID.x;
+	for(int y = 0; y <= height; y++) {
+	    vec3 pos = vec3(x, getHeight(x, y), y);
+	    vec3 normal = getNormal(x, y);
+	
+	    Vertices[y * width + x].position = (transform * vec4(pos, 1.0)).xyz;
+	    Vertices[y * width + x].normal = normalTransform * normal;
+	}
 }
 "
 
