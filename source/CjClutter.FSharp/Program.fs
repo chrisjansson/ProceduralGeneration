@@ -120,27 +120,34 @@ type FysicsWindow() =
         let storageBuffer = GL.GenBuffer()
         GL.BindBuffer(BufferTarget.ShaderStorageBuffer, storageBuffer)
         let numberOfPoints = 128 * 128
+        let numberOfFloats = 6 * numberOfPoints
         let a:float32[] = null
-        let size:nativeint = nativeint(sizeof<float32> * 6 * numberOfPoints)
+        let size:nativeint = nativeint(sizeof<float32> * numberOfFloats)
         GL.BufferData(BufferTarget.ShaderStorageBuffer, size, a, BufferUsageHint.StaticDraw)
         GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 4, storageBuffer)
+
 
         let sw = new System.Diagnostics.Stopwatch();
         sw.Start() 
 
         GL.UseProgram(noiseProgram.ProgramId)
+
+        noiseProgram.Max.set (new OpenTK.Vector2(128.0f, 128.0f))
+        noiseProgram.Min.set (new OpenTK.Vector2(-128.0f, -128.0f))
+        noiseProgram.Transform.set OpenTK.Matrix4.Identity
+        noiseProgram.NormalTransform.set OpenTK.Matrix3.Identity
         GL.DispatchCompute(numberOfPoints / 128, 1, 1)
         GL.MemoryBarrier(MemoryBarrierFlags.ShaderStorageBarrierBit)
+        printfn "%A" sw.Elapsed
 
         let source = GL.MapBuffer(BufferTarget.ShaderStorageBuffer, BufferAccess.ReadOnly)
-        let destination = Array.zeroCreate<float32> numberOfPoints
+        let destination = Array.zeroCreate<float32> numberOfFloats
 
-        let source2 = NativeInterop.NativePtr.ofNativeInt<float32> source
-        for i = 0 to numberOfPoints - 1 do
-            destination.[i] <- NativeInterop.NativePtr.get source2 (i * sizeof<float32>)
+        System.Runtime.InteropServices.Marshal.Copy(source, destination, 0, destination.Length)
 
         sw.Stop()
         printfn "%A" sw.Elapsed
+
 
 //        let source2 = NativeInterop.NativePtr.ofNativeInt<float32> source
 //        for i = 0 to 1024 do
