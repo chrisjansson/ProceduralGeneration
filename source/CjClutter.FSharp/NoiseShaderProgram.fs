@@ -147,8 +147,8 @@ void main() {
 	    vec3 pos = vec3(x, getHeight(x, y), y);
 	    vec3 normal = getNormal(x, y);
 	
-	    Vertices[y + width * x].position = (transform * vec4(pos, 1.0)).xyz;
-	    Vertices[y * width + x].normal = normalTransform * normal;
+	    Vertices[y + (width + 1) * x].position = (transform * vec4(pos, 1.0)).xyz;
+	    Vertices[y + (width + 1) * x].normal = normalTransform * normal;
 	}
 }
 "
