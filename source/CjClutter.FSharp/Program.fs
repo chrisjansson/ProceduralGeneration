@@ -145,10 +145,6 @@ type FysicsWindow() =
         let bounds = new CjClutter.OpenGl.EntityComponent.Bounds2D(new Vector2d(-128.0, -128.0), new Vector2d(128.0, 128.0))
         let chunk = factory.Create(bounds)
 
-//        let source2 = NativeInterop.NativePtr.ofNativeInt<float32> source
-//        for i = 0 to 1024 do
-//            NativeInterop.NativePtr.get source2 (i * sizeof<float32>) |> printfn "%A"
-
         let points = Array.zeroCreate<Vector3> numberOfPoints
         for i = 0 to numberOfPoints - 1 do
             points.[i] <- new Vector3(destination.[i * 8], 0.0f, destination.[i * 8 + 2])
@@ -160,7 +156,6 @@ type FysicsWindow() =
                 printfn "Difference %A %A" points.[i] chunkPoints.[i]
 
         GL.UnmapBuffer(BufferTarget.ShaderStorageBuffer)
-
 
         for i = 1 to 4 do
             BackgroundWorker.startWorkerThread this |> ignore
