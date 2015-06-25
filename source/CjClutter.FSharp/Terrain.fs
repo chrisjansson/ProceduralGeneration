@@ -41,7 +41,9 @@ let allocateGpu (noiseShader:NoiseShaderProgram.NoiseShader) (node:node) =
     let min = new Vector2(float32 bounds.Min.X, float32 bounds.Min.Y)
     noiseShader.Max.set max
     noiseShader.Min.set min
-    let meshDimensions = float32 (128 - 1)
+    let widthInPoints = 128
+    let meshDimensions = float32 (widthInPoints - 1)
+    let numberOfPoints = 128 * 128
     noiseShader.Transform.set (Matrix4.CreateTranslation(-meshDimensions / 2.0f, 0.0f, -meshDimensions / 2.0f) * Matrix4.CreateScale(1.0f / meshDimensions, 1.0f, 1.0f / meshDimensions))
     noiseShader.NormalTransform.set OpenTK.Matrix3.Identity
     GL.DispatchCompute(numberOfPoints / 128, 1, 1)
