@@ -28,6 +28,13 @@ namespace CjClutter.OpenGl.EntityComponent
                 }
             }
 
+            var faces = CreateFaces(columns, rows);
+
+            return new Mesh3V3N(vertices, faces).Transformed(Matrix4.CreateTranslation(-columns / 2f, 0, -rows / 2f) * Matrix4.CreateScale((float)(1.0 / columns), 1, (float)(1.0 / rows)));
+        }
+
+        public static List<Face3> CreateFaces(int columns, int rows)
+        {
             var faces = new List<Face3>();
             for (var x = 0; x < columns; x++)
             {
@@ -73,7 +80,7 @@ namespace CjClutter.OpenGl.EntityComponent
                 }
             }
 
-            return new Mesh3V3N(vertices, faces).Transformed(Matrix4.CreateTranslation(-columns / 2f, 0, -rows / 2f) * Matrix4.CreateScale((float)(1.0 / columns), 1, (float)(1.0 / rows)));
+            return faces;
         }
 
         private class FlatHeightMap : IHeightMap
