@@ -7,6 +7,8 @@ open CjClutter.OpenGl.OpenGl
 open CjClutter.OpenGl.Gui
 open CjClutter.OpenGl.EntityComponent
 open OpenTK.Graphics.OpenGL4
+open System.Collections.Generic
+open System.Linq
 
 type node = ChunkedLodTreeFactory.ChunkedLodTreeNode
 
@@ -31,6 +33,16 @@ let allocate (node:node) =
                             NormalMatrix = Matrix3.Identity
                         }
     }
+
+let allocateElementBuffer =
+    let buffer = GL.GenBuffer()
+    
+    let indices = CjClutter.OpenGl.EntityComponent.MeshCreator.CreateFaces(128, 128) |> Array.ofSeq |> Array.collect (fun f -> [|uint32(f.V0);uint32(f.V1);uint32(f.V2)|])
+    GL.BindBuffer(BufferTarget.ElementArrayBuffer, buffer)
+
+    let size = nativeint(sizeof<uint32> * indices.Length)
+    GL.BufferData(BufferTarget.ElementArrayBuffer, size, indices, BufferUsageHint.StaticRead)
+    buffer
    
 let allocateGpu (noiseShader:NoiseShaderProgram.NoiseShader) (node:node) =
     GL.UseProgram(noiseShader.ProgramId)
@@ -47,6 +59,8 @@ let allocateGpu (noiseShader:NoiseShaderProgram.NoiseShader) (node:node) =
     noiseShader.Transform.set (Matrix4.CreateTranslation(-meshDimensions / 2.0f, 0.0f, -meshDimensions / 2.0f) * Matrix4.CreateScale(1.0f / meshDimensions, 1.0f, 1.0f / meshDimensions))
     noiseShader.NormalTransform.set OpenTK.Matrix3.Identity
     GL.DispatchCompute(numberOfPoints / 128, 1, 1)
+
+
 
 
 type NoiseShaderProgram = 
