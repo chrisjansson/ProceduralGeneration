@@ -44,7 +44,8 @@ let allocateElementBuffer =
     GL.BufferData(BufferTarget.ElementArrayBuffer, size, indices, BufferUsageHint.StaticRead)
     buffer
    
-let allocateGpu (noiseShader:NoiseShaderProgram.NoiseShader) (node:node) =
+let allocateGpu (elementBuffer:int) (noiseShader:NoiseShaderProgram.NoiseShader) (node:node) =
+    
     GL.UseProgram(noiseShader.ProgramId)
 
     let bounds = node.Bounds
@@ -60,6 +61,17 @@ let allocateGpu (noiseShader:NoiseShaderProgram.NoiseShader) (node:node) =
     noiseShader.NormalTransform.set OpenTK.Matrix3.Identity
     GL.DispatchCompute(numberOfPoints / 128, 1, 1)
 
+
+    let vertexArray = GL.GenVertexArray()
+    GL.BindVertexArray(vertexArray)
+
+    GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, sizeof<float32> * 8, 0)
+    GL.EnableVertexAttribArray(0)
+    GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, sizeof<float32> * 8, 4)
+    GL.EnableVertexAttribArray(1)
+    GL.BindVertexArray(0)
+    GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0)
+    GL.BindBuffer(BufferTarget.ArrayBuffer, 0)
 
 
 
