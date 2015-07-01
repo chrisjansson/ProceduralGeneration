@@ -74,6 +74,8 @@ let allocateGpu (elementBuffer:int) (noiseShader:NoiseShaderProgram.NoiseShader)
 
     let vertexArray = GL.GenVertexArray()
     GL.BindVertexArray(vertexArray)
+    GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementBuffer)
+    GL.BindBuffer(BufferTarget.ArrayBuffer, storageBuffer)
 
     GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, sizeof<float32> * 8, 0)
     GL.EnableVertexAttribArray(0)
