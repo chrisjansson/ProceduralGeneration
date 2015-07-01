@@ -46,6 +46,15 @@ let allocateElementBuffer =
    
 let allocateGpu (elementBuffer:int) (noiseShader:NoiseShaderProgram.NoiseShader) (node:node) =
     
+    let storageBuffer = GL.GenBuffer()
+    GL.BindBuffer(BufferTarget.ShaderStorageBuffer, storageBuffer)
+    let numberOfPoints = 128 * 128
+    let numberOfFloats = 8 * numberOfPoints
+    let a:float32[] = null
+    let size:nativeint = nativeint(sizeof<float32> * numberOfFloats)
+    GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 4, storageBuffer)
+    GL.BufferData(BufferTarget.ShaderStorageBuffer, size, a, BufferUsageHint.StaticDraw)
+
     GL.UseProgram(noiseShader.ProgramId)
 
     let bounds = node.Bounds
@@ -60,6 +69,7 @@ let allocateGpu (elementBuffer:int) (noiseShader:NoiseShaderProgram.NoiseShader)
     noiseShader.Transform.set (Matrix4.CreateTranslation(-meshDimensions / 2.0f, 0.0f, -meshDimensions / 2.0f) * Matrix4.CreateScale(1.0f / meshDimensions, 1.0f, 1.0f / meshDimensions))
     noiseShader.NormalTransform.set OpenTK.Matrix3.Identity
     GL.DispatchCompute(numberOfPoints / 128, 1, 1)
+    GL.MemoryBarrier(MemoryBarrierFlags.ShaderStorageBarrierBit)
 
 
     let vertexArray = GL.GenVertexArray()
