@@ -37,12 +37,13 @@ let allocate (node:node) =
 let allocateElementBuffer =
     let buffer = GL.GenBuffer()
     
-    let indices = CjClutter.OpenGl.EntityComponent.MeshCreator.CreateFaces(128, 128) |> Array.ofSeq |> Array.collect (fun f -> [|uint32(f.V0);uint32(f.V1);uint32(f.V2)|])
+    let faces = CjClutter.OpenGl.EntityComponent.MeshCreator.CreateFaces(128, 128)
+    let indices = faces |> Array.ofSeq |> Array.collect (fun f -> [|uint32(f.V0);uint32(f.V1);uint32(f.V2)|])
     GL.BindBuffer(BufferTarget.ElementArrayBuffer, buffer)
 
     let size = nativeint(sizeof<uint32> * indices.Length)
     GL.BufferData(BufferTarget.ElementArrayBuffer, size, indices, BufferUsageHint.StaticRead)
-    buffer
+    (buffer, faces.Count)
    
 let allocateGpu (elementBuffer:int) (noiseShader:NoiseShaderProgram.NoiseShader) (node:node) =
     
@@ -71,7 +72,6 @@ let allocateGpu (elementBuffer:int) (noiseShader:NoiseShaderProgram.NoiseShader)
     GL.DispatchCompute(numberOfPoints / 128, 1, 1)
     GL.MemoryBarrier(MemoryBarrierFlags.ShaderStorageBarrierBit)
 
-
     let vertexArray = GL.GenVertexArray()
     GL.BindVertexArray(vertexArray)
     GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementBuffer)
@@ -84,6 +84,19 @@ let allocateGpu (elementBuffer:int) (noiseShader:NoiseShaderProgram.NoiseShader)
     GL.BindVertexArray(0)
     GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0)
     GL.BindBuffer(BufferTarget.ArrayBuffer, 0)
+
+    let bounds = node.Bounds
+    let translation = Matrix4.CreateTranslation(float32 bounds.Center.X, 0.0f, float32 bounds.Center.Y)
+    let delta = bounds.Max - bounds.Min
+    let scale = Matrix4.CreateScale(float32 delta.X, 1.0f, float32 delta.Y)
+    {
+        bind = fun() -> GL.BindVertexArray(vertexArray)
+        faces = 1
+        renderContext = {
+                            ModelMatrix = scale * translation
+                            NormalMatrix = Matrix3.Identity
+                        }
+    }
 
 
 
