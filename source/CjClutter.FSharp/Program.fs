@@ -91,7 +91,9 @@ type FysicsWindow() =
         SpecularExp = 150.0 }
     let defaultVm = { IntegrationSpeed = 1.0; BlinnMaterial = defaultBlinnMaterial }
     let tree = makeTerrainLodTree
-    let nodeCache = makeCache allocate
+    let (elementBuffer, faces) = allocateElementBuffer
+    let noiseShader = 
+    let nodeCache = makeCache (allocateGpu elementBuffer)
 
     let mutable vm : ViewModel = defaultVm
     let terrain = new CjClutter.OpenGl.Terrain(new LOD.ChunkedLod())
@@ -114,48 +116,50 @@ type FysicsWindow() =
         GL.Enable(EnableCap.DepthTest)
         this.VSync <- VSyncMode.On
 
+        let elementBuffer = allocateElementBuffer
+
         let version = GL.GetString(StringName.Version)
         let noiseProgram = NoiseShaderProgram.makeNoiseShader
 
-        let storageBuffer = GL.GenBuffer()
-        GL.BindBuffer(BufferTarget.ShaderStorageBuffer, storageBuffer)
-        let numberOfPoints = 128 * 128
-        let numberOfFloats = 8 * numberOfPoints
-        let a:float32[] = null
-        let size:nativeint = nativeint(sizeof<float32> * numberOfFloats)
-        GL.BufferData(BufferTarget.ShaderStorageBuffer, size, a, BufferUsageHint.StaticDraw)
-        GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 4, storageBuffer)
-
-        let destination = Array.zeroCreate<float32> numberOfFloats
-        GL.UseProgram(noiseProgram.ProgramId)
-
-        noiseProgram.Max.set (new OpenTK.Vector2(128.0f, 128.0f))
-        noiseProgram.Min.set (new OpenTK.Vector2(-128.0f, -128.0f))
-        noiseProgram.Transform.set (Matrix4.CreateTranslation(-127.0f / 2.0f, 0.0f, -127.0f / 2.0f) * Matrix4.CreateScale(1.0f / 127.0f, 1.0f, 1.0f / 127.0f))
-        noiseProgram.NormalTransform.set OpenTK.Matrix3.Identity
-        GL.DispatchCompute(numberOfPoints / 128, 1, 1)
-        GL.MemoryBarrier(MemoryBarrierFlags.ShaderStorageBarrierBit)
-
-        let source = GL.MapBuffer(BufferTarget.ShaderStorageBuffer, BufferAccess.ReadOnly)
-        
-
-        System.Runtime.InteropServices.Marshal.Copy(source, destination, 0, destination.Length)
-
-        let factory = new CjClutter.OpenGl.TerrainChunkFactory()
-        let bounds = new CjClutter.OpenGl.EntityComponent.Bounds2D(new Vector2d(-128.0, -128.0), new Vector2d(128.0, 128.0))
-        let chunk = factory.Create(bounds)
-
-        let points = Array.zeroCreate<Vector3> numberOfPoints
-        for i = 0 to numberOfPoints - 1 do
-            points.[i] <- new Vector3(destination.[i * 8], 0.0f, destination.[i * 8 + 2])
-
-        let chunkPoints = chunk.Vertices.Select(fun v -> v.Position).ToArray()
-        
-        for i = 0 to points.Length - 1 do
-            if points.[i] <> chunkPoints.[i] then do
-                printfn "Difference %A %A" points.[i] chunkPoints.[i]
-
-        GL.UnmapBuffer(BufferTarget.ShaderStorageBuffer)
+//        let storageBuffer = GL.GenBuffer()
+//        GL.BindBuffer(BufferTarget.ShaderStorageBuffer, storageBuffer)
+//        let numberOfPoints = 128 * 128
+//        let numberOfFloats = 8 * numberOfPoints
+//        let a:float32[] = null
+//        let size:nativeint = nativeint(sizeof<float32> * numberOfFloats)
+//        GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 4, storageBuffer)
+//        GL.BufferData(BufferTarget.ShaderStorageBuffer, size, a, BufferUsageHint.StaticDraw)
+//        
+//        let destination = Array.zeroCreate<float32> numberOfFloats
+//        GL.UseProgram(noiseProgram.ProgramId)
+//
+//        noiseProgram.Max.set (new OpenTK.Vector2(128.0f, 128.0f))
+//        noiseProgram.Min.set (new OpenTK.Vector2(-128.0f, -128.0f))
+//        noiseProgram.Transform.set (Matrix4.CreateTranslation(-127.0f / 2.0f, 0.0f, -127.0f / 2.0f) * Matrix4.CreateScale(1.0f / 127.0f, 1.0f, 1.0f / 127.0f))
+//        noiseProgram.NormalTransform.set OpenTK.Matrix3.Identity
+//        GL.DispatchCompute(numberOfPoints / 128, 1, 1)
+//        GL.MemoryBarrier(MemoryBarrierFlags.ShaderStorageBarrierBit)
+//
+//        let source = GL.MapBuffer(BufferTarget.ShaderStorageBuffer, BufferAccess.ReadOnly)
+//        
+//
+//        System.Runtime.InteropServices.Marshal.Copy(source, destination, 0, destination.Length)
+//
+//        let factory = new CjClutter.OpenGl.TerrainChunkFactory()
+//        let bounds = new CjClutter.OpenGl.EntityComponent.Bounds2D(new Vector2d(-128.0, -128.0), new Vector2d(128.0, 128.0))
+//        let chunk = factory.Create(bounds)
+//
+//        let points = Array.zeroCreate<Vector3> numberOfPoints
+//        for i = 0 to numberOfPoints - 1 do
+//            points.[i] <- new Vector3(destination.[i * 8], 0.0f, destination.[i * 8 + 2])
+//
+//        let chunkPoints = chunk.Vertices.Select(fun v -> v.Position).ToArray()
+//        
+//        for i = 0 to points.Length - 1 do
+//            if points.[i] <> chunkPoints.[i] then do
+//                printfn "Difference %A %A" points.[i] chunkPoints.[i]
+//
+//        GL.UnmapBuffer(BufferTarget.ShaderStorageBuffer)
 
         for i = 1 to 4 do
             BackgroundWorker.startWorkerThread this |> ignore
