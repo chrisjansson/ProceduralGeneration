@@ -107,7 +107,7 @@ type FysicsWindow() =
     override this.OnLoad(e) =
         this.program <- BlinnShaderProgram BlinnShaderProgram.makeBlinnShaderProgram
         this.program2 <- NormalDebugShaderProgram NormalDebugShaderProgram.makeSimpleShaderProgram
-        this.tweakbarContext <- new Context(Tw.GraphicsAPI.OpenGL)
+        this.tweakbarContext <- new Context(Tw.GraphicsAPI.OpenGLCore)
         let vmObs = configureTweakBar this.tweakbarContext defaultVm
         vmObs.Subscribe(fun m -> vm <- m) |> ignore
         GL.LineWidth(1.0f)
