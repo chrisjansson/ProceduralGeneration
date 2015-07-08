@@ -19,7 +19,7 @@ open Input
 
 let drawMesh (m:Rendering.AllocatedMesh) (primitiveType:PrimitiveType) =
     m.bind()
-    GL.DrawElements(BeginMode.Triangles, m.faces * 3, DrawElementsType.UnsignedInt, 0);
+    GL.DrawElements(BeginMode.Triangles, m.faces, DrawElementsType.UnsignedInt, 0);
 
 type ShaderProgram =
     | SimpleShaderProgram of SimpleShaderProgram.SimpleProgram
@@ -192,7 +192,37 @@ type FysicsWindow() =
             lodCamera.Height <- camera.Height
 
         GL.Clear(ClearBufferMask.ColorBufferBit ||| ClearBufferMask.DepthBufferBit)
+        
+        let projectionMatrix = CjClutter.OpenGl.OpenTk.Matrix4dExtensions.ToMatrix4(camera.ComputeProjectionMatrix())
+        let cameraMatrix = CjClutter.OpenGl.OpenTk.Matrix4dExtensions.ToMatrix4(camera.ComputeCameraMatrix())
 
+        let nodeCache = this.nodeCache
+        let frustum = CjClutter.OpenGl.Camera.FrustumPlaneExtractor.ExtractRowMajor(lodCamera)
+        let visibleNodes = findVisibleNodes tree frustum (float this.Width) lodCamera.HorizontalFieldOfView lodCamera.Position 20.0
+        let (nodesToDraw, nodesToCache) = getNodesToDrawAndCache nodeCache visibleNodes
+
+        let takeMax n array =
+            let elementsToTake = min (Array.length array) n
+            Array.take elementsToTake array
+
+        for n in nodesToCache |> Array.sortBy(fun n -> n.GeometricError) |> Array.rev |> takeMax (cacheSize - nodesInCache) do
+            nodesInCache <- nodesInCache + 1
+            nodeCache.beginCache n
+
+        let blinnMaterial = vm.BlinnMaterial
+
+        let staticRenderContext = {
+                ProjectionMatrix = projectionMatrix
+                ViewMatrix = cameraMatrix
+            }
+
+        let renderJob = {
+                StaticContext = staticRenderContext
+                RenderJobs = nodesToDraw |> Array.map (fun n -> nodeCache.get n) |> Array.map (fun m -> makeRenderJob m cameraMatrix) |> Array.toList
+                Material = Blinn({ Rendering.BlinnMaterial.AmbientColor = blinnMaterial.AmbientColor; DiffuseColor = blinnMaterial.DiffuseColor; SpecularColor = blinnMaterial.SpecularColor})
+            }
+
+        render this.program renderJob
 
         this.tweakbarContext.Draw()
 
