@@ -45,7 +45,7 @@ let allocateElementBuffer =
     GL.BufferData(BufferTarget.ElementArrayBuffer, size, indices, BufferUsageHint.StaticRead)
     (buffer, faces.Count)
    
-let allocateGpu (elementBuffer:int) (noiseShader:NoiseShaderProgram.NoiseShader) (node:node) =
+let allocateGpu (elementBuffer:int) (elements:int) (noiseShader:NoiseShaderProgram.NoiseShader) (node:node) =
     
     let storageBuffer = GL.GenBuffer()
     GL.BindBuffer(BufferTarget.ShaderStorageBuffer, storageBuffer)
@@ -91,7 +91,7 @@ let allocateGpu (elementBuffer:int) (noiseShader:NoiseShaderProgram.NoiseShader)
     let scale = Matrix4.CreateScale(float32 delta.X, 1.0f, float32 delta.Y)
     {
         bind = fun() -> GL.BindVertexArray(vertexArray)
-        faces = 1
+        faces = elements
         renderContext = {
                             ModelMatrix = scale * translation
                             NormalMatrix = Matrix3.Identity
