@@ -90,7 +90,10 @@ let allocateGpu (elementBuffer:int) (elements:int) (noiseShader:NoiseShaderProgr
     let delta = bounds.Max - bounds.Min
     let scale = Matrix4.CreateScale(float32 delta.X, 1.0f, float32 delta.Y)
     {
-        bind = fun() -> GL.BindVertexArray(vertexArray)
+        bind = fun() -> 
+            GL.BindVertexArray(vertexArray)
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementBuffer)
+            GL.BindBuffer(BufferTarget.ArrayBuffer, storageBuffer)
         faces = elements
         renderContext = {
                             ModelMatrix = scale * translation
