@@ -16,10 +16,23 @@ open LOD
 open LODCache
 open Terrain
 open Input
+open System.Runtime.InteropServices
 
 let drawMesh (m:Rendering.AllocatedMesh) (primitiveType:PrimitiveType) =
     m.bind()
-    GL.DrawElements(BeginMode.Triangles, m.faces, DrawElementsType.UnsignedInt, 0);
+
+    let buffer = GL.MapBuffer(BufferTarget.ArrayBuffer, BufferAccess.ReadOnly)
+    let dest = Array.zeroCreate<float32> (128 * 128 * 8)
+    Marshal.Copy(buffer, dest, 0, dest.Length)
+    GL.UnmapBuffer(BufferTarget.ArrayBuffer) |> ignore
+    
+    let vectors = Array.zeroCreate<Vector3> (dest.Length / 8)
+    for i = 0 to vectors.Length - 1 do
+        let v = new Vector3(dest.[i*8], dest.[i*8+1], dest.[i*8+2])
+        vectors.[i] <- v
+            
+    //GL.DrawElements(BeginMode.Triangles, m.faces * 3, DrawElementsType.UnsignedInt, 0);
+    GL.DrawArrays(BeginMode.Points, 0, 128 * 128)
 
 type ShaderProgram =
     | SimpleShaderProgram of SimpleShaderProgram.SimpleProgram
@@ -102,7 +115,7 @@ type FysicsWindow() =
     let keyboard = new CjClutter.OpenGl.Input.Keboard.KeyboardInputProcessor()
     let mutable synchronizeCameras = true
     let mutable nodesInCache = 0
-    let mutable cacheSize = 10000000
+    let mutable cacheSize = 1
 
     override this.OnLoad(e) =
         this.program <- BlinnShaderProgram BlinnShaderProgram.makeBlinnShaderProgram
@@ -192,7 +205,8 @@ type FysicsWindow() =
             lodCamera.Height <- camera.Height
 
         GL.Clear(ClearBufferMask.ColorBufferBit ||| ClearBufferMask.DepthBufferBit)
-        
+        GL.PointSize(20.0f)
+
         let projectionMatrix = CjClutter.OpenGl.OpenTk.Matrix4dExtensions.ToMatrix4(camera.ComputeProjectionMatrix())
         let cameraMatrix = CjClutter.OpenGl.OpenTk.Matrix4dExtensions.ToMatrix4(camera.ComputeCameraMatrix())
 
