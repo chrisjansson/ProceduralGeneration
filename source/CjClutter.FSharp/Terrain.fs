@@ -100,9 +100,7 @@ let allocateGpu (elementBuffer:int) (elements:int) (noiseShader:NoiseShaderProgr
                             NormalMatrix = Matrix3.Identity
                         }
     }
-
-
-
+    
 type NoiseShaderProgram = 
     {
         programId : int
