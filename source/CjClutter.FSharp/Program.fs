@@ -21,18 +21,7 @@ open System.Runtime.InteropServices
 let drawMesh (m:Rendering.AllocatedMesh) (primitiveType:PrimitiveType) =
     m.bind()
 
-    let buffer = GL.MapBuffer(BufferTarget.ArrayBuffer, BufferAccess.ReadOnly)
-    let dest = Array.zeroCreate<float32> (128 * 128 * 8)
-    Marshal.Copy(buffer, dest, 0, dest.Length)
-    GL.UnmapBuffer(BufferTarget.ArrayBuffer) |> ignore
-    
-    let vectors = Array.zeroCreate<Vector3> (dest.Length / 8)
-    for i = 0 to vectors.Length - 1 do
-        let v = new Vector3(dest.[i*8], dest.[i*8+1], dest.[i*8+2])
-        vectors.[i] <- v
-            
-    //GL.DrawElements(BeginMode.Triangles, m.faces * 3, DrawElementsType.UnsignedInt, 0);
-    GL.DrawArrays(BeginMode.Points, 0, 128 * 128)
+    GL.DrawElements(BeginMode.Triangles, m.faces * 3, DrawElementsType.UnsignedInt, 0);
 
 type ShaderProgram =
     | SimpleShaderProgram of SimpleShaderProgram.SimpleProgram
@@ -100,6 +89,7 @@ type FysicsWindow() =
     [<DefaultValue>] val mutable elementBuffer : int
     [<DefaultValue>] val mutable elements : int
     [<DefaultValue>] val mutable nodeCache : LODCache
+    [<DefaultValue>] val mutable mesh : AllocatedMesh
     let defaultBlinnMaterial = { 
         AmbientColor = new Vector3(0.1f, 0.1f, 0.1f); 
         DiffuseColor = new Vector3(0.4f, 0.7f, 0.4f); 
@@ -115,7 +105,8 @@ type FysicsWindow() =
     let keyboard = new CjClutter.OpenGl.Input.Keboard.KeyboardInputProcessor()
     let mutable synchronizeCameras = true
     let mutable nodesInCache = 0
-    let mutable cacheSize = 1
+    let mutable cacheSize = 10000
+    let node = new  CjClutter.OpenGl.ChunkedLodTreeFactory.ChunkedLodTreeNode(new CjClutter.OpenGl.EntityComponent.Bounds2D(new Vector2d(-128.0, -128.0 + 100.0), new Vector2d(128.0, 128.0 + 100.0)), null, 0.0)
 
     override this.OnLoad(e) =
         this.program <- BlinnShaderProgram BlinnShaderProgram.makeBlinnShaderProgram
@@ -138,6 +129,8 @@ type FysicsWindow() =
         let allocate = allocateGpu elementBuffer elements noiseProgram
 
         this.nodeCache <- makeCache allocate
+
+        this.mesh <- allocate node
 
         for i = 1 to 1 do
             BackgroundWorker.startWorkerThread this |> ignore
@@ -205,7 +198,6 @@ type FysicsWindow() =
             lodCamera.Height <- camera.Height
 
         GL.Clear(ClearBufferMask.ColorBufferBit ||| ClearBufferMask.DepthBufferBit)
-        GL.PointSize(20.0f)
 
         let projectionMatrix = CjClutter.OpenGl.OpenTk.Matrix4dExtensions.ToMatrix4(camera.ComputeProjectionMatrix())
         let cameraMatrix = CjClutter.OpenGl.OpenTk.Matrix4dExtensions.ToMatrix4(camera.ComputeCameraMatrix())
