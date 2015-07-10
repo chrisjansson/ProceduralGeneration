@@ -37,7 +37,7 @@ let allocate (node:node) =
 let allocateElementBuffer =
     let buffer = GL.GenBuffer()
     
-    let faces = CjClutter.OpenGl.EntityComponent.MeshCreator.CreateFaces(128, 128)
+    let faces = CjClutter.OpenGl.EntityComponent.MeshCreator.CreateFaces(127, 127)
     let indices = faces |> Array.ofSeq |> Array.collect (fun f -> [|uint32(f.V0);uint32(f.V1);uint32(f.V2)|])
     GL.BindBuffer(BufferTarget.ElementArrayBuffer, buffer)
 
@@ -54,7 +54,7 @@ let allocateGpu (elementBuffer:int) (elements:int) (noiseShader:NoiseShaderProgr
     let a:float32[] = null
     let size:nativeint = nativeint(sizeof<float32> * numberOfFloats)
     GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 4, storageBuffer)
-    GL.BufferData(BufferTarget.ShaderStorageBuffer, size, a, BufferUsageHint.StaticDraw)
+    GL.BufferData(BufferTarget.ShaderStorageBuffer, size, a, BufferUsageHint.StaticRead)
 
     GL.UseProgram(noiseShader.ProgramId)
 
@@ -74,13 +74,13 @@ let allocateGpu (elementBuffer:int) (elements:int) (noiseShader:NoiseShaderProgr
 
     let vertexArray = GL.GenVertexArray()
     GL.BindVertexArray(vertexArray)
+    GL.EnableVertexAttribArray(0)
+    GL.EnableVertexAttribArray(1)
     GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementBuffer)
     GL.BindBuffer(BufferTarget.ArrayBuffer, storageBuffer)
-
     GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, sizeof<float32> * 8, 0)
-    GL.EnableVertexAttribArray(0)
     GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, sizeof<float32> * 8, 4)
-    GL.EnableVertexAttribArray(1)
+   
     GL.BindVertexArray(0)
     GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0)
     GL.BindBuffer(BufferTarget.ArrayBuffer, 0)
