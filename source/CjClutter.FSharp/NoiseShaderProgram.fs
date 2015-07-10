@@ -80,11 +80,12 @@ float noise3d(vec3 pos) {
 
 float offset = 1.0;
 int octaves = 7;
-float lacunarity = 1.0;
+float lacunarity = 2.1347;
 float gain = 1.0;
 float H = 1.0;
 
 float ridgedMultiFractal(vec3 pos) {
+    pos = vec3(pos.x / 400.0, pos.y / 400.0, 0);
     float signal = noise3d(pos);
     signal = abs(signal);
     signal = offset - signal;
@@ -105,7 +106,7 @@ float ridgedMultiFractal(vec3 pos) {
 
         frequency *= lacunarity;
     }
-    return result;
+    return result * 30;
 }
 
 int width = 127;
