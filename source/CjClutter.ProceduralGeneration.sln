@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22512.0
+VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CjClutter.ObjLoader.Test", "CjClutter.ObjLoader.Test\CjClutter.ObjLoader.Test.csproj", "{2FDC8918-CCF7-427C-82CD-BA67A8887C9C}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CjClutter.Commons", "CjClutter.Commons\CjClutter.Commons.csproj", "{FF713732-F7A4-40C8-B136-8EAA52A443FD}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CjClutter.FSharp", "CjClutter.FSharp\CjClutter.FSharp.fsproj", "{B2A23F04-9A30-4148-962B-322739D377F3}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CDLod", "CDLod\CDLod.fsproj", "{B311CAFC-5872-4A42-B488-C85E5B36DFB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,18 @@ Global
 		{B2A23F04-9A30-4148-962B-322739D377F3}.Release|x64.Build.0 = Release|Any CPU
 		{B2A23F04-9A30-4148-962B-322739D377F3}.Release|x86.ActiveCfg = Release|Any CPU
 		{B2A23F04-9A30-4148-962B-322739D377F3}.Release|x86.Build.0 = Release|Any CPU
+		{B311CAFC-5872-4A42-B488-C85E5B36DFB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B311CAFC-5872-4A42-B488-C85E5B36DFB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B311CAFC-5872-4A42-B488-C85E5B36DFB2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B311CAFC-5872-4A42-B488-C85E5B36DFB2}.Debug|x64.Build.0 = Debug|Any CPU
+		{B311CAFC-5872-4A42-B488-C85E5B36DFB2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B311CAFC-5872-4A42-B488-C85E5B36DFB2}.Debug|x86.Build.0 = Debug|Any CPU
+		{B311CAFC-5872-4A42-B488-C85E5B36DFB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B311CAFC-5872-4A42-B488-C85E5B36DFB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B311CAFC-5872-4A42-B488-C85E5B36DFB2}.Release|x64.ActiveCfg = Release|Any CPU
+		{B311CAFC-5872-4A42-B488-C85E5B36DFB2}.Release|x64.Build.0 = Release|Any CPU
+		{B311CAFC-5872-4A42-B488-C85E5B36DFB2}.Release|x86.ActiveCfg = Release|Any CPU
+		{B311CAFC-5872-4A42-B488-C85E5B36DFB2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
