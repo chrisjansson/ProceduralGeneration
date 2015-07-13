@@ -57,6 +57,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <Content Include="packages.config" />
     <Content Include="app.config" />
+    <Compile Include="LodSelectTests.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
