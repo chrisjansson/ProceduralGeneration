@@ -13,6 +13,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CjClutter.FSharp", "CjClutt
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CDLod", "CDLod\CDLod.fsproj", "{B311CAFC-5872-4A42-B488-C85E5B36DFB2}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CDLod.Tests", "CDLod.Tests\CDLod.Tests.fsproj", "{D7C6DE99-C8D4-45B3-BA18-20D8D43EC4C2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,18 @@ Global
 		{B311CAFC-5872-4A42-B488-C85E5B36DFB2}.Release|x64.Build.0 = Release|Any CPU
 		{B311CAFC-5872-4A42-B488-C85E5B36DFB2}.Release|x86.ActiveCfg = Release|Any CPU
 		{B311CAFC-5872-4A42-B488-C85E5B36DFB2}.Release|x86.Build.0 = Release|Any CPU
+		{D7C6DE99-C8D4-45B3-BA18-20D8D43EC4C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7C6DE99-C8D4-45B3-BA18-20D8D43EC4C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7C6DE99-C8D4-45B3-BA18-20D8D43EC4C2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D7C6DE99-C8D4-45B3-BA18-20D8D43EC4C2}.Debug|x64.Build.0 = Debug|Any CPU
+		{D7C6DE99-C8D4-45B3-BA18-20D8D43EC4C2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D7C6DE99-C8D4-45B3-BA18-20D8D43EC4C2}.Debug|x86.Build.0 = Debug|Any CPU
+		{D7C6DE99-C8D4-45B3-BA18-20D8D43EC4C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7C6DE99-C8D4-45B3-BA18-20D8D43EC4C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7C6DE99-C8D4-45B3-BA18-20D8D43EC4C2}.Release|x64.ActiveCfg = Release|Any CPU
+		{D7C6DE99-C8D4-45B3-BA18-20D8D43EC4C2}.Release|x64.Build.0 = Release|Any CPU
+		{D7C6DE99-C8D4-45B3-BA18-20D8D43EC4C2}.Release|x86.ActiveCfg = Release|Any CPU
+		{D7C6DE99-C8D4-45B3-BA18-20D8D43EC4C2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
