@@ -6,9 +6,11 @@ type Node = {
 
 //Optimization, if a parent node is completely inside the frustum all children will be that as well -> frustum cull can be skipped
 
-let lodSelect frustumTester root =
+let lodSelect frustumTester detailTester node =
+    let intersectsFrustum = frustumTester node
+    let isInRange = detailTester node
     //test against frustum
     //sphere intersect
-    match frustumTester root with
-    | true -> [ root ]
-    | false -> []
+    match (intersectsFrustum, isInRange) with
+    | (true, true) -> [ node ]
+    | _ -> []
