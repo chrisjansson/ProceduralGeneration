@@ -15,7 +15,7 @@ let ``lod selection where root node is out of frustum should be empty`` () =
 let ``lod selection where root node is in frustum and has no children selects root`` () =
     let node = { Children = []; LodLevel = 0 }
     let actual = lodSelect (fun _ -> true) (fun _ _ -> true) node
-    test <@ actual = [ node ] @>
+    test <@ actual = [ Selection.Full node ] @>
 
 [<Fact>]
 let ``lod selection where root node is in range of the next lod level and child node is in range of it's lod level selects child`` () =
@@ -24,14 +24,13 @@ let ``lod selection where root node is in range of the next lod level and child 
     let child = { Children = []; LodLevel = childLod };
     let node = { Children = [ child ]; LodLevel = rootLod; }
     let actual = lodSelect (fun _ -> true) (fun _ _ -> true) node
-    test <@ actual = [ child ] @>
-
+    test <@ actual = [ Selection.Full child ] @>
 
 [<Fact>]
 let ``lod selection where root node is not in range of the next lod level selects root`` () =
     let node = { Children = [ { Children = []; LodLevel = 1 } ]; LodLevel = 0 }
     let actual = lodSelect (fun _ -> true) (fun _ _ -> false) node
-    test <@ actual = [ node ] @>
+    test <@ actual = [ Selection.Full node ] @>
 
 //
 //[<Fact>]
