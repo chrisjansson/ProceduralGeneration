@@ -14,6 +14,7 @@ type Bounds = {
 type Node = {
         Children : Node list
         LodLevel : int
+        Bounds : Bounds
     }
 
 type PartialSelection = {
