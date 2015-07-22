@@ -56,3 +56,26 @@ let ``lod selection where root node is in range of the next lod level and child 
 
     let actual = lodSelect (fun _ -> true) detailSelector root
     test <@ actual = [ Selection.Partial { Parent = root; Child = child } ] @>
+
+[<Fact>]
+let ``lod selection integration test`` () =
+    let leafInRange = { Children = []; LodLevel = 1; }
+    let leafOutOfRage = { Children = []; LodLevel = 2; }
+    let firstMiddleNode = { Children = [ leafInRange; leafOutOfRage ]; LodLevel = 3 }
+    let middleNodeOutOfFrustum = { Children = []; LodLevel = 4; }
+    let middleNodeWithEnoughDetail = { Children = [ { Children = []; LodLevel = 5; } ]; LodLevel = 6 }
+    let root = { Children = [ firstMiddleNode; middleNodeOutOfFrustum; middleNodeWithEnoughDetail ]; LodLevel = 7; }
+
+    let frustumIntersector n =
+        match n with
+        | _ when n = middleNodeOutOfFrustum -> false
+        | _ -> true
+
+    let detailSelector n l =
+        match n with
+        | _ when (n, l) = (middleNodeWithEnoughDetail, middleNodeWithEnoughDetail.LodLevel + 1) -> false
+        | _ when n = leafOutOfRage -> false
+        | _ -> true
+
+    let actual = lodSelect frustumIntersector detailSelector root
+    test <@ actual = [ Full leafInRange; Partial { Parent = firstMiddleNode; Child = leafOutOfRage }; Full middleNodeWithEnoughDetail ] @>
