@@ -49,3 +49,38 @@ let ``Splits bounds in four pieces in XZ plane``() =
         ]
 
     test <@ expected = actual @>
+
+[<Fact>]
+let ``QuadTree example`` () =
+    let bounds = { Min = { X = -1.0; Y = -10.0; Z = -1.0; }; Max = { X = 1.0; Y = 10.0; Z = 1.0; } }
+    
+    let expected = {
+            Children = 
+                [
+                    { 
+                        Children = []
+                        LodLevel = 0
+                        Bounds = { Min = { X = -1.0; Y = -10.0; Z = -1.0; }; Max = { X = 0.0; Y = 10.0; Z = 0.0; } }
+                    }
+                    { 
+                        Children = []
+                        LodLevel = 0
+                        Bounds = { Min = { X = -1.0; Y = -10.0; Z = 0.0; }; Max = { X = 0.0; Y = 10.0; Z = 1.0; } }
+                    }
+                    { 
+                        Children = []
+                        LodLevel = 0
+                        Bounds = { Min = { X = 0.0; Y = -10.0; Z = -1.0; }; Max = { X = 1.0; Y = 10.0; Z = 0.0; } }
+                    }
+                    { 
+                        Children = []
+                        LodLevel = 0
+                        Bounds = { Min = { X = 0.0; Y = -10.0; Z = 0.0; }; Max = { X = 1.0; Y = 10.0; Z = 1.0; } }
+                    }
+                ]
+            LodLevel = 1
+            Bounds = bounds
+        }
+
+    let actual = makeXZQuadTree 1 bounds
+    test <@ expected = actual @>

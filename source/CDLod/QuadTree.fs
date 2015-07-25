@@ -39,3 +39,5 @@ let quadXZBoundsSplitter bounds =
             Max = max
         }
     ]
+
+let makeXZQuadTree depth bounds = makeTree quadXZBoundsSplitter depth bounds
