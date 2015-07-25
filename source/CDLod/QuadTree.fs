@@ -24,7 +24,7 @@ let quadXZBoundsSplitter bounds =
     [
         { 
             Min = min; 
-            Max = { X = center.X; Y = max.Y; Z = center.Z }
+            Max = { center with Y = max.Y }
         }
         { 
             Min = { X = min.X; Y = min.Y; Z = center.Z } 
@@ -35,7 +35,7 @@ let quadXZBoundsSplitter bounds =
             Max = { X = max.X; Y = max.Y; Z = center.Z } 
         }
         { 
-            Min = { X = center.X; Y = min.Y; Z = center.Z }
+            Min = { center with Y = min.Y }
             Max = max
         }
     ]
