@@ -1,16 +1,5 @@
 ﻿module LodSelect
 
-type Point = {
-        X : float
-        Y : float
-        Z : float
-    }
-
-type Bounds = {
-        Min : Point
-        Max : Point
-    }
-
 type Node = {
         Children : Node list
         LodLevel : int
