@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Math.fs" />
+    <Compile Include="LodRanges.fs" />
     <Compile Include="LodSelect.fs" />
     <Compile Include="QuadTree.fs" />
   </ItemGroup>

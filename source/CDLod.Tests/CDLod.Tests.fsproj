@@ -58,6 +58,7 @@
     <Content Include="packages.config" />
     <Content Include="app.config" />
     <Compile Include="AABBSphereInteresectionTests.fs" />
+    <Compile Include="LodRangesTests.fs" />
     <Compile Include="LodSelectTests.fs" />
     <Compile Include="QuadTreeTests.fs" />
   </ItemGroup>
