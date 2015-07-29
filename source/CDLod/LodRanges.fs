@@ -37,18 +37,12 @@ let makeLodRanges lodSettings =
         currentDetailBalance <- currentDetailBalance * lodSettings.LodDistanceRatio
 
     let lodRanges = Array.zeroCreate<LodRange> lodSettings.LodLevels
-    previousPosition <- lodNear
     for i = 0 to lodSettings.LodLevels - 1 do
+        let previous = if i = 0 then 0.0 else lodRanges.[i - 1].MorphStart
         let lodRange = {
                 VisibilityRange = visibilityRanges.[i]
                 MorphEnd = visibilityRanges.[i]
-                MorphStart = previousPosition + (visibilityRanges.[i] - previousPosition) * lodSettings.MorphStartRatio
+                MorphStart = previous + (visibilityRanges.[i] - previous) * lodSettings.MorphStartRatio
             }
         lodRanges.[i] <- lodRange
-        previousPosition <- lodRange.MorphStart
     lodRanges
-//
-//      selectionObj->m_morphEnd[i] = selectionObj->m_visibilityRanges[index];
-//      selectionObj->m_morphStart[i] = prevPos + (selectionObj->m_morphEnd[i] - prevPos) * selectionObj->m_morphStartRatio;
-//
-//      prevPos = selectionObj->m_morphStart[i];
