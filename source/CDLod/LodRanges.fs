@@ -4,7 +4,7 @@ type LodSettings = {
         LodLevels : int
         LodDistanceRatio : float //2.0
         VisibilityDistance : float
-        MorphStartRatio : float //
+        MorphStartRatio : float //0.667
     }
 
 let calculateTotalDetailBalance lodLevels lodDistanceRatio =
