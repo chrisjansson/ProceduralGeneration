@@ -14,6 +14,12 @@ let calculateTotalDetailBalance lodLevels lodDistanceRatio =
         currentDetailBalance <- currentDetailBalance * lodDistanceRatio
     totalDetailBalance
 
+type LodRange = {
+        VisibilityRange : float
+        MorphStart : float
+        MorphEnd : float
+    }
+
 let makeLodRanges lodSettings =
     let lodNear = 0.0
     let lodFar = lodSettings.VisibilityDistance
