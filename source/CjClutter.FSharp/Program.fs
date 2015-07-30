@@ -20,7 +20,6 @@ open System.Runtime.InteropServices
 
 let drawMesh (m:Rendering.AllocatedMesh) (primitiveType:PrimitiveType) =
     m.bind()
-
     GL.DrawElements(BeginMode.Triangles, m.faces * 3, DrawElementsType.UnsignedInt, 0);
 
 type ShaderProgram =
@@ -86,27 +85,18 @@ type FysicsWindow() =
     [<DefaultValue>] val mutable program : ShaderProgram
     [<DefaultValue>] val mutable program2 : ShaderProgram
     [<DefaultValue>] val mutable blinn : System.IObservable<BlinnMaterial>
-    [<DefaultValue>] val mutable elementBuffer : int
-    [<DefaultValue>] val mutable elements : int
-    [<DefaultValue>] val mutable nodeCache : LODCache
-    [<DefaultValue>] val mutable mesh : AllocatedMesh
     let defaultBlinnMaterial = { 
         AmbientColor = new Vector3(0.1f, 0.1f, 0.1f); 
         DiffuseColor = new Vector3(0.4f, 0.7f, 0.4f); 
         SpecularColor = new Vector3(1.0f, 1.0f, 1.0f); 
         SpecularExp = 150.0 }
     let defaultVm = { IntegrationSpeed = 1.0; BlinnMaterial = defaultBlinnMaterial }
-    let tree = makeTerrainLodTree
     let mutable vm : ViewModel = defaultVm
-    let terrain = new CjClutter.OpenGl.Terrain(new LOD.ChunkedLod())
     let camera = new CjClutter.OpenGl.Camera.LookAtCamera()
     let lodCamera = new CjClutter.OpenGl.Camera.LookAtCamera()
     let factory = new CjClutter.OpenGl.TerrainChunkFactory()
     let keyboard = new CjClutter.OpenGl.Input.Keboard.KeyboardInputProcessor()
     let mutable synchronizeCameras = true
-    let mutable nodesInCache = 0
-    let mutable cacheSize = 10000
-    let node = new  CjClutter.OpenGl.ChunkedLodTreeFactory.ChunkedLodTreeNode(new CjClutter.OpenGl.EntityComponent.Bounds2D(new Vector2d(-128.0, -128.0 + 100.0), new Vector2d(128.0, 128.0 + 100.0)), null, 0.0)
 
     override this.OnLoad(e) =
         this.program <- BlinnShaderProgram BlinnShaderProgram.makeBlinnShaderProgram
@@ -119,18 +109,7 @@ type FysicsWindow() =
         GL.Enable(EnableCap.DepthTest)
         this.VSync <- VSyncMode.On
 
-        let (elementBuffer, elements) = allocateElementBuffer
-        this.elementBuffer <- elementBuffer
-        this.elements <- elements
-
         let version = GL.GetString(StringName.Version)
-        let noiseProgram = NoiseShaderProgram.makeNoiseShader
-
-        let allocate = allocateGpu elementBuffer elements noiseProgram
-
-        this.nodeCache <- makeCache allocate
-
-        this.mesh <- allocate node
 
         for i = 1 to 1 do
             BackgroundWorker.startWorkerThread this |> ignore
@@ -158,7 +137,6 @@ type FysicsWindow() =
         match e.Key with
         | Key.N -> synchronizeCameras <- false
         | Key.M -> synchronizeCameras <- true
-        | Key.Space -> cacheSize <- cacheSize + 1
         | _ -> ()
         match convertKeyEvent e with
         | Some keys -> 
@@ -202,36 +180,24 @@ type FysicsWindow() =
         let projectionMatrix = CjClutter.OpenGl.OpenTk.Matrix4dExtensions.ToMatrix4(camera.ComputeProjectionMatrix())
         let cameraMatrix = CjClutter.OpenGl.OpenTk.Matrix4dExtensions.ToMatrix4(camera.ComputeCameraMatrix())
 
-        let nodeCache = this.nodeCache
         let frustum = CjClutter.OpenGl.Camera.FrustumPlaneExtractor.ExtractRowMajor(lodCamera)
-        let visibleNodes = findVisibleNodes tree frustum (float this.Width) lodCamera.HorizontalFieldOfView lodCamera.Position 20.0
-        let (nodesToDraw, nodesToCache) = getNodesToDrawAndCache nodeCache visibleNodes
-
-        let takeMax n array =
-            let elementsToTake = min (Array.length array) n
-            Array.take elementsToTake array
-
-        for n in nodesToCache |> Array.sortBy(fun n -> n.GeometricError) |> Array.rev |> takeMax (cacheSize - nodesInCache) do
-            nodesInCache <- nodesInCache + 1
-            nodeCache.beginCache n
-
+        
         let blinnMaterial = vm.BlinnMaterial
 
         let staticRenderContext = {
                 ProjectionMatrix = projectionMatrix
                 ViewMatrix = cameraMatrix
             }
-
-        let renderJob = {
-                StaticContext = staticRenderContext
-                RenderJobs = nodesToDraw |> Array.map (fun n -> nodeCache.get n) |> Array.map (fun m -> makeRenderJob m cameraMatrix) |> Array.toList
-                Material = Blinn({ Rendering.BlinnMaterial.AmbientColor = blinnMaterial.AmbientColor; DiffuseColor = blinnMaterial.DiffuseColor; SpecularColor = blinnMaterial.SpecularColor})
-            }
-
-        render this.program renderJob
+//
+//        let renderJob = {
+//                StaticContext = staticRenderContext
+//                RenderJobs = 
+//                Material = Blinn({ Rendering.BlinnMaterial.AmbientColor = blinnMaterial.AmbientColor; DiffuseColor = blinnMaterial.DiffuseColor; SpecularColor = blinnMaterial.SpecularColor})
+//            }
+//
+//        render this.program renderJob
 
         this.tweakbarContext.Draw()
-
         this.SwapBuffers();
 
 [<EntryPoint>]
