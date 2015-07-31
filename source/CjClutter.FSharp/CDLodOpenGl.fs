@@ -37,6 +37,20 @@ let createVertexArrayObjectForV3N3 (vertexVertexAttribute:int) (normalVertexAttr
     GL.BindVertexArray(0)
     vertexArray
 
+type RenderableCDLodMesh = {
+        Bind : unit -> unit
+        ElementCount : int
+    }
 
+let makeRenderableSquareXZMesh dimension vertexVertexAttribute normalVertexAttribute =
+    let allocatedMesh = makeSquareXZMesh dimension
+    let vertexArrayObject = createVertexArrayObjectForV3N3 vertexVertexAttribute normalVertexAttribute
+    {
+        Bind = fun _ -> 
+            GL.BindBuffer(BufferTarget.ArrayBuffer, allocatedMesh.VertexBuffer)
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, allocatedMesh.ElementBuffer)
+            GL.BindVertexArray(vertexArrayObject)
+        ElementCount = allocatedMesh.ElementCount
+    }
 
     
