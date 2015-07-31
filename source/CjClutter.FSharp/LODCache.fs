@@ -7,7 +7,7 @@ type node = ChunkedLodTreeFactory.ChunkedLodTreeNode
 type LODCache = {
         contains : node -> bool
         beginCache : node -> unit
-        get : node -> Rendering.AllocatedMesh
+        get : node -> Rendering.RenderableMesh
     }
 
 let getNodesToDrawAndCache cache (requestedNodes:node array) =
@@ -71,10 +71,10 @@ let getMeshesToDraw cache (requestedNodes:node array) =
     getMeshesFromCache cache nodesToDraw
     
 type CachedNode = {
-        mutable mesh : option<Rendering.AllocatedMesh>
+        mutable mesh : option<Rendering.RenderableMesh>
     }
    
-let makeCache (chunkFactory : node -> Rendering.AllocatedMesh) =
+let makeCache (chunkFactory : node -> Rendering.RenderableMesh) =
     let dict = new System.Collections.Concurrent.ConcurrentDictionary<node, CachedNode>()
 
     let contains node = 

@@ -137,7 +137,7 @@ namespace ObjLoader.Test
         {
             Func<ChunkedLodTreeFactory.ChunkedLodTreeNode, bool> contains = node => _cache.Contains(node);
             Action<ChunkedLodTreeFactory.ChunkedLodTreeNode> beginCache = _ => { };
-            Func<ChunkedLodTreeFactory.ChunkedLodTreeNode, Rendering.AllocatedMesh> get = _ => { throw new Exception(); };
+            Func<ChunkedLodTreeFactory.ChunkedLodTreeNode, Rendering.RenderableMesh> get = _ => { throw new Exception(); };
             var a = FSharpUtil.FSharpFuncUtil.ToFSharpFunc(contains);
             var b = FSharpUtil.FSharpFuncUtil.ToFSharpFunc(beginCache);
             var c = FSharpUtil.FSharpFuncUtil.ToFSharpFunc(get);

@@ -15,6 +15,12 @@ type IndividualRenderContext = {
     }
 
 type AllocatedMesh = {
+        ElementCount : int
+        VertexBuffer : int
+        ElementBuffer : int
+    }
+
+type RenderableMesh = {
             bind : unit -> unit
             faces : int
             renderContext : IndividualRenderContext
@@ -22,7 +28,7 @@ type AllocatedMesh = {
 
 type IndividualRenderJob = {
         IndividualContext : IndividualRenderContext
-        Mesh : AllocatedMesh
+        Mesh : RenderableMesh
     }
 
 type BlinnMaterial = {

@@ -18,7 +18,7 @@ open Terrain
 open Input
 open System.Runtime.InteropServices
 
-let drawMesh (m:Rendering.AllocatedMesh) (primitiveType:PrimitiveType) =
+let drawMesh (m:Rendering.RenderableMesh) (primitiveType:PrimitiveType) =
     m.bind()
     GL.DrawElements(BeginMode.Triangles, m.faces * 3, DrawElementsType.UnsignedInt, 0);
 

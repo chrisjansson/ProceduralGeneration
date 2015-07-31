@@ -1,5 +1,6 @@
 ﻿module CDLodOpenGl
 
+open Rendering
 open OpenTK.Graphics.OpenGL4
 open CjClutter.OpenGl.EntityComponent
 open CjClutter.OpenGl.OpenGl.VertexTypes
@@ -21,4 +22,4 @@ let makeSquareXZMesh dimension =
     let elements = mesh.Faces |> Array.collect (fun f -> [| f.V0; f.V1; f.V2 |] ) |> Array.map (fun e -> uint16 e)
     GL.BufferData(BufferTarget.ElementArrayBuffer, elementDataSize, elements, BufferUsageHint.StaticDraw)
     GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0)
-    (vertexBuffer, elementBuffer)
+    { ElementCount = elements.Length; VertexBuffer = vertexBuffer; ElementBuffer = elementBuffer }
