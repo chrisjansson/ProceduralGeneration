@@ -23,3 +23,20 @@ let makeSquareXZMesh dimension =
     GL.BufferData(BufferTarget.ElementArrayBuffer, elementDataSize, elements, BufferUsageHint.StaticDraw)
     GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0)
     { ElementCount = elements.Length; VertexBuffer = vertexBuffer; ElementBuffer = elementBuffer }
+
+let createVertexArrayObjectForV3N3 (vertexVertexAttribute:int) (normalVertexAttribute:int)  =
+    let vertexArray = GL.GenVertexArray()
+    let v = new Vertex3V3N()
+
+    GL.BindVertexArray(vertexArray)
+    GL.EnableVertexAttribArray(vertexVertexAttribute)
+    GL.EnableVertexAttribArray(normalVertexAttribute)
+
+    GL.VertexAttribPointer(vertexVertexAttribute, 3, VertexAttribPointerType.Float, false, v.SizeInBytes, v.PositionOffset)
+    GL.VertexAttribPointer(normalVertexAttribute, 3, VertexAttribPointerType.Float, false, v.SizeInBytes, v.NormalOffset)
+    GL.BindVertexArray(0)
+    vertexArray
+
+
+
+    
