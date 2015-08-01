@@ -9,7 +9,7 @@ namespace CjClutter.OpenGl.Camera
 
         public LookAtCamera()
         {
-            Position = new Vector3d(0, 500, 50);
+            Position = new Vector3d(0, 10, 5);
             Target = new Vector3d(0, 0, 0);
             Up = new Vector3d(0, 1, 0);
         }
@@ -68,8 +68,8 @@ namespace CjClutter.OpenGl.Camera
         public static readonly ProjectionMode Orthographic = new OrthographicProjection();
         public static readonly ProjectionMode Perspective = new PerspectiveProjection();
 
-        public const double NearPlane = 1;
-        public const double FarPlane = 100000;
+        public const double NearPlane = 0.01;
+        public const double FarPlane = 1000;
 
         public abstract Matrix4d ComputeProjectionMatrix(ICamera camera);
 
