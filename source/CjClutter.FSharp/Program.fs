@@ -16,11 +16,15 @@ open LOD
 open LODCache
 open Terrain
 open Input
+open CDLodOpenGl
 open System.Runtime.InteropServices
 
 let drawMesh (m:Rendering.RenderableMesh) (primitiveType:PrimitiveType) =
     m.bind()
-    GL.DrawElements(BeginMode.Triangles, m.faces * 3, DrawElementsType.UnsignedInt, 0);
+    match primitiveType with
+    | PrimitiveType.Points -> GL.DrawArrays(PrimitiveType.Points, 0, m.faces * 3)
+    | PrimitiveType.Triangles -> GL.DrawElements(BeginMode.Triangles, m.faces * 3, DrawElementsType.UnsignedShort, 0);
+    | _ -> ()
 
 type ShaderProgram =
     | SimpleShaderProgram of SimpleShaderProgram.SimpleProgram
@@ -85,6 +89,7 @@ type FysicsWindow() =
     [<DefaultValue>] val mutable program : ShaderProgram
     [<DefaultValue>] val mutable program2 : ShaderProgram
     [<DefaultValue>] val mutable blinn : System.IObservable<BlinnMaterial>
+    [<DefaultValue>] val mutable cdlodMesh : RenderableCDLodMesh
     let defaultBlinnMaterial = { 
         AmbientColor = new Vector3(0.1f, 0.1f, 0.1f); 
         DiffuseColor = new Vector3(0.4f, 0.7f, 0.4f); 
@@ -111,8 +116,10 @@ type FysicsWindow() =
 
         let version = GL.GetString(StringName.Version)
 
-        for i = 1 to 1 do
-            BackgroundWorker.startWorkerThread this |> ignore
+        this.cdlodMesh <- makeRenderableSquareXZMesh 64 0 1
+//
+//        for i = 1 to 1 do
+//            BackgroundWorker.startWorkerThread this |> ignore
 
     override this.OnClosing(e) =
         this.tweakbarContext.Dispose()
@@ -121,7 +128,7 @@ type FysicsWindow() =
         keyboard.Update(OpenTK.Input.Keyboard.GetState())
         if this.Keyboard.[Key.Escape] then do
             this.Exit()
-        let transform = convert keyboard e.Time
+        let transform = convert keyboard (e.Time / 200.0)
         applyTransform camera transform
 //        let transform = convert keyboard e.Time
 //        if this.Keyboard.[Key.A] then do
@@ -188,14 +195,19 @@ type FysicsWindow() =
                 ProjectionMatrix = projectionMatrix
                 ViewMatrix = cameraMatrix
             }
-//
-//        let renderJob = {
-//                StaticContext = staticRenderContext
-//                RenderJobs = 
-//                Material = Blinn({ Rendering.BlinnMaterial.AmbientColor = blinnMaterial.AmbientColor; DiffuseColor = blinnMaterial.DiffuseColor; SpecularColor = blinnMaterial.SpecularColor})
-//            }
-//
-//        render this.program renderJob
+
+        let renderJob = {
+                StaticContext = staticRenderContext
+                RenderJobs = [ 
+                        {
+                            Mesh = { RenderableMesh.bind = this.cdlodMesh.Bind; RenderableMesh.faces = this.cdlodMesh.ElementCount / 3; renderContext = { IndividualRenderContext.ModelMatrix = Matrix4.Identity; NormalMatrix = Matrix3.Identity } };
+                            IndividualContext = { IndividualRenderContext.NormalMatrix = Matrix3.Identity; ModelMatrix = Matrix4.Identity }
+                        }
+                    ]
+                Material = Blinn({ Rendering.BlinnMaterial.AmbientColor = blinnMaterial.AmbientColor; DiffuseColor = blinnMaterial.DiffuseColor; SpecularColor = blinnMaterial.SpecularColor})
+            }
+
+        render this.program renderJob
 
         this.tweakbarContext.Draw()
         this.SwapBuffers();
