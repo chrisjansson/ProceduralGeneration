@@ -117,9 +117,9 @@ type FysicsWindow() =
         let version = GL.GetString(StringName.Version)
 
         this.cdlodMesh <- makeRenderableSquareXZMesh 64 0 1
-//
-//        for i = 1 to 1 do
-//            BackgroundWorker.startWorkerThread this |> ignore
+
+        for i = 1 to 1 do
+            BackgroundWorker.startWorkerThread this |> ignore
 
     override this.OnClosing(e) =
         this.tweakbarContext.Dispose()
@@ -130,15 +130,6 @@ type FysicsWindow() =
             this.Exit()
         let transform = convert keyboard (e.Time / 200.0)
         applyTransform camera transform
-//        let transform = convert keyboard e.Time
-//        if this.Keyboard.[Key.A] then do
-//            camera.Position <- Vector3d.Transform(camera.Position, Matrix4d.CreateRotationY(-e.Time))
-//        if this.Keyboard.[Key.D] then do
-//            camera.Position <- Vector3d.Transform(camera.Position, Matrix4d.CreateRotationY(e.Time))
-//        if this.Keyboard.[Key.W] then do
-//            camera.Position <- camera.Position - camera.Position * (e.Time)
-//        if this.Keyboard.[Key.S] then do
-//            camera.Position <- camera.Position + camera.Position * (e.Time)
 
     override this.OnKeyUp(e) =
         match e.Key with
