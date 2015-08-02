@@ -90,4 +90,10 @@ let makeVector2Uniform (programId:int) uniformName =
     let uniformLocation = GL.GetUniformLocation(programId, uniformName)
     { Vector2Uniform.set = fun v -> GL.Uniform2(uniformLocation, v) }
 
+type FloatUniform = { set : float32 -> unit }
+
+let makeFloatUniform (programId:int) uniformName =
+    let uniformLocation = GL.GetUniformLocation(programId, uniformName)
+    { FloatUniform.set = fun f -> GL.Uniform1(uniformLocation, f) }
+
     
