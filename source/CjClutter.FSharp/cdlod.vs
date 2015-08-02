@@ -24,7 +24,7 @@ void main()
 {
 	vec4 worldPosition = modelMatrix * vec4(position, 1.0);
  	vec2 morphedPos = morphVertex(position.xz + vec2(0.5),  position.xz, morphK);
-	gl_Position = projectionMatrix * viewMatrix * vec4(morphedPos, 0.0, 1.0);
+	gl_Position = projectionMatrix * viewMatrix * vec4(morphedPos.x, 0.0, morphedPos.y, 1.0);
     vPosition = position;
     vNormal = normal;
 }

@@ -107,9 +107,6 @@
     <None Include="blinn.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="blinn.vs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <Content Include="cdlod.vs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

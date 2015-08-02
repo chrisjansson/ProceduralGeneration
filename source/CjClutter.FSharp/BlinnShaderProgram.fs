@@ -2,7 +2,7 @@
 open OpenTK.Graphics.OpenGL
 open shader
 
-let vertexShaderSource = System.IO.File.ReadAllText("Blinn.vs")
+let vertexShaderSource = System.IO.File.ReadAllText("cdlod.vs")
 let fragmentShaderSource = System.IO.File.ReadAllText("Blinn.fs")
 
 let rawShaders = [ 
