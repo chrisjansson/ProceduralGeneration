@@ -112,6 +112,7 @@ type FysicsWindow() =
         GL.LineWidth(1.0f)
         GL.ClearColor(Color.WhiteSmoke)
         GL.Enable(EnableCap.DepthTest)
+        
         this.VSync <- VSyncMode.On
 
         let version = GL.GetString(StringName.Version)
@@ -198,7 +199,11 @@ type FysicsWindow() =
                 Material = Blinn({ Rendering.BlinnMaterial.AmbientColor = blinnMaterial.AmbientColor; DiffuseColor = blinnMaterial.DiffuseColor; SpecularColor = blinnMaterial.SpecularColor})
             }
 
+        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line)
+
         render this.program renderJob
+
+        GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill)
 
         this.tweakbarContext.Draw()
         this.SwapBuffers();
