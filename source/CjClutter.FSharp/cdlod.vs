@@ -18,7 +18,8 @@ vec2 morphVertex(vec2 gridPos, vec2 vertex, float morphK)
 {
 	vec2 fracPart = fract(gridPos.xy * g_gridDim.xy * 0.5) * 2.0 / g_gridDim.xy;
 	return vertex.xy - fracPart * g_quadScale.xy * morphK;
-} 
+} 
+
 void main()
 {
 	vec4 worldPosition = modelMatrix * vec4(position, 1.0);
