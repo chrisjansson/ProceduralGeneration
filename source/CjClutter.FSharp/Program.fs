@@ -63,6 +63,13 @@ let configureTweakBar c defaultValue =
     bar.Contained <- true
     makeViewModel bar defaultValue
         
+let clamp (min) (max) (value) =
+    match value with 
+    | x when x < min -> min
+    | x when x > max -> max
+    | _ -> value
+
+
 let makeRenderJob mesh cameraMatrix =
     let translation = Matrix4.Identity
     let (modelToProjection:Matrix4) = translation * cameraMatrix;
@@ -88,8 +95,8 @@ type FysicsWindow() =
     [<DefaultValue>] val mutable tweakbarContext : Context
     [<DefaultValue>] val mutable program : ShaderProgram
     [<DefaultValue>] val mutable program2 : ShaderProgram
-    [<DefaultValue>] val mutable blinn : System.IObservable<BlinnMaterial>
     [<DefaultValue>] val mutable cdlodMesh : RenderableCDLodMesh
+    [<DefaultValue>] val mutable morph : float32
     let defaultBlinnMaterial = { 
         AmbientColor = new Vector3(0.1f, 0.1f, 0.1f); 
         DiffuseColor = new Vector3(0.4f, 0.7f, 0.4f); 
@@ -136,6 +143,8 @@ type FysicsWindow() =
         match e.Key with
         | Key.N -> synchronizeCameras <- false
         | Key.M -> synchronizeCameras <- true
+        | Key.O -> this.morph <- clamp 0.0f 1.0f (this.morph + float32 0.1)
+        | Key.K -> this.morph <- clamp 0.0f 1.0f (this.morph - float32 0.1)
         | _ -> ()
         match convertKeyEvent e with
         | Some keys -> 
