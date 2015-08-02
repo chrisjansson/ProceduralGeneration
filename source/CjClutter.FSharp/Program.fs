@@ -179,6 +179,10 @@ type FysicsWindow() =
         let projectionMatrix = CjClutter.OpenGl.OpenTk.Matrix4dExtensions.ToMatrix4(camera.ComputeProjectionMatrix())
         let cameraMatrix = CjClutter.OpenGl.OpenTk.Matrix4dExtensions.ToMatrix4(camera.ComputeCameraMatrix())
 
+        match this.program with
+        | BlinnShaderProgram b -> b.MorphK.set this.morph
+        | _ -> ()
+
         let frustum = CjClutter.OpenGl.Camera.FrustumPlaneExtractor.ExtractRowMajor(lodCamera)
         
         let blinnMaterial = vm.BlinnMaterial
