@@ -108,6 +108,9 @@ type FysicsWindow() =
     let lodCamera = new CjClutter.OpenGl.Camera.LookAtCamera()
     let factory = new CjClutter.OpenGl.TerrainChunkFactory()
     let keyboard = new CjClutter.OpenGl.Input.Keboard.KeyboardInputProcessor()
+    let lodTree = QuadTree.makeXZQuadTree 5 { Min = { X = -4096.0; Y = 0.0; Z = -4096.0 }; Max = { X = 4096.0; Y = 0.0; Z = 4096.0; } }
+    let lodRanges = LodRanges.makeLodRanges { LodRanges.LodSettings.LodDistanceRatio = 2.0; LodLevels = 6; VisibilityDistance = 4000.0; MorphStartRatio = 0.667 }
+
     let mutable synchronizeCameras = true
 
     override this.OnLoad(e) =
