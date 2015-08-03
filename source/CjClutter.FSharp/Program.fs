@@ -191,6 +191,18 @@ type FysicsWindow() =
         let projectionMatrix = CjClutter.OpenGl.OpenTk.Matrix4dExtensions.ToMatrix4(camera.ComputeProjectionMatrix())
         let cameraMatrix = CjClutter.OpenGl.OpenTk.Matrix4dExtensions.ToMatrix4(camera.ComputeCameraMatrix())
 
+        let detailTester (lodRanges:LodRanges.LodRange array) (cameraPosition:Vector3d) (node:LodSelect.Node) detailLevel = 
+            match detailLevel with
+            | level when detailLevel < 0 -> false 
+            | _ ->    
+                let range = lodRanges.[detailLevel]
+                let sphere = { Math.Sphere.Center = { X = cameraPosition.X; Y = cameraPosition.Y; Z = cameraPosition.Z }; Radius = range.VisibilityRange }
+                aabbSphereIntersects node.Bounds sphere
+
+        let frustumTester _ = true
+
+        let nodes = LodSelect.lodSelect frustumTester (detailTester lodRanges camera.Position) lodTree
+
         match this.program with
         | BlinnShaderProgram b -> b.MorphK.set this.morph
         | _ -> ()
