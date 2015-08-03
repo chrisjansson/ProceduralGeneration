@@ -146,6 +146,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CDLod\CDLod.fsproj">
+      <Name>CDLod</Name>
+      <Project>{b311cafc-5872-4a42-b488-c85e5b36dfb2}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\CjClutter.OpenGl\CjClutter.OpenGl.csproj">
       <Name>CjClutter.OpenGl</Name>
       <Project>{f8718fbf-110a-42a2-9ca0-e35ae8222c08}</Project>

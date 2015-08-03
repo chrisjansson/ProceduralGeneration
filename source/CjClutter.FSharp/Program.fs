@@ -204,10 +204,10 @@ type FysicsWindow() =
         let renderJob = {
                 StaticContext = staticRenderContext
                 RenderJobs = [ 
-                        {
-                            Mesh = { RenderableMesh.bind = this.cdlodMesh.Bind; RenderableMesh.faces = this.cdlodMesh.ElementCount / 3; renderContext = { IndividualRenderContext.ModelMatrix = Matrix4.Identity; NormalMatrix = Matrix3.Identity } };
-                            IndividualContext = { IndividualRenderContext.NormalMatrix = Matrix3.Identity; ModelMatrix = Matrix4.Identity }
-                        }
+                                {
+                                    Mesh = { RenderableMesh.bind = this.cdlodMesh.Bind; RenderableMesh.faces = this.cdlodMesh.ElementCount / 3; renderContext = { IndividualRenderContext.ModelMatrix = Matrix4.Identity; NormalMatrix = Matrix3.Identity } };
+                                    IndividualContext = { IndividualRenderContext.NormalMatrix = Matrix3.Identity; ModelMatrix = Matrix4.Identity }
+                                }
                     ]
                 Material = Blinn({ Rendering.BlinnMaterial.AmbientColor = blinnMaterial.AmbientColor; DiffuseColor = blinnMaterial.DiffuseColor; SpecularColor = blinnMaterial.SpecularColor})
             }
