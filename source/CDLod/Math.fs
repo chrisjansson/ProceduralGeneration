@@ -17,6 +17,25 @@ type Sphere = {
         Radius : float
     }
 
+type Size = Point
+
+let getBoundsSize bounds =
+    {
+        X = bounds.Max.X - bounds.Min.X
+        Y = bounds.Max.Y - bounds.Min.Y
+        Z = bounds.Max.Z - bounds.Min.Z
+    }
+
+let getBoundsCenter bounds =
+    let min = bounds.Min
+    let max = bounds.Max
+    let size = getBoundsSize bounds
+    {
+        X = min.X + size.X / 2.0
+        Y = min.Y + size.Y / 2.0
+        Z = min.Z + size.Z / 2.0
+    }
+
 let aabbSphereIntersects aabb sphere =
     let mutable d = 0.0
     
