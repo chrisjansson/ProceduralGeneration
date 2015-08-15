@@ -21,7 +21,7 @@ let rec lodSelect frustumTester detailTester node =
     match intersectsFrustum with
     | true ->
         let hasChildren = not node.Children.IsEmpty
-        let isInNextLodRange = detailTester node (node.LodLevel + 1)
+        let isInNextLodRange = detailTester node (node.LodLevel - 1)
         let converter n =
             match detailTester n n.LodLevel with
             | true -> lodSelect frustumTester detailTester n

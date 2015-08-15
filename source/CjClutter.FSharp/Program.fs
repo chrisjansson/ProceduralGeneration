@@ -23,7 +23,7 @@ let drawMesh (m:Rendering.RenderableMesh) (primitiveType:PrimitiveType) =
     m.bind()
     match primitiveType with
     | PrimitiveType.Points -> GL.DrawArrays(PrimitiveType.Points, 0, m.faces * 3)
-    | PrimitiveType.Triangles -> GL.DrawElements(BeginMode.Triangles, m.faces * 3, DrawElementsType.UnsignedShort, 0);
+    | PrimitiveType.Triangles -> GL.DrawElements(BeginMode.Triangles, m.faces * 3, DrawElementsType.UnsignedShort, 0)
     | _ -> ()
 
 type ShaderProgram =
@@ -203,6 +203,18 @@ type FysicsWindow() =
 
         let nodes = LodSelect.lodSelect frustumTester (detailTester lodRanges camera.Position) lodTree
 
+        let makeRenderJob node =
+            match node with
+            | LodSelect.Full node -> 
+                let center = getBoundsCenter node.Bounds
+                let translation = Matrix4.CreateTranslation(float32 center.X, float32 center.Y, float32 center.Z)
+                let individualRenderContext = { IndividualRenderContext.ModelMatrix = translation; NormalMatrix = Matrix3.Identity }
+                let mesh = { RenderableMesh.bind = this.cdlodMesh.Bind; RenderableMesh.faces = this.cdlodMesh.ElementCount / 3; renderContext = individualRenderContext }
+                Some { Mesh = mesh; IndividualContext = individualRenderContext }
+            | _ -> None 
+
+        let renderJobs = nodes |> List.choose (fun n -> makeRenderJob n) |> List.take 3
+
         match this.program with
         | BlinnShaderProgram b -> b.MorphK.set this.morph
         | _ -> ()
@@ -218,12 +230,7 @@ type FysicsWindow() =
 
         let renderJob = {
                 StaticContext = staticRenderContext
-                RenderJobs = [ 
-                                {
-                                    Mesh = { RenderableMesh.bind = this.cdlodMesh.Bind; RenderableMesh.faces = this.cdlodMesh.ElementCount / 3; renderContext = { IndividualRenderContext.ModelMatrix = Matrix4.Identity; NormalMatrix = Matrix3.Identity } };
-                                    IndividualContext = { IndividualRenderContext.NormalMatrix = Matrix3.Identity; ModelMatrix = Matrix4.Identity }
-                                }
-                    ]
+                RenderJobs = renderJobs
                 Material = Blinn({ Rendering.BlinnMaterial.AmbientColor = blinnMaterial.AmbientColor; DiffuseColor = blinnMaterial.DiffuseColor; SpecularColor = blinnMaterial.SpecularColor})
             }
 
