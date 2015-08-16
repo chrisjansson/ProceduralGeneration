@@ -2,8 +2,6 @@
 open OpenTK
 open primitives
 
-
-
 type StaticRenderContext = {
         ViewMatrix : Matrix4
         ProjectionMatrix : Matrix4
@@ -26,10 +24,21 @@ type RenderableMesh = {
             renderContext : IndividualRenderContext
         }
 
-type IndividualRenderJob = {
+type CDLodRenderJob = {
+        MorphStart : float32
+        MorphEnd : float32
+        ModelMatrix : Matrix4
+        NormalMatrix : Matrix3
+    }
+
+type BasicRenderJob = {
         IndividualContext : IndividualRenderContext
         Mesh : RenderableMesh
     }
+
+type IndividualRenderJob =
+    | CDLodRenderJob
+    | BasicRenderJob
 
 type BlinnMaterial = {
         AmbientColor : Vector3
