@@ -207,13 +207,15 @@ type FysicsWindow() =
             match node with
             | LodSelect.Full node -> 
                 let center = getBoundsCenter node.Bounds
+                let size = getBoundsSize node.Bounds
+                let scale = Matrix4.CreateScale(float32 size.X, float32 size.Y, float32 size.Z)
                 let translation = Matrix4.CreateTranslation(float32 center.X, float32 center.Y, float32 center.Z)
-                let individualRenderContext = { IndividualRenderContext.ModelMatrix = translation; NormalMatrix = Matrix3.Identity }
+                let individualRenderContext = { IndividualRenderContext.ModelMatrix = scale * translation; NormalMatrix = Matrix3.Identity }
                 let mesh = { RenderableMesh.bind = this.cdlodMesh.Bind; RenderableMesh.faces = this.cdlodMesh.ElementCount / 3; renderContext = individualRenderContext }
                 Some { Mesh = mesh; IndividualContext = individualRenderContext }
             | _ -> None 
 
-        let renderJobs = nodes |> List.choose (fun n -> makeRenderJob n) |> List.take 3
+        let renderJobs = nodes |> List.choose (fun n -> makeRenderJob n)
 
         match this.program with
         | BlinnShaderProgram b -> b.MorphK.set this.morph
