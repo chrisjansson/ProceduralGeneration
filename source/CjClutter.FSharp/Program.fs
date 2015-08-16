@@ -96,7 +96,6 @@ type FysicsWindow() =
     [<DefaultValue>] val mutable program : ShaderProgram
     [<DefaultValue>] val mutable program2 : ShaderProgram
     [<DefaultValue>] val mutable cdlodMesh : RenderableCDLodMesh
-    [<DefaultValue>] val mutable morph : float32
     let defaultBlinnMaterial = { 
         AmbientColor = new Vector3(0.1f, 0.1f, 0.1f); 
         DiffuseColor = new Vector3(0.4f, 0.7f, 0.4f); 
@@ -146,8 +145,6 @@ type FysicsWindow() =
         match e.Key with
         | Key.N -> synchronizeCameras <- false
         | Key.M -> synchronizeCameras <- true
-        | Key.O -> this.morph <- clamp 0.0f 1.0f (this.morph + float32 0.1)
-        | Key.K -> this.morph <- clamp 0.0f 1.0f (this.morph - float32 0.1)
         | _ -> ()
         match convertKeyEvent e with
         | Some keys -> 
@@ -216,10 +213,6 @@ type FysicsWindow() =
             | _ -> None 
 
         let renderJobs = nodes |> List.choose (fun n -> makeRenderJob n)
-
-        match this.program with
-        | BlinnShaderProgram b -> b.MorphK.set this.morph
-        | _ -> ()
 
         let frustum = CjClutter.OpenGl.Camera.FrustumPlaneExtractor.ExtractRowMajor(lodCamera)
         
