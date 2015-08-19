@@ -37,8 +37,8 @@ type BasicRenderJob = {
     }
 
 type IndividualRenderJob =
-    | CDLodRenderJob
-    | BasicRenderJob
+    | CDLodRenderJob of CDLodRenderJob
+    | BasicRenderJob of BasicRenderJob
 
 type BlinnMaterial = {
         AmbientColor : Vector3
