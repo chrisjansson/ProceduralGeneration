@@ -7,11 +7,6 @@ type StaticRenderContext = {
         ProjectionMatrix : Matrix4
     }
 
-type IndividualRenderContext = {
-        ModelMatrix : Matrix4
-        NormalMatrix : Matrix3 //To view space
-    }
-
 type AllocatedMesh = {
         ElementCount : int
         VertexBuffer : int
@@ -32,7 +27,8 @@ type CDLodRenderJob = {
     }
 
 type BasicRenderJob = {
-        IndividualContext : IndividualRenderContext
+        ModelMatrix : Matrix4
+        NormalMatrix : Matrix3 //To view space
         Mesh : RenderableMesh
     }
 
