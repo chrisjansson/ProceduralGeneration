@@ -48,7 +48,7 @@ type BlinnMaterial = {
 
 type RenderJob = {
         StaticContext : StaticRenderContext
-        RenderJobs : list<IndividualRenderJob>
+        RenderJobs : IndividualRenderJob list
     }
 
 
