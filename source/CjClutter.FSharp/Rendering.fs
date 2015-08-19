@@ -46,14 +46,9 @@ type BlinnMaterial = {
         SpecularColor : Vector3
     }
 
-type MaterialType =
-    | Blinn of BlinnMaterial
-    | NoMaterial
-
 type RenderJob = {
         StaticContext : StaticRenderContext
         RenderJobs : list<IndividualRenderJob>
-        Material : MaterialType
     }
 
 
