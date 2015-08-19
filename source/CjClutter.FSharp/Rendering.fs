@@ -14,9 +14,8 @@ type AllocatedMesh = {
     }
 
 type RenderableMesh = {
-            bind : unit -> unit
-            faces : int
-            renderContext : IndividualRenderContext
+            Bind : unit -> unit
+            Faces : int
         }
 
 type CDLodRenderJob = {
