@@ -23,6 +23,7 @@ type CDLodRenderJob = {
         MorphEnd : float32
         ModelMatrix : Matrix4
         NormalMatrix : Matrix3
+        Mesh : RenderableMesh
     }
 
 type BasicRenderJob = {

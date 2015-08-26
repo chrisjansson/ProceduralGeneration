@@ -20,10 +20,10 @@ open CDLodOpenGl
 open System.Runtime.InteropServices
 
 let drawMesh (m:Rendering.RenderableMesh) (primitiveType:PrimitiveType) =
-    m.bind()
+    m.Bind()
     match primitiveType with
-    | PrimitiveType.Points -> GL.DrawArrays(PrimitiveType.Points, 0, m.faces * 3)
-    | PrimitiveType.Triangles -> GL.DrawElements(BeginMode.Triangles, m.faces * 3, DrawElementsType.UnsignedShort, 0)
+    | PrimitiveType.Points -> GL.DrawArrays(PrimitiveType.Points, 0, m.Faces * 3)
+    | PrimitiveType.Triangles -> GL.DrawElements(BeginMode.Triangles, m.Faces * 3, DrawElementsType.UnsignedShort, 0)
     | _ -> ()
 
 type ShaderProgram =
@@ -207,9 +207,15 @@ type FysicsWindow() =
                 let size = getBoundsSize node.Bounds
                 let scale = Matrix4.CreateScale(float32 size.X, float32 size.Y, float32 size.Z)
                 let translation = Matrix4.CreateTranslation(float32 center.X, float32 center.Y, float32 center.Z)
-                let individualRenderContext = { IndividualRenderContext.ModelMatrix = scale * translation; NormalMatrix = Matrix3.Identity }
-                let mesh = { RenderableMesh.bind = this.cdlodMesh.Bind; RenderableMesh.faces = this.cdlodMesh.ElementCount / 3; renderContext = individualRenderContext }
-                Some { Mesh = mesh; IndividualContext = individualRenderContext }
+                let mesh = { RenderableMesh.Bind = this.cdlodMesh.Bind; RenderableMesh.Faces = this.cdlodMesh.ElementCount / 3; }
+                let renderJob = { 
+                        MorphStart = 0.0f
+                        MorphEnd = 0.0f
+                        ModelMatrix = scale * translation
+                        NormalMatrix = Matrix3.Identity
+                        Mesh = mesh
+                    }
+                Some renderJob
             | _ -> None 
 
         let renderJobs = nodes |> List.choose (fun n -> makeRenderJob n)

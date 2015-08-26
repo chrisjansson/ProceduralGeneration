@@ -26,8 +26,8 @@ let allocate (node:node) =
         allocatedMesh.CreateVAO()
         allocatedMesh.VertexArrayObject.Bind()
     { 
-        bind = bind
-        faces = mesh.Faces.Length
+        Bind = bind
+        Faces = mesh.Faces.Length
         renderContext = {
                             ModelMatrix = scale * translation
                             NormalMatrix = Matrix3.Identity
@@ -90,15 +90,11 @@ let allocateGpu (elementBuffer:int) (elements:int) (noiseShader:NoiseShaderProgr
     let delta = bounds.Max - bounds.Min
     let scale = Matrix4.CreateScale(float32 delta.X, 1.0f, float32 delta.Y)
     {
-        bind = fun() -> 
+        Bind = fun() -> 
             GL.BindVertexArray(vertexArray)
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementBuffer)
             GL.BindBuffer(BufferTarget.ArrayBuffer, storageBuffer)
-        faces = elements
-        renderContext = {
-                            ModelMatrix = scale * translation
-                            NormalMatrix = Matrix3.Identity
-                        }
+        Faces = elements
     }
     
 type NoiseShaderProgram = 
