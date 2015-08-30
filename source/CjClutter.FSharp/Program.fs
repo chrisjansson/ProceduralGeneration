@@ -210,9 +210,10 @@ type FysicsWindow() =
                 let scale = Matrix4.CreateScale(float32 size.X, float32 size.Y, float32 size.Z)
                 let translation = Matrix4.CreateTranslation(float32 center.X, float32 center.Y, float32 center.Z)
                 let mesh = { RenderableMesh.Bind = this.cdlodMesh.Bind; RenderableMesh.Faces = this.cdlodMesh.ElementCount / 3; }
+                let lodRange = lodRanges.[node.LodLevel]
                 let renderJob = { 
-                        MorphStart = 0.0f
-                        MorphEnd = 0.0f
+                        MorphStart = float32 lodRange.MorphStart
+                        MorphEnd = float32 lodRange.MorphEnd
                         ModelMatrix = scale * translation
                         NormalMatrix = Matrix3.Identity
                         Mesh = mesh
