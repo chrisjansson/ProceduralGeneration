@@ -31,30 +31,44 @@ type ShaderProgram =
     | NormalDebugShaderProgram of NormalDebugShaderProgram.SimpleProgram
     | BlinnShaderProgram of BlinnShaderProgram.BlinnPhongProgram
 
-let render program renderJob =
-    match program with
-    | SimpleShaderProgram p ->
-        GL.UseProgram p.ProgramId
-        p.ProjectionMatrixUniform.set renderJob.StaticContext.ProjectionMatrix
-        p.ViewMatrix.set renderJob.StaticContext.ViewMatrix
-    | BlinnShaderProgram p ->
-        GL.UseProgram p.ProgramId
-        p.ProjectionMatrixUniform.set renderJob.StaticContext.ProjectionMatrix
-        p.ViewMatrix.set renderJob.StaticContext.ViewMatrix
-        match renderJob.Material with
-        | Blinn m -> 
-            p.AmbientColor.set m.AmbientColor
-            p.DiffuseColor.set m.DiffuseColor
-            p.SpecularColor.set m.SpecularColor
-            for j in renderJob.RenderJobs do
-                p.ModelMatrix.set j.Mesh.renderContext.ModelMatrix
-                p.NormalMatrix.set j.Mesh.renderContext.NormalMatrix
-                drawMesh j.Mesh PrimitiveType.Triangles
-        | _ -> ()
-    | NormalDebugShaderProgram p ->
-        GL.UseProgram p.ProgramId
-        p.ProjectionMatrixUniform.set renderJob.StaticContext.ProjectionMatrix
-        p.ViewMatrix.set renderJob.StaticContext.ViewMatrix
+let renderTerrain (p:BlinnShaderProgram.BlinnPhongProgram) staticContext (renderJobs:CDLodRenderJob seq) =
+    GL.UseProgram p.ProgramId
+    p.ProjectionMatrixUniform.set staticContext.ProjectionMatrix
+    p.ViewMatrix.set staticContext.ViewMatrix
+    for job in renderJobs do
+        p.ModelMatrix.set job.ModelMatrix
+        p.NormalMatrix.set job.NormalMatrix
+        p.MorphStart.set job.MorphStart
+        p.MorphEnd.set job.MorphEnd
+        drawMesh job.Mesh PrimitiveType.Triangles
+
+//
+//let render program renderJob =
+//    match program with
+////    | SimpleShaderProgram p ->
+////        GL.UseProgram p.ProgramId
+////        p.ProjectionMatrixUniform.set renderJob.StaticContext.ProjectionMatrix
+////        p.ViewMatrix.set renderJob.StaticContext.ViewMatrix
+//    | BlinnShaderProgram p ->
+//        GL.UseProgram p.ProgramId
+//        p.ProjectionMatrixUniform.set renderJob.StaticContext.ProjectionMatrix
+//        p.ViewMatrix.set renderJob.StaticContext.ViewMatrix
+//
+//    | _ -> failwith "Unrecognized program"
+////        match renderJob.Material with
+////        | Blinn m -> 
+////            p.AmbientColor.set m.AmbientColor
+////            p.DiffuseColor.set m.DiffuseColor
+////            p.SpecularColor.set m.SpecularColor
+////            for j in renderJob.RenderJobs do
+////                p.ModelMatrix.set j.Mesh.renderContext.ModelMatrix
+////                p.NormalMatrix.set j.Mesh.renderContext.NormalMatrix
+////                drawMesh j.Mesh PrimitiveType.Triangles
+////        | _ -> ()
+////    | NormalDebugShaderProgram p ->
+////        GL.UseProgram p.ProgramId
+////        p.ProjectionMatrixUniform.set renderJob.StaticContext.ProjectionMatrix
+////        p.ViewMatrix.set renderJob.StaticContext.ViewMatrix
 
 let configureTweakBar c defaultValue =
     let bar = new Bar(c)
@@ -68,19 +82,6 @@ let clamp (min) (max) (value) =
     | x when x < min -> min
     | x when x > max -> max
     | _ -> value
-
-
-let makeRenderJob mesh cameraMatrix =
-    let translation = Matrix4.Identity
-    let (modelToProjection:Matrix4) = translation * cameraMatrix;
-    let normalMatrix = new Matrix3(Matrix4.Transpose(modelToProjection.Inverted()))
-    {
-        Mesh = mesh
-        IndividualContext = {
-                            ModelMatrix = translation
-                            NormalMatrix = normalMatrix
-            }
-        }
 
 let fsaaSamples = 8
 let windowGraphicsMode =
@@ -229,15 +230,12 @@ type FysicsWindow() =
                 ViewMatrix = cameraMatrix
             }
 
-        let renderJob = {
-                StaticContext = staticRenderContext
-                RenderJobs = renderJobs
-                Material = Blinn({ Rendering.BlinnMaterial.AmbientColor = blinnMaterial.AmbientColor; DiffuseColor = blinnMaterial.DiffuseColor; SpecularColor = blinnMaterial.SpecularColor})
-            }
-
         GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line)
 
-        render this.program renderJob
+
+        match this.program with
+        | BlinnShaderProgram p -> renderTerrain p staticRenderContext renderJobs
+        | _ -> ()
 
         GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill)
 
