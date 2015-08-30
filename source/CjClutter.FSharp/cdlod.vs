@@ -3,7 +3,9 @@
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 modelMatrix;
-uniform float morphK;
+uniform float morphStart;
+uniform float morphEnd;
+uniform vec3 cameraPosition;
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;

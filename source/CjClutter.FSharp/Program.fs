@@ -201,6 +201,7 @@ type FysicsWindow() =
 
         let nodes = LodSelect.lodSelect frustumTester (detailTester lodRanges camera.Position) lodTree
 
+        let camera = Vector3(float32 lodCamera.Position.X, float32 lodCamera.Position.Y, float32 lodCamera.Position.Z)
         let makeRenderJob node =
             match node with
             | LodSelect.Full node -> 
@@ -215,6 +216,7 @@ type FysicsWindow() =
                         ModelMatrix = scale * translation
                         NormalMatrix = Matrix3.Identity
                         Mesh = mesh
+                        CameraPosition = camera
                     }
                 Some renderJob
             | _ -> None 

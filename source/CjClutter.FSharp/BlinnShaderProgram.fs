@@ -20,6 +20,7 @@ type BlinnPhongProgram = {
         SpecularColor : Vector3Uniform
         MorphStart : FloatUniform
         MorphEnd : FloatUniform
+        CameraPositon : Vector3Uniform
     }
 
 let makeBlinnShaderProgram =
@@ -36,6 +37,7 @@ let makeBlinnShaderProgram =
             SpecularColor = makeVector3Uniform programId "specColor"
             MorphStart = makeFloatUniform programId "morphStart"
             MorphEnd = makeFloatUniform programId "morphEnd"
+            CameraPositon = makeVector3Uniform programId "cameraPosition"
         }
     | Result.Failure m -> failwith ("Program compilation failed " + m)
 
