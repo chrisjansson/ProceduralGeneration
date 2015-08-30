@@ -25,7 +25,10 @@ vec2 morphVertex(vec2 gridPos, vec2 vertex, float morphK)
 void main()
 {
 	vec4 worldPosition = modelMatrix * vec4(position, 1.0);
- 	vec2 morphedPos = morphVertex(position.xz + vec2(0.5),  worldPosition.xz, morphK);
+	float l = length(worldPosition.xyz - cameraPosition);
+	float clamped = clamp(l - morphStart, morphStart, morphEnd);
+	float a = (clamped - morphStart) /  (morphEnd - morphStart);
+ 	vec2 morphedPos = morphVertex(position.xz + vec2(0.5),  worldPosition.xz, 1.0 - a);
 	gl_Position = projectionMatrix * viewMatrix * vec4(morphedPos.x, 0.0, morphedPos.y, 1.0);
     vPosition = position;
     vNormal = normal;

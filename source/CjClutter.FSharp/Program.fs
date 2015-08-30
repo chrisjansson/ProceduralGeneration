@@ -40,7 +40,9 @@ let renderTerrain (p:BlinnShaderProgram.BlinnPhongProgram) staticContext (render
         p.NormalMatrix.set job.NormalMatrix
         p.MorphStart.set job.MorphStart
         p.MorphEnd.set job.MorphEnd
+        p.CameraPositon.set job.CameraPosition
         drawMesh job.Mesh PrimitiveType.Triangles
+        
 
 //
 //let render program renderJob =
