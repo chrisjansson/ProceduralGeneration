@@ -28,10 +28,10 @@ let allocate (node:node) =
     { 
         Bind = bind
         Faces = mesh.Faces.Length
-        renderContext = {
-                            ModelMatrix = scale * translation
-                            NormalMatrix = Matrix3.Identity
-                        }
+//        renderContext = {
+//                            ModelMatrix = scale * translation
+//                            NormalMatrix = Matrix3.Identity
+//                        }
     }
 
 let allocateElementBuffer =
