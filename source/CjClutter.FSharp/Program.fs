@@ -41,6 +41,7 @@ let renderTerrain (p:BlinnShaderProgram.BlinnPhongProgram) staticContext (render
         p.MorphStart.set job.MorphStart
         p.MorphEnd.set job.MorphEnd
         p.CameraPositon.set job.CameraPosition
+        p.QuadScale.set job.QuadScale
         drawMesh job.Mesh PrimitiveType.Triangles
         
 
@@ -220,6 +221,7 @@ type FysicsWindow() =
                         NormalMatrix = Matrix3.Identity
                         Mesh = mesh
                         CameraPosition = camera
+                        QuadScale = Vector2(float32 size.X, float32 size.Z)
                     }
                 Some renderJob
             | _ -> None 

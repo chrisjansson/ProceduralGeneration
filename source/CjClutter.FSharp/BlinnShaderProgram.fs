@@ -21,6 +21,7 @@ type BlinnPhongProgram = {
         MorphStart : FloatUniform
         MorphEnd : FloatUniform
         CameraPositon : Vector3Uniform
+        QuadScale : Vector2Uniform
     }
 
 let makeBlinnShaderProgram =
@@ -38,6 +39,7 @@ let makeBlinnShaderProgram =
             MorphStart = makeFloatUniform programId "morphStart"
             MorphEnd = makeFloatUniform programId "morphEnd"
             CameraPositon = makeVector3Uniform programId "cameraPosition"
+            QuadScale = makeVector2Uniform programId "quadScale"
         }
     | Result.Failure m -> failwith ("Program compilation failed " + m)
 

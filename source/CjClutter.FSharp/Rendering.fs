@@ -22,6 +22,7 @@ type CDLodRenderJob = {
         MorphStart : float32
         MorphEnd : float32
         CameraPosition : Vector3
+        QuadScale : Vector2
         ModelMatrix : Matrix4
         NormalMatrix : Matrix3
         Mesh : RenderableMesh
