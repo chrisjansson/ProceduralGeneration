@@ -197,7 +197,7 @@ type FysicsWindow() =
             | level when detailLevel < 0 -> false 
             | _ ->    
                 let range = lodRanges.[detailLevel]
-                let sphere = { Math.Sphere.Center = { X = cameraPosition.X; Y = cameraPosition.Y; Z = cameraPosition.Z }; Radius = range.VisibilityRange }
+                let sphere = { Math.Sphere.Center = { X = cameraPosition.X; Y = cameraPosition.Y; Z = cameraPosition.Z }; Radius = range.VisibilityRange * 2.0 }
                 aabbSphereIntersects node.Bounds sphere
 
         let frustumTester _ = true
