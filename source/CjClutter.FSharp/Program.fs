@@ -200,7 +200,13 @@ type FysicsWindow() =
                 let sphere = { Math.Sphere.Center = { X = cameraPosition.X; Y = cameraPosition.Y; Z = cameraPosition.Z }; Radius = range.VisibilityRange * 2.0 }
                 aabbSphereIntersects node.Bounds sphere
 
-        let frustumTester _ = true
+        let frustum = CjClutter.OpenGl.Camera.FrustumPlaneExtractor.ExtractRowMajor(lodCamera)
+
+        let frustumTester (node:LodSelect.Node) =
+            let center = getBoundsCenter node.Bounds
+            let size = getBoundsSize node.Bounds
+            let sphere = { Center = Vector3d(center.X, center.Y, center.Z); Radius = size.X * 2.0 }
+            isSphereInsideViewVolume frustum sphere
 
         let nodes = LodSelect.lodSelect frustumTester (detailTester lodRanges camera.Position) lodTree
 
@@ -228,7 +234,7 @@ type FysicsWindow() =
 
         let renderJobs = nodes |> List.choose (fun n -> makeRenderJob n)
 
-        let frustum = CjClutter.OpenGl.Camera.FrustumPlaneExtractor.ExtractRowMajor(lodCamera)
+        
         
         let blinnMaterial = vm.BlinnMaterial
 
