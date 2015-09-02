@@ -79,7 +79,7 @@ let ``lod selection integration test`` () =
 
     let detailSelector n l =
         match n with
-        | _ when (n, l) = (middleNodeWithEnoughDetail, middleNodeWithEnoughDetail.LodLevel + 1) -> false
+        | _ when (n, l) = (middleNodeWithEnoughDetail, middleNodeWithEnoughDetail.LodLevel - 1) -> false
         | _ when n = leafOutOfRage -> false
         | _ -> true
 
