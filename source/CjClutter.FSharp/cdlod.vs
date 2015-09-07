@@ -7,6 +7,7 @@ uniform float morphStart;
 uniform float morphEnd;
 uniform vec3 cameraPosition;
 uniform vec2 quadScale;
+uniform sampler2D heightMap;
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;
@@ -25,11 +26,13 @@ vec2 morphVertex(vec2 gridPos, vec2 vertex, float morphK)
 void main()
 {
 	vec4 worldPosition = modelMatrix * vec4(position, 1.0);
-	float l = length(worldPosition.xyz - cameraPosition.xzy);
+	float height = texture2D(heightMap, (worldPosition.xz / 2048.0) + 0.5).x;
+	worldPosition.y = height * 100;
+	float l = length(worldPosition.xyz - cameraPosition);
 	float clamped = clamp(l - morphStart, morphStart, morphEnd);
 	float a = (clamped - morphStart) /  (morphEnd - morphStart);
  	vec2 morphedPos = morphVertex(position.xz + vec2(0.5),  worldPosition.xz, a);
-	gl_Position = projectionMatrix * viewMatrix * vec4(morphedPos.x, 0.0, morphedPos.y, 1.0);
+	gl_Position = projectionMatrix * viewMatrix * vec4(morphedPos.x, texture2D(heightMap, (morphedPos / 2048.0) + 0.5).x * 100, morphedPos.y, 1.0);
     vPosition = position;
     vNormal = normal;
 }

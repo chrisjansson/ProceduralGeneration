@@ -100,6 +100,7 @@ type FysicsWindow() =
     [<DefaultValue>] val mutable program : ShaderProgram
     [<DefaultValue>] val mutable program2 : ShaderProgram
     [<DefaultValue>] val mutable cdlodMesh : RenderableCDLodMesh
+    [<DefaultValue>] val mutable texture : int
     let defaultBlinnMaterial = { 
         AmbientColor = new Vector3(0.1f, 0.1f, 0.1f); 
         DiffuseColor = new Vector3(0.4f, 0.7f, 0.4f); 
@@ -111,7 +112,7 @@ type FysicsWindow() =
     let lodCamera = new CjClutter.OpenGl.Camera.LookAtCamera()
     let factory = new CjClutter.OpenGl.TerrainChunkFactory()
     let keyboard = new CjClutter.OpenGl.Input.Keboard.KeyboardInputProcessor()
-    let lodTree = QuadTree.makeXZQuadTree 5 { Min = { X = -4096.0; Y = 0.0; Z = -4096.0 }; Max = { X = 4096.0; Y = 0.0; Z = 4096.0; } }
+    let lodTree = QuadTree.makeXZQuadTree 5 { Min = { X = -1024.0; Y = 0.0; Z = -1024.0 }; Max = { X = 1024.0; Y = 0.0; Z = 1024.0; } }
     let lodRanges = LodRanges.makeLodRanges { LodRanges.LodSettings.LodDistanceRatio = 2.0; LodLevels = 6; VisibilityDistance = 4000.0; MorphStartRatio = 0.667 }
 
     let mutable synchronizeCameras = true
@@ -131,6 +132,9 @@ type FysicsWindow() =
         let version = GL.GetString(StringName.Version)
 
         this.cdlodMesh <- makeRenderableSquareXZMesh 64 0 1
+
+        this.texture <- loadTexture "canyon massive.raw"
+
 
         for i = 1 to 1 do
             BackgroundWorker.startWorkerThread this |> ignore
@@ -235,7 +239,6 @@ type FysicsWindow() =
         let renderJobs = nodes |> List.choose (fun n -> makeRenderJob n)
 
         
-        
         let blinnMaterial = vm.BlinnMaterial
 
         let staticRenderContext = {
@@ -245,9 +248,13 @@ type FysicsWindow() =
 
         GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line)
 
+        GL.ActiveTexture(TextureUnit.Texture0)
+        GL.BindTexture(TextureTarget.Texture2D, this.texture)
 
         match this.program with
-        | BlinnShaderProgram p -> renderTerrain p staticRenderContext renderJobs
+        | BlinnShaderProgram p -> 
+            p.HeightMap.set 0
+            renderTerrain p staticRenderContext renderJobs
         | _ -> ()
 
         GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill)

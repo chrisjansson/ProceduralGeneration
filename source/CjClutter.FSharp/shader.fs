@@ -96,11 +96,17 @@ let makeFloatUniform (programId:int) uniformName =
     let uniformLocation = GL.GetUniformLocation(programId, uniformName)
     { FloatUniform.set = fun f -> GL.Uniform1(uniformLocation, f) }
 
+type IntUniform = { set : int -> unit }
+
+let makeIntUniform (programId:int) uniformName =
+    let uniformLocation = GL.GetUniformLocation(programId, uniformName)
+    { IntUniform.set = fun f -> GL.Uniform1(uniformLocation, f) }
+
 let loadTexture fileName =
     let textureId = GL.GenTexture()
     GL.BindTexture(TextureTarget.Texture2D, textureId)
-    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
     let texture = System.IO.File.ReadAllBytes(fileName)
-    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, 512, 512, 0, PixelFormat.Red, PixelType.UnsignedByte, texture)
+    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, 4096, 4096, 0, PixelFormat.Red, PixelType.UnsignedShort, texture)
     textureId
