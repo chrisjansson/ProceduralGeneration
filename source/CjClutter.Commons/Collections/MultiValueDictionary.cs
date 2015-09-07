@@ -19,15 +19,13 @@ namespace CjClutter.Commons.Collections
 
         public void Add(TKey key, TValue value)
         {
-            var containsKey = _dictionary.ContainsKey(key);
-            if (containsKey)
-            {
-                _dictionary[key].Add(value);
+            List<TValue> list;
+            if (!_dictionary.TryGetValue(key, out list)) {
+                list = new List<TValue> { value };
+                _dictionary.Add(key, list);
             }
-            else
-            {
-                var valueCollection = new List<TValue> { value };
-                _dictionary.Add(key, valueCollection);
+            else {
+                list.Add(value);
             }
         }
 
