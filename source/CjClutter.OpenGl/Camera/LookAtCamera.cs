@@ -9,8 +9,8 @@ namespace CjClutter.OpenGl.Camera
 
         public LookAtCamera()
         {
-            Position = new Vector3d(0, 10, 5);
-            Target = new Vector3d(0, 0, 0);
+            Position = new Vector3d(0, 100, 100);
+            Target = new Vector3d(0, 95, 95);
             Up = new Vector3d(0, 1, 0);
         }
 
