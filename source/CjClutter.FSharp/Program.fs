@@ -94,7 +94,7 @@ let windowGraphicsMode =
             Graphics.GraphicsMode.Default.Stencil,
             fsaaSamples)
 type FysicsWindow() = 
-    inherit GameWindow(800, 600, windowGraphicsMode, "Window", GameWindowFlags.Default, DisplayDevice.Default, 4, 3, Graphics.GraphicsContextFlags.Debug) 
+    inherit GameWindow(800, 600, windowGraphicsMode, "Window", GameWindowFlags.Default, DisplayDevice.Default, 4, 3, Graphics.GraphicsContextFlags.Default) 
 
     [<DefaultValue>] val mutable tweakbarContext : Context
     [<DefaultValue>] val mutable program : ShaderProgram
