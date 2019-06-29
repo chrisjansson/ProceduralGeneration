@@ -28,7 +28,10 @@ module Parser =
         | Percent
         | Keyword of Keyword
         | LParens
-        | RParens 
+        | RParens
+    and TypeQualifier = SingleTypeQualifier list
+    and SingleTypeQualifier =
+        | StorageQualifier of Token //TODO: Can be narrowed to actual storage qualifiers
     and Keyword =
         | Const
         | Uniform
@@ -214,7 +217,7 @@ module Parser =
         let rParens = pchar ')' >>. preturn (Token RParens)
         
         module Keyword =
-            let private keywordP str keyword = pstring str >>. preturn (keyword |> Keyword |> Token)
+            let private keywordP str keyword = pstring str >>. preturn (keyword |> Keyword)
             
             let _const = keywordP "const" Const
             let _in = keywordP "in" In
@@ -235,7 +238,7 @@ module Parser =
                 
     let typeNameList endP = many1Till anyChar endP
     
-    module StorageQualifier =
+    module StorageQualifierParser =
         let storageQualifier =
             TokensParsers.Keyword._const
             <|> TokensParsers.Keyword._in
@@ -254,6 +257,12 @@ module Parser =
             <|> TokensParsers.Keyword._writeonly
             <|> TokensParsers.Keyword._subroutine
             <|> (TokensParsers.Keyword._subroutine .>> TokensParsers.lParens .>> (typeNameList TokensParsers.rParens) .>> TokensParsers.rParens)
+    
+    module TypeQualifierParser =
+        let singleTypeQualifier =
+            StorageQualifierParser.storageQualifier |>> StorageQualifier
+
+        let typeQualifierParser: Parser<TypeQualifier, _> = many1 singleTypeQualifier
     
     let functionDefinition = preturn FunctionDefinition //TODO: To parse uniforms this can probably be skipped
     
@@ -279,7 +288,7 @@ let main argv =
         CharParsers.run Parser.translationUnit "" |> ignore
     with _ ->
         ()
-    CharParsers.run Parser.StorageQualifier.storageQualifier "uniform" |> printfn "%A"
+    CharParsers.run Parser.StorageQualifierParser.storageQualifier "uniform" |> printfn "%A"
     
     printfn "Hello World from F#!"
     0 // return an integer exit code
