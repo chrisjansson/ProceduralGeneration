@@ -15,6 +15,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CDLod", "CDLod\CDLod.fsproj
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CDLod.Tests", "CDLod.Tests\CDLod.Tests.fsproj", "{D7C6DE99-C8D4-45B3-BA18-20D8D43EC4C2}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "GlslParser", "GlslParser\GlslParser.fsproj", "{ADB1EAB9-2893-4F9F-B92A-DF4255F0F268}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,6 +99,18 @@ Global
 		{D7C6DE99-C8D4-45B3-BA18-20D8D43EC4C2}.Release|x64.Build.0 = Release|Any CPU
 		{D7C6DE99-C8D4-45B3-BA18-20D8D43EC4C2}.Release|x86.ActiveCfg = Release|Any CPU
 		{D7C6DE99-C8D4-45B3-BA18-20D8D43EC4C2}.Release|x86.Build.0 = Release|Any CPU
+		{ADB1EAB9-2893-4F9F-B92A-DF4255F0F268}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADB1EAB9-2893-4F9F-B92A-DF4255F0F268}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADB1EAB9-2893-4F9F-B92A-DF4255F0F268}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ADB1EAB9-2893-4F9F-B92A-DF4255F0F268}.Debug|x64.Build.0 = Debug|Any CPU
+		{ADB1EAB9-2893-4F9F-B92A-DF4255F0F268}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ADB1EAB9-2893-4F9F-B92A-DF4255F0F268}.Debug|x86.Build.0 = Debug|Any CPU
+		{ADB1EAB9-2893-4F9F-B92A-DF4255F0F268}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADB1EAB9-2893-4F9F-B92A-DF4255F0F268}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADB1EAB9-2893-4F9F-B92A-DF4255F0F268}.Release|x64.ActiveCfg = Release|Any CPU
+		{ADB1EAB9-2893-4F9F-B92A-DF4255F0F268}.Release|x64.Build.0 = Release|Any CPU
+		{ADB1EAB9-2893-4F9F-B92A-DF4255F0F268}.Release|x86.ActiveCfg = Release|Any CPU
+		{ADB1EAB9-2893-4F9F-B92A-DF4255F0F268}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
