@@ -157,11 +157,11 @@ type Token =
     | SUBROUTINE
     | IDENTIFIER of string
     | TYPENAME
-    | FLOATCONSTANT
-    | INTCONSTANT
-    | UINTCONSTANT
+    | FLOATCONSTANT of string
+    | INTCONSTANT of string
+    | UINTCONSTANT of string
     | BOOLCONSTANT of bool
-    | DOUBLECONSTANT
+    | DOUBLECONSTANT of string
     | FIELDSELECTION
     | LEFTOP
     | RIGHTOP
@@ -563,3 +563,62 @@ module Identifier =
         let nonDigitP = anyOf nonDigits
         let digitP = anyOf digits
         nonDigitP .>>. many1 (nonDigitP <|> digitP) |>> (fun (c, carr) -> c::carr) |>> (fun chars -> System.String.Join("", chars) |> IDENTIFIER)
+        
+module Integer =
+    let nonZeroDigits =
+        [|
+            '1';'2';'3';'4';'5';'6';'7';'8';'9'
+        |]
+    
+    let digits =
+        [|
+            '0';'1';'2';'3';'4';'5';'6';'7';'8';'9'
+        |]
+        
+    let integerSuffixP = anyOf [ 'u'; 'U' ]
+        
+    let nonZeroDigitP = anyOf nonZeroDigits
+    let digitP = anyOf digits
+    
+    let mapSuffix tn ts (s, suffix) =
+        match suffix with
+        | Some _ -> ts s
+        | None -> tn s
+    
+    let decimalConstantP =
+        nonZeroDigitP .>>. many1 digitP |>> (fun (c, carr) -> c::carr) |>> (fun chars -> System.String.Join("", chars)) .>>. (opt integerSuffixP) |>> (mapSuffix INTCONSTANT UINTCONSTANT)
+        
+    let octalDigit = 
+        [|
+            '0';'1';'2';'3';'4';'5';'6';'7'
+        |]
+    let octalConstantP =
+        pchar '0' .>>. many1 (anyOf octalDigit) |>> (fun (c, carr) -> c::carr) |>> (fun chars -> System.String.Join("", chars)) .>>. (opt integerSuffixP) |>> (mapSuffix INTCONSTANT UINTCONSTANT)
+        
+    let hexadecimalDigits =
+        [|
+            '0';'1';'2';'3';'4';'5';'6';'7';'8';'9'
+            'a'; 'b'; 'c'; 'd'; 'e'; 'f'
+            'A'; 'B'; 'C'; 'D'; 'E'; 'F'
+        |]
+    
+    let hexadecimalConstantP =
+        pchar '0' .>>. ((pchar 'X') <|> (pchar 'x')) .>>. (many1 (anyOf hexadecimalDigits)) |>> (fun ((c1, c2), carr) -> c1::c2::carr) |>> (fun chars -> System.String.Join("", chars)) .>>. (opt integerSuffixP) |>> (mapSuffix INTCONSTANT UINTCONSTANT)
+        
+module FloatingPoint =
+    let digitSequenceP =
+        many1 Integer.digitP
+    
+    let signP = anyOf [ '+'; '-' ]
+    
+    let floatingSuffixP: Parser<_, unit> =
+        (anyOf [ 'f'; 'F' ] |>> List.singleton) <|> (anyOf [ 'l'; 'L' ] .>>. anyOf [ 'f'; 'F' ] |>> (fun (a, b) -> [a; b]))
+        
+    let exponentPartP =
+        anyOf [ 'e'; 'E' ] .>>. (opt signP) .>>. digitSequenceP >>. preturn ()
+        
+let tokenP: Parser<_, unit> =
+    Keyword.keywordParser
+    <|> attempt Integer.decimalConstantP
+    <|> attempt Integer.octalConstantP
+    <|> attempt Integer.hexadecimalConstantP

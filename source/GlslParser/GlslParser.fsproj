@@ -5,9 +5,11 @@
         <TargetFramework>netcoreapp3.0</TargetFramework>
     </PropertyGroup>
 
+
     <ItemGroup>
-        <Compile Include="Program.fs" />
         <Compile Include="Tokenizer.fs" />
+
+        <Compile Include="Program.fs" />
     </ItemGroup>
 
     <ItemGroup>
