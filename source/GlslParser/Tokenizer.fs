@@ -157,11 +157,11 @@ type Token =
     | SUBROUTINE
     | IDENTIFIER of string
     | TYPENAME
-    | FLOATCONSTANT of string
+    | FLOATCONSTANT
     | INTCONSTANT of string
     | UINTCONSTANT of string
     | BOOLCONSTANT of bool
-    | DOUBLECONSTANT of string
+    | DOUBLECONSTANT
     | FIELDSELECTION
     | LEFTOP
     | RIGHTOP
@@ -617,8 +617,21 @@ module FloatingPoint =
     let exponentPartP =
         anyOf [ 'e'; 'E' ] .>>. (opt signP) .>>. digitSequenceP >>. preturn ()
         
+    let fractionalConstantP =
+        (digitSequenceP .>> pchar '.' .>> digitSequenceP >>. preturn ())
+        <|> (pchar '.' .>> digitSequenceP >>. preturn ())
+        <|> (digitSequenceP .>> pchar '.' >>. preturn ())
+        
+    
+    let floatingConstantP =
+        (fractionalConstantP .>> (opt exponentPartP) .>> (opt floatingSuffixP) >>. preturn ())
+        <|> (digitSequenceP .>> exponentPartP .>> (opt floatingSuffixP) >>. preturn ())
+        >>. preturn FLOATCONSTANT
+
+        
 let tokenP: Parser<_, unit> =
     Keyword.keywordParser
     <|> attempt Integer.decimalConstantP
     <|> attempt Integer.octalConstantP
     <|> attempt Integer.hexadecimalConstantP
+    <|> attempt FloatingPoint.floatingConstantP

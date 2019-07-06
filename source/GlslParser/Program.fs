@@ -580,12 +580,8 @@ let main argv =
     CharParsers.run (GlslParser.Tokenizer.tokenP) "123" |> printfn "%A"
     CharParsers.run (GlslParser.Tokenizer.tokenP) "123u" |> printfn "%A"
     CharParsers.run (GlslParser.Tokenizer.tokenP) "0123" |> printfn "%A"
-    CharParsers.run (GlslParser.Tokenizer.tokenP) "0xA0000000" |> printfn "%A"
-    CharParsers.run (GlslParser.Tokenizer.FloatingPoint.exponentPartP) "e123" |> printfn "%A"
-    CharParsers.run (GlslParser.Tokenizer.FloatingPoint.exponentPartP) "E123" |> printfn "%A"
-    CharParsers.run (GlslParser.Tokenizer.FloatingPoint.exponentPartP) "E+123" |> printfn "%A"
-    CharParsers.run (GlslParser.Tokenizer.FloatingPoint.exponentPartP) "e-123" |> printfn "%A"
-    CharParsers.run (GlslParser.Tokenizer.FloatingPoint.exponentPartP) "e-" |> printfn "%A"
+    CharParsers.run (GlslParser.Tokenizer.tokenP) "1.5" |> printfn "%A"
+    CharParsers.run (GlslParser.Tokenizer.tokenP) "2.0LF" |> printfn "%A"
     
     printfn "Hello World from F#!"
     0 // return an integer exit code
