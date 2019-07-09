@@ -216,6 +216,7 @@ type Token =
     | PRECISION
     | ATTRIBUTE //TODO: Check these, these are keywords but not tokens?
     | VARYING
+    | WHITESPACE
      
 module Keyword =
     let keywordP str token =
@@ -562,7 +563,9 @@ module Identifier =
     let identifier: Parser<_, unit> =
         let nonDigitP = anyOf nonDigits
         let digitP = anyOf digits
-        nonDigitP .>>. many1 (nonDigitP <|> digitP) |>> (fun (c, carr) -> c::carr) |>> (fun chars -> System.String.Join("", chars) |> IDENTIFIER)
+        let p = nonDigitP .>>. many (nonDigitP <|> digitP) |>> (fun (c, carr) -> c::carr) |>> (fun chars -> System.String.Join("", chars) |> IDENTIFIER)
+        
+        p <??> "Identifier"
         
 module Integer =
     let nonZeroDigits =
@@ -586,14 +589,14 @@ module Integer =
         | None -> tn s
     
     let decimalConstantP =
-        nonZeroDigitP .>>. many1 digitP |>> (fun (c, carr) -> c::carr) |>> (fun chars -> System.String.Join("", chars)) .>>. (opt integerSuffixP) |>> (mapSuffix INTCONSTANT UINTCONSTANT)
+        nonZeroDigitP .>>. many digitP |>> (fun (c, carr) -> c::carr) |>> (fun chars -> System.String.Join("", chars)) .>>. (opt integerSuffixP) |>> (mapSuffix INTCONSTANT UINTCONSTANT)
         
     let octalDigit = 
         [|
             '0';'1';'2';'3';'4';'5';'6';'7'
         |]
     let octalConstantP =
-        pchar '0' .>>. many1 (anyOf octalDigit) |>> (fun (c, carr) -> c::carr) |>> (fun chars -> System.String.Join("", chars)) .>>. (opt integerSuffixP) |>> (mapSuffix INTCONSTANT UINTCONSTANT)
+        pchar '0' .>>. many (anyOf octalDigit) |>> (fun (c, carr) -> c::carr) |>> (fun chars -> System.String.Join("", chars)) .>>. (opt integerSuffixP) |>> (mapSuffix INTCONSTANT UINTCONSTANT)
         
     let hexadecimalDigits =
         [|
@@ -628,10 +631,96 @@ module FloatingPoint =
         <|> (digitSequenceP .>> exponentPartP .>> (opt floatingSuffixP) >>. preturn ())
         >>. preturn FLOATCONSTANT
 
+module Operator =
+    let private operatorParser sequence token =
+        pstring sequence  >>. preturn token
+    
+    let operatorP =
+        choice [
+            operatorParser "(" Token.LEFTPAREN
+            operatorParser ")" Token.RIGHTPAREN
+
+            operatorParser "[" Token.LEFTBRACKET
+            operatorParser "]" Token.RIGHTBRACKET
+            
+            (previousCharSatisfiesNot (fun c -> System.Char.IsWhiteSpace(c)) >>. operatorParser "." Token.FIELDSELECTION .>> nextCharSatisfiesNot (fun c -> System.Char.IsWhiteSpace(c)))
+            operatorParser "++" Token.INCOP
+            operatorParser "--" Token.DECOP
+            operatorParser "~" Token.TILDE
+            operatorParser "!" Token.BANG
+            operatorParser "+" Token.PLUS
+            operatorParser "-" Token.DASH
+
+            operatorParser "*" Token.STAR
+            operatorParser "/" Token.SLASH
+            operatorParser "%" Token.PERCENT
+
+            //Empty group
+                         
+            operatorParser "<<" Token.LEFTOP
+            operatorParser ">>" Token.RIGHTOP
+                                    
+            operatorParser "<=" Token.LEOP
+            operatorParser ">=" Token.GEOP
+            operatorParser "<" Token.LEFTANGLE
+            operatorParser ">" Token.RIGHTANGLE
+
+            operatorParser "==" Token.EQOP
+            operatorParser "==" Token.NEOP
+            
+            operatorParser "&&" Token.ANDOP
+            operatorParser "||" Token.OROP
+            operatorParser "^^" Token.XOROP
+            
+            operatorParser "*=" Token.MULASSIGN
+            operatorParser "/=" Token.DIVASSIGN
+            operatorParser "+=" Token.ADDASSIGN
+            operatorParser "%=" Token.MODASSIGN
+            operatorParser "<<=" Token.LEFTASSIGN
+            operatorParser ">>=" Token.RIGHTASSIGN
+            operatorParser "&=" Token.ANDASSIGN
+            operatorParser "^=" Token.XORASSIGN
+            operatorParser "|=" Token.ORASSIGN
+            operatorParser "-=" Token.SUBASSIGN
+                                                            
+            operatorParser "?" Token.QUESTION
+            operatorParser "&" Token.AMPERSAND
+            operatorParser "^" Token.CARET
+            operatorParser "|" Token.VERTICALBAR
+            operatorParser ";" Token.SEMICOLON
+            operatorParser "=" Token.EQUAL
+            operatorParser ":" Token.COLON
+            operatorParser "{" Token.LEFTBRACE
+            operatorParser "}" Token.RIGHTBRACE
+
+            operatorParser "." Token.DOT
+            operatorParser "," Token.COMMA
+            
+        ]
         
 let tokenP: Parser<_, unit> =
-    Keyword.keywordParser
+    attempt Keyword.keywordParser
+    <|> attempt Identifier.identifier
     <|> attempt Integer.decimalConstantP
     <|> attempt Integer.octalConstantP
     <|> attempt Integer.hexadecimalConstantP
     <|> attempt FloatingPoint.floatingConstantP
+    <|> attempt Operator.operatorP
+    
+let tokensP =
+    let whitespaceP =
+        attempt spaces1 >>. preturn WHITESPACE
+        
+    many1 (tokenP <|> whitespaceP) .>> eof
+    
+let parse str =
+    let isWhitespace token =
+        match token with
+        | WHITESPACE -> true
+        | _ -> false
+        
+    
+    match CharParsers.run tokensP str with
+    | Success (r, _, _) -> r |> List.filter (fun t -> not (isWhitespace t)) |> Result.Ok
+    | Failure (e, _, _) -> Result.Error e
+    
