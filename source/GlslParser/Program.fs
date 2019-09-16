@@ -1,582 +1,527 @@
-﻿// Learn more about F# at http://fsharp.org
+﻿open GlslParser.ParserLibrary
 
-open FParsec
-open System
-//
-//module Parser =
-//    open FParsec
-//    type AST =
-//        | TranslationUnit of ExternalDeclaration list
-//        | Ignore
-////        | Declaration of Declaration
-//        | Token of Token
-//    and ExternalDeclaration =
-//        | FunctionDefinition
-//        | Declaration of Declaration
-//        | SemiColon
-//    and Token =
-//        | Comma
-//        | Colon
-//        | Equal
-//        | SemiColon
-//        | Bang
-//        | Dash
-//        | Tilde
-//        | Plus
-//        | Star
-//        | Slash
-//        | Percent
-//        | Keyword of Keyword
-//        | LParens
-//        | RParens
-//        | LBracket
-//        | RBracket
-//    and TypeQualifier = SingleTypeQualifier list
-//    and SingleTypeQualifier =
-//        | StorageQualifier of Token //TODO: Can be narrowed to actual storage qualifiers
-//    and Keyword =
-//        | Const
-//        | Uniform
-//        | Buffer
-//        | Shared
-//        | Attribute
-//        | Varying
-//        | Coherent
-//        | Volatile
-//        | Restrict
-//        | Readonly
-//        | Writeonly
-//        | Atomic_uint
-//        | Layout
-//        | Centroid
-//        | Flat
-//        | Smooth
-//        | Noperspective
-//        | Patch
-//        | Sample
-//        | Invariant
-//        | Precise
-//        | Break
-//        | Continue
-//        | Do
-//        | For
-//        | While
-//        | Switch
-//        | Case
-//        | Default
-//        | If
-//        | Else
-//        | Subroutine
-//        | In
-//        | Out
-//        | InOut
-//        | Int
-//        | Void
-//        | Bool
-//        | True
-//        | False
-//        | Float
-//        | Double
-//        | Discard
-//        | Return
-//        | Vec2
-//        | Vec3
-//        | Vec4
-//        | Ivec2
-//        | Ivec3
-//        | Ivec4
-//        | Bvec2
-//        | Bvec3
-//        | Bvec4
-//        | Uint
-//        | Uvec2
-//        | Uvec3
-//        | Uvec4
-//        | Dvec2
-//        | Dvec3
-//        | Dvec4
-//        | Mat2
-//        | Mat3
-//        | Mat4
-//        | Mat2x2
-//        | Mat2x3
-//        | Mat2x4
-//        | Mat3x2
-//        | Mat3x3
-//        | Mat3x4
-//        | Mat4x2
-//        | Mat4x3
-//        | Mat4x4
-//        | Dmat2
-//        | Dmat3
-//        | Dmat4
-//        | Dmat2x2
-//        | Dmat2x3
-//        | Dmat2x4
-//        | Dmat3x2
-//        | Dmat3x3
-//        | Dmat3x4
-//        | Dmat4x2
-//        | Dmat4x3
-//        | Dmat4x4
-//        | Lowp
-//        | Mediump
-//        | Highp
-//        | Precision
-//        | Sampler1D
-//        | Sampler1DShadow
-//        | Sampler1DArray
-//        | Sampler1DArrayShadow
-//        | Isampler1D
-//        | Isampler1DArray
-//        | Usampler1D
-//        | Usampler1DArray
-//        | Sampler2D
-//        | Sampler2DShadow
-//        | Sampler2DArray
-//        | Sampler2DArrayShadow
-//        | Isampler2D
-//        | Isampler2DArray
-//        | Usampler2D
-//        | Usampler2DArray
-//        | Sampler2DRect
-//        | Sampler2DRectShadow
-//        | Isampler2DRect
-//        | Usampler2DRect
-//        | Sampler2DMS
-//        | Isampler2DMS
-//        | Usampler2DMS
-//        | Sampler2DMSArray
-//        | Isampler2DMSArray
-//        | Usampler2DMSArray
-//        | Sampler3D
-//        | Isampler3D
-//        | Usampler3D
-//        | SamplerCube
-//        | SamplerCubeShadow
-//        | IsamplerCube
-//        | UsamplerCube
-//        | SamplerCubeArray
-//        | SamplerCubeArrayShadow
-//        | IsamplerCubeArray
-//        | UsamplerCubeArray
-//        | SamplerBuffer
-//        | IsamplerBuffer
-//        | UsamplerBuffer
-//        | Image1D
-//        | Iimage1D
-//        | Uimage1D
-//        | Image1DArray
-//        | Iimage1DArray
-//        | Uimage1DArray
-//        | Image2D
-//        | Iimage2D
-//        | Uimage2D
-//        | Image2DArray
-//        | Iimage2DArray
-//        | Uimage2DArray
-//        | Image2DRect
-//        | Iimage2DRect
-//        | Uimage2DRect
-//        | Image2DMS
-//        | Iimage2DMS
-//        | Uimage2DMS
-//        | Image2DMSArray
-//        | Iimage2DMSArray
-//        | Uimage2DMSArray
-//        | Image3D
-//        | Iimage3D
-//        | Uimage3D
-//        | ImageCube
-//        | IimageCube
-//        | UimageCube
-//        | ImageCubeArray
-//        | IimageCubeArray
-//        | UimageCubeArray
-//        | ImageBuffer
-//        | IimageBuffer
-//        | UimageBuffer
-//        | Struct
-//
-//    and Declaration =
-//        | FunctionPrototype
-//        | InitDeclaratorList
-//        | PrecisionThing 
-//        
-//    module TokensParsers =
-//        let comma _ = pchar ',' >>. preturn (Token Comma)
-//        let colon _ = pchar ':' >>. preturn (Token Colon)
-//        let equal _ = pchar '=' >>. preturn (Token Equal)
-//        let bang _ = pchar '!' >>. preturn (Token Bang)
-//        let dash _ = pchar '-' >>. preturn (Token Dash)
-//        let tilde _ = pchar '~' >>. preturn (Token Tilde)
-//        let plus _ = pchar '+' >>. preturn (Token Plus)
-//        let star _ = pchar '*' >>. preturn (Token Star)
-//        let slash _ = pchar '/' >>. preturn (Token Slash)
-//        let percent _ = pchar '%' >>. preturn (Token Percent)
-//        let semiColon = pchar ';' >>. preturn (Token SemiColon)
-//        let lParens = pchar '(' >>. preturn (Token LParens)
-//        let rParens = pchar ')' >>. preturn (Token RParens)
-//        let lBracket = pchar '[' >>. preturn (Token LBracket)
-//        let rBracket = pchar ']' >>. preturn (Token RBracket)
-//        
-//        module Keyword =
-//            let private keywordP str keyword = pstring str >>. preturn (keyword |> Keyword)
-//            
-//            let _const = keywordP "const" Const
-//            let _in = keywordP "in" In
-//            let _out = keywordP "out" Out
-//            let _inout = keywordP "inout" InOut
-//            let _centroid = keywordP "centroid" Centroid
-//            let _patch = keywordP "patch" Patch
-//            let _sample = keywordP "sample" Sample
-//            let _uniform = keywordP "uniform" Uniform
-//            let _buffer = keywordP "buffer" Buffer
-//            let _shared = keywordP "shared" Shared
-//            let _coherent = keywordP "coherent" Coherent
-//            let _volatile = keywordP "volatile" Volatile
-//            let _restrict = keywordP "restrict" Restrict
-//            let _readonly = keywordP "readonly" Readonly
-//            let _writeonly = keywordP "writeonly" Writeonly
-//            let _subroutine = keywordP "subroutine" Subroutine
-//
-//            let _attribute = keywordP "attribute" Attribute
-//            let _varying = keywordP "varying" Varying
-//            let _atomic_uint = keywordP "atomic_uint" Atomic_uint
-//            let _layout = keywordP "layout" Layout
-//            let _flat = keywordP "flat" Flat
-//            let _smooth = keywordP "smooth" Smooth
-//            let _noperspective = keywordP "noperspective" Noperspective
-//            let _invariant = keywordP "invariant" Invariant
-//            let _precise = keywordP "precise" Precise
-//            let _break = keywordP "break" Break
-//            let _continue = keywordP "continue" Continue
-//            let _do = keywordP "do" Do
-//            let _for = keywordP "for" For
-//            let _while = keywordP "while" While
-//            let _switch = keywordP "switch" Switch
-//            let _case = keywordP "case" Case
-//            let _default = keywordP "default" Default
-//            let _if = keywordP "if" If
-//            let _else = keywordP "else" Else
-//            let _int = keywordP "int" Int
-//            let _void = keywordP "void" Void
-//            let _bool = keywordP "bool" Bool
-//            let _true = keywordP "true" True
-//            let _false = keywordP "false" False
-//            let _float = keywordP "float" Float
-//            let _double = keywordP "double" Double
-//            let _discard = keywordP "discard" Discard
-//            let _return = keywordP "return" Return
-//            let _vec2 = keywordP "vec2" Vec2
-//            let _vec3 = keywordP "vec3" Vec3
-//            let _vec4 = keywordP "vec4" Vec4
-//            let _ivec2 = keywordP "ivec2" Ivec2
-//            let _ivec3 = keywordP "ivec3" Ivec3
-//            let _ivec4 = keywordP "ivec4" Ivec4
-//            let _bvec2 = keywordP "bvec2" Bvec2
-//            let _bvec3 = keywordP "bvec3" Bvec3
-//            let _bvec4 = keywordP "bvec4" Bvec4
-//            let _uint = keywordP "uint" Uint
-//            let _uvec2 = keywordP "uvec2" Uvec2
-//            let _uvec3 = keywordP "uvec3" Uvec3
-//            let _uvec4 = keywordP "uvec4" Uvec4
-//            let _dvec2 = keywordP "dvec2" Dvec2
-//            let _dvec3 = keywordP "dvec3" Dvec3
-//            let _dvec4 = keywordP "dvec4" Dvec4
-//            let _mat2 = keywordP "mat2" Mat2
-//            let _mat3 = keywordP "mat3" Mat3
-//            let _mat4 = keywordP "mat4" Mat4
-//            let _mat2x2 = keywordP "mat2x2" Mat2x2
-//            let _mat2x3 = keywordP "mat2x3" Mat2x3
-//            let _mat2x4 = keywordP "mat2x4" Mat2x4
-//            let _mat3x2 = keywordP "mat3x2" Mat3x2
-//            let _mat3x3 = keywordP "mat3x3" Mat3x3
-//            let _mat3x4 = keywordP "mat3x4" Mat3x4
-//            let _mat4x2 = keywordP "mat4x2" Mat4x2
-//            let _mat4x3 = keywordP "mat4x3" Mat4x3
-//            let _mat4x4 = keywordP "mat4x4" Mat4x4
-//            let _dmat2 = keywordP "dmat2" Dmat2
-//            let _dmat3 = keywordP "dmat3" Dmat3
-//            let _dmat4 = keywordP "dmat4" Dmat4
-//            let _dmat2x2 = keywordP "dmat2x2" Dmat2x2
-//            let _dmat2x3 = keywordP "dmat2x3" Dmat2x3
-//            let _dmat2x4 = keywordP "dmat2x4" Dmat2x4
-//            let _dmat3x2 = keywordP "dmat3x2" Dmat3x2
-//            let _dmat3x3 = keywordP "dmat3x3" Dmat3x3
-//            let _dmat3x4 = keywordP "dmat3x4" Dmat3x4
-//            let _dmat4x2 = keywordP "dmat4x2" Dmat4x2
-//            let _dmat4x3 = keywordP "dmat4x3" Dmat4x3
-//            let _dmat4x4 = keywordP "dmat4x4" Dmat4x4
-//            let _lowp = keywordP "lowp" Lowp
-//            let _mediump = keywordP "mediump" Mediump
-//            let _highp = keywordP "highp" Highp
-//            let _precision = keywordP "precision" Precision
-//            let _sampler1D = keywordP "sampler1D" Sampler1D
-//            let _sampler1DShadow = keywordP "sampler1DShadow" Sampler1DShadow
-//            let _sampler1DArray = keywordP "sampler1DArray" Sampler1DArray
-//            let _sampler1DArrayShadow = keywordP "sampler1DArrayShadow" Sampler1DArrayShadow
-//            let _isampler1D = keywordP "isampler1D" Isampler1D
-//            let _isampler1DArray = keywordP "isampler1DArray" Isampler1DArray
-//            let _usampler1D = keywordP "usampler1D" Usampler1D
-//            let _usampler1DArray = keywordP "usampler1DArray" Usampler1DArray
-//            let _sampler2D = keywordP "sampler2D" Sampler2D
-//            let _sampler2DShadow = keywordP "sampler2DShadow" Sampler2DShadow
-//            let _sampler2DArray = keywordP "sampler2DArray" Sampler2DArray
-//            let _sampler2DArrayShadow = keywordP "sampler2DArrayShadow" Sampler2DArrayShadow
-//            let _isampler2D = keywordP "isampler2D" Isampler2D
-//            let _isampler2DArray = keywordP "isampler2DArray" Isampler2DArray
-//            let _usampler2D = keywordP "usampler2D" Usampler2D
-//            let _usampler2DArray = keywordP "usampler2DArray" Usampler2DArray
-//            let _sampler2DRect = keywordP "sampler2DRect" Sampler2DRect
-//            let _sampler2DRectShadow = keywordP "sampler2DRectShadow" Sampler2DRectShadow
-//            let _isampler2DRect = keywordP "isampler2DRect" Isampler2DRect
-//            let _usampler2DRect = keywordP "usampler2DRect" Usampler2DRect
-//            let _sampler2DMS = keywordP "sampler2DMS" Sampler2DMS
-//            let _isampler2DMS = keywordP "isampler2DMS" Isampler2DMS
-//            let _usampler2DMS = keywordP "usampler2DMS" Usampler2DMS
-//            let _sampler2DMSArray = keywordP "sampler2DMSArray" Sampler2DMSArray
-//            let _isampler2DMSArray = keywordP "isampler2DMSArray" Isampler2DMSArray
-//            let _usampler2DMSArray = keywordP "usampler2DMSArray" Usampler2DMSArray
-//            let _sampler3D = keywordP "sampler3D" Sampler3D
-//            let _isampler3D = keywordP "isampler3D" Isampler3D
-//            let _usampler3D = keywordP "usampler3D" Usampler3D
-//            let _samplerCube = keywordP "samplerCube" SamplerCube
-//            let _samplerCubeShadow = keywordP "samplerCubeShadow" SamplerCubeShadow
-//            let _isamplerCube = keywordP "isamplerCube" IsamplerCube
-//            let _usamplerCube = keywordP "usamplerCube" UsamplerCube
-//            let _samplerCubeArray = keywordP "samplerCubeArray" SamplerCubeArray
-//            let _samplerCubeArrayShadow = keywordP "samplerCubeArrayShadow" SamplerCubeArrayShadow
-//            let _isamplerCubeArray = keywordP "isamplerCubeArray" IsamplerCubeArray
-//            let _usamplerCubeArray = keywordP "usamplerCubeArray" UsamplerCubeArray
-//            let _samplerBuffer = keywordP "samplerBuffer" SamplerBuffer
-//            let _isamplerBuffer = keywordP "isamplerBuffer" IsamplerBuffer
-//            let _usamplerBuffer = keywordP "usamplerBuffer" UsamplerBuffer
-//            let _image1D = keywordP "image1D" Image1D
-//            let _iimage1D = keywordP "iimage1D" Iimage1D
-//            let _uimage1D = keywordP "uimage1D" Uimage1D
-//            let _image1DArray = keywordP "image1DArray" Image1DArray
-//            let _iimage1DArray = keywordP "iimage1DArray" Iimage1DArray
-//            let _uimage1DArray = keywordP "uimage1DArray" Uimage1DArray
-//            let _image2D = keywordP "image2D" Image2D
-//            let _iimage2D = keywordP "iimage2D" Iimage2D
-//            let _uimage2D = keywordP "uimage2D" Uimage2D
-//            let _image2DArray = keywordP "image2DArray" Image2DArray
-//            let _iimage2DArray = keywordP "iimage2DArray" Iimage2DArray
-//            let _uimage2DArray = keywordP "uimage2DArray" Uimage2DArray
-//            let _image2DRect = keywordP "image2DRect" Image2DRect
-//            let _iimage2DRect = keywordP "iimage2DRect" Iimage2DRect
-//            let _uimage2DRect = keywordP "uimage2DRect" Uimage2DRect
-//            let _image2DMS = keywordP "image2DMS" Image2DMS
-//            let _iimage2DMS = keywordP "iimage2DMS" Iimage2DMS
-//            let _uimage2DMS = keywordP "uimage2DMS" Uimage2DMS
-//            let _image2DMSArray = keywordP "image2DMSArray" Image2DMSArray
-//            let _iimage2DMSArray = keywordP "iimage2DMSArray" Iimage2DMSArray
-//            let _uimage2DMSArray = keywordP "uimage2DMSArray" Uimage2DMSArray
-//            let _image3D = keywordP "image3D" Image3D
-//            let _iimage3D = keywordP "iimage3D" Iimage3D
-//            let _uimage3D = keywordP "uimage3D" Uimage3D
-//            let _imageCube = keywordP "imageCube" ImageCube
-//            let _iimageCube = keywordP "iimageCube" IimageCube
-//            let _uimageCube = keywordP "uimageCube" UimageCube
-//            let _imageCubeArray = keywordP "imageCubeArray" ImageCubeArray
-//            let _iimageCubeArray = keywordP "iimageCubeArray" IimageCubeArray
-//            let _uimageCubeArray = keywordP "uimageCubeArray" UimageCubeArray
-//            let _imageBuffer = keywordP "imageBuffer" ImageBuffer
-//            let _iimageBuffer = keywordP "iimageBuffer" IimageBuffer
-//            let _uimageBuffer = keywordP "uimageBuffer" UimageBuffer
-//            let _struct = keywordP "struct" Struct
-//    
-//                    
-//    let typeNameList endP = many1Till anyChar endP
-//    
-//    
-//    
-//    module StorageQualifierParser =
-//        let storageQualifier =
-//            TokensParsers.Keyword._const
-//            <|> TokensParsers.Keyword._in
-//            <|> TokensParsers.Keyword._out
-//            <|> TokensParsers.Keyword._inout
-//            <|> TokensParsers.Keyword._centroid
-//            <|> TokensParsers.Keyword._patch
-//            <|> TokensParsers.Keyword._sample
-//            <|> TokensParsers.Keyword._uniform
-//            <|> TokensParsers.Keyword._buffer
-//            <|> TokensParsers.Keyword._shared
-//            <|> TokensParsers.Keyword._coherent
-//            <|> TokensParsers.Keyword._volatile
-//            <|> TokensParsers.Keyword._restrict
-//            <|> TokensParsers.Keyword._readonly
-//            <|> TokensParsers.Keyword._writeonly
-//            <|> TokensParsers.Keyword._subroutine
-//            <|> (TokensParsers.Keyword._subroutine .>> TokensParsers.lParens .>> (typeNameList TokensParsers.rParens) .>> TokensParsers.rParens)
-//    
-//    module TypeQualifierParser =
-//        let singleTypeQualifier =
-//            StorageQualifierParser.storageQualifier |>> StorageQualifier
-//
-//        let typeQualifierParser: Parser<TypeQualifier, _> = many1 singleTypeQualifier
-//    
-//    module TypeSpecifierParser =
-//        let typeSpecifierNonArray =
-//            TokensParsers.Keyword._void
-//            <|> TokensParsers.Keyword._float
-//            <|> TokensParsers.Keyword._double
-//            <|> TokensParsers.Keyword._int
-//            <|> TokensParsers.Keyword._uint
-//            <|> TokensParsers.Keyword._bool
-//            <|> TokensParsers.Keyword._vec2
-//            <|> TokensParsers.Keyword._vec3
-//            <|> TokensParsers.Keyword._vec4
-//            <|> TokensParsers.Keyword._dvec2
-//            <|> TokensParsers.Keyword._dvec3
-//            <|> TokensParsers.Keyword._dvec4
-//            <|> TokensParsers.Keyword._bvec2
-//            <|> TokensParsers.Keyword._bvec3
-//            <|> TokensParsers.Keyword._bvec4
-//            <|> TokensParsers.Keyword._ivec2
-//            <|> TokensParsers.Keyword._ivec3
-//            <|> TokensParsers.Keyword._ivec4
-//            <|> TokensParsers.Keyword._uvec2
-//            <|> TokensParsers.Keyword._uvec3
-//            <|> TokensParsers.Keyword._uvec4
-//            <|> TokensParsers.Keyword._mat2
-//            <|> TokensParsers.Keyword._mat3
-//            <|> TokensParsers.Keyword._mat4
-//            <|> TokensParsers.Keyword._mat2x2
-//            <|> TokensParsers.Keyword._mat2x3
-//            <|> TokensParsers.Keyword._mat2x4
-//            <|> TokensParsers.Keyword._mat3x2
-//            <|> TokensParsers.Keyword._mat3x3
-//            <|> TokensParsers.Keyword._mat3x4
-//            <|> TokensParsers.Keyword._mat4x2
-//            <|> TokensParsers.Keyword._mat4x3
-//            <|> TokensParsers.Keyword._mat4x4
-//            <|> TokensParsers.Keyword._dmat2
-//            <|> TokensParsers.Keyword._dmat3
-//            <|> TokensParsers.Keyword._dmat4
-//            <|> TokensParsers.Keyword._dmat2x2
-//            <|> TokensParsers.Keyword._dmat2x3
-//            <|> TokensParsers.Keyword._dmat2x4
-//            <|> TokensParsers.Keyword._dmat3x2
-//            <|> TokensParsers.Keyword._dmat3x3
-//            <|> TokensParsers.Keyword._dmat3x4
-//            <|> TokensParsers.Keyword._dmat4x2
-//            <|> TokensParsers.Keyword._dmat4x3
-//            <|> TokensParsers.Keyword._dmat4x4
-//            <|> TokensParsers.Keyword._atomic_uint
-//            <|> TokensParsers.Keyword._sampler2D
-//            <|> TokensParsers.Keyword._sampler3D
-//            <|> TokensParsers.Keyword._samplerCube
-//            <|> TokensParsers.Keyword._sampler2DShadow
-//            <|> TokensParsers.Keyword._samplerCubeShadow
-//            <|> TokensParsers.Keyword._sampler2DArray
-//            <|> TokensParsers.Keyword._sampler2DArrayShadow
-//            <|> TokensParsers.Keyword._samplerCubeArray
-//            <|> TokensParsers.Keyword._samplerCubeArrayShadow
-//            <|> TokensParsers.Keyword._isampler2D
-//            <|> TokensParsers.Keyword._isampler3D
-//            <|> TokensParsers.Keyword._isamplerCube
-//            <|> TokensParsers.Keyword._isampler2DArray
-//            <|> TokensParsers.Keyword._isamplerCubeArray
-//            <|> TokensParsers.Keyword._usampler2D
-//            <|> TokensParsers.Keyword._usampler3D
-//            <|> TokensParsers.Keyword._usamplerCube
-//            <|> TokensParsers.Keyword._usampler2DArray
-//            <|> TokensParsers.Keyword._usamplerCubeArray
-//            <|> TokensParsers.Keyword._sampler1D
-//            <|> TokensParsers.Keyword._sampler1DShadow
-//            <|> TokensParsers.Keyword._sampler1DArray
-//            <|> TokensParsers.Keyword._sampler1DArrayShadow
-//            <|> TokensParsers.Keyword._isampler1D
-//            <|> TokensParsers.Keyword._isampler1DArray
-//            <|> TokensParsers.Keyword._usampler1D
-//            <|> TokensParsers.Keyword._usampler1DArray
-//            <|> TokensParsers.Keyword._sampler2DRect
-//            <|> TokensParsers.Keyword._sampler2DRectShadow
-//            <|> TokensParsers.Keyword._isampler2DRect
-//            <|> TokensParsers.Keyword._usampler2DRect
-//            <|> TokensParsers.Keyword._samplerBuffer
-//            <|> TokensParsers.Keyword._isamplerBuffer
-//            <|> TokensParsers.Keyword._usamplerBuffer
-//            <|> TokensParsers.Keyword._sampler2DMS
-//            <|> TokensParsers.Keyword._isampler2DMS
-//            <|> TokensParsers.Keyword._usampler2DMS
-//            <|> TokensParsers.Keyword._sampler2DMSArray
-//            <|> TokensParsers.Keyword._isampler2DMSArray
-//            <|> TokensParsers.Keyword._usampler2DMSArray
-//            <|> TokensParsers.Keyword._image2D
-//            <|> TokensParsers.Keyword._iimage2D
-//            <|> TokensParsers.Keyword._uimage2D
-//            <|> TokensParsers.Keyword._image3D
-//            <|> TokensParsers.Keyword._iimage3D
-//            <|> TokensParsers.Keyword._uimage3D
-//            <|> TokensParsers.Keyword._imageCube
-//            <|> TokensParsers.Keyword._iimageCube
-//            <|> TokensParsers.Keyword._uimageCube
-//            <|> TokensParsers.Keyword._imageBuffer
-//            <|> TokensParsers.Keyword._iimageBuffer
-//            <|> TokensParsers.Keyword._uimageBuffer
-//            <|> TokensParsers.Keyword._image1D
-//            <|> TokensParsers.Keyword._iimage1D
-//            <|> TokensParsers.Keyword._uimage1D
-//            <|> TokensParsers.Keyword._image1DArray
-//            <|> TokensParsers.Keyword._iimage1DArray
-//            <|> TokensParsers.Keyword._uimage1DArray
-//            <|> TokensParsers.Keyword._image2DRect
-//            <|> TokensParsers.Keyword._iimage2DRect
-//            <|> TokensParsers.Keyword._uimage2DRect
-//            <|> TokensParsers.Keyword._image2DArray
-//            <|> TokensParsers.Keyword._iimage2DArray
-//            <|> TokensParsers.Keyword._uimage2DArray
-//            <|> TokensParsers.Keyword._imageCubeArray
-//            <|> TokensParsers.Keyword._iimageCubeArray
-//            <|> TokensParsers.Keyword._uimageCubeArray
-//            <|> TokensParsers.Keyword._image2DMS
-//            <|> TokensParsers.Keyword._iimage2DMS
-//            <|> TokensParsers.Keyword._uimage2DMS
-//            <|> TokensParsers.Keyword._image2DMSArray
-//            <|> TokensParsers.Keyword._iimage2DMSArray
-//            <|> TokensParsers.Keyword._uimage2DMSArray
-//
-//        let constantExpression = preturn () //TODO:
-//        
-//        let singleArraySpecifier =
-//            (TokensParsers.lBracket .>> TokensParsers.rBracket >>. preturn ())
-//            <|> (TokensParsers.lBracket .>> constantExpression .>> TokensParsers.rBracket >>. preturn ())
-//        
-//        let arraySpecifier =
-//            many1 singleArraySpecifier
-//        
-//        ()
-//    
-//    let functionDefinition = preturn FunctionDefinition //TODO: To parse uniforms this can probably be skipped
-//    
-//    module Declaration =
-//        let functionPrototype = preturn (FunctionPrototype) .>> TokensParsers.semiColon
-//    
-//        let initDeclaratorList = preturn (InitDeclaratorList) .>> TokensParsers.semiColon
-//    
-//    let declaration =
-//        Declaration.functionPrototype
-//            
-//    
-//    let externalDeclaration =
-//        functionDefinition
-//            <|> (declaration |>> ExternalDeclaration.Declaration)
-//            <|> (TokensParsers.semiColon >>. preturn ExternalDeclaration.SemiColon)
-//    
-//    let translationUnit = many1 externalDeclaration |>> (fun ed -> TranslationUnit ed)
+module Parser =
+    open GlslParser.ParserLibrary
+
+    open GlslParser.ParserLibrary.ParserWithPositionalErrors
+        
+    let tokenP token =
+        satisfy (fun t -> t = token) (sprintf "%A" token)
+
+    type Token = GlslParser.Tokenizer.Token
+
+
+    let semicolonP = tokenP GlslParser.Tokenizer.Token.SEMICOLON
+    let commaP = tokenP GlslParser.Tokenizer.Token.COMMA
+    let leftBracketP = tokenP GlslParser.Tokenizer.Token.LEFTBRACKET
+    let rightBracketP = tokenP GlslParser.Tokenizer.Token.RIGHTBRACKET
+    let leftBraceP = tokenP GlslParser.Tokenizer.Token.LEFTBRACE
+    let rightBraceP = tokenP GlslParser.Tokenizer.Token.RIGHTBRACE
+    let leftParenP = tokenP Token.LEFTPAREN
+    let rightParenP = tokenP Token.RIGHTPAREN
+    
+    let constantExpressionP = failwith "todo"
+    
+    
+    let identifierP =
+        let matcher token =
+            match token with
+            | GlslParser.Tokenizer.Token.IDENTIFIER _ -> true
+            | _ -> false
+        satisfy matcher ("IDENTIFIER")
+
+        
+    let typeSpecifierPRef = ParserWithPositionalErrors.createRefParser ()
+    let statementPRef = ParserWithPositionalErrors.createRefParser ()
+    let expressionPRef = ParserWithPositionalErrors.createRefParser ()
+    let postfixExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    let assignmentExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    let functionCallHeaderWithParametersPRef = ParserWithPositionalErrors.createRefParser ()
+    let unaryExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+        
+    let rec structDeclaratorP =
+        (identifierP |>> ignore) <|> (identifierP .>>. arraySpecifierP |>> ignore)
+
+    and structDeclaratorListP =
+        (structDeclaratorP .>>. (many (commaP .>>. structDeclaratorP)) |>> ignore)
+        
+    and structDeclarationP =
+        (typeSpecifierPRef.Parser .>>. structDeclaratorListP .>>. semicolonP |>> ignore)
+        <|> (typeQualifierP .>>. typeSpecifierPRef.Parser .>>. structDeclaratorListP .>>. semicolonP |>> ignore)
+    
+    and structDeclarationListP = (many1 structDeclarationP) |>> ignore
+
+    and structSpecifierP =
+        (tokenP Token.STRUCT .>>. identifierP .>>. leftBraceP .>>. structDeclarationListP .>>. rightBraceP |>> ignore)
+        <|> (tokenP Token.STRUCT .>>. leftBraceP .>>. structDeclarationListP .>>. rightBraceP |>> ignore)
+    
+    and typeSpecifierNonArrayP =
+        let tokens = [
+                Token.VOID
+                Token.FLOAT
+                Token.DOUBLE
+                Token.INT
+                Token.UINT
+                Token.BOOL
+                Token.VEC2
+                Token.VEC3
+                Token.VEC4
+                Token.DVEC2
+                Token.DVEC3
+                Token.DVEC4
+                Token.BVEC2
+                Token.BVEC3
+                Token.BVEC4
+                Token.IVEC2
+                Token.IVEC3
+                Token.IVEC4
+                Token.UVEC2
+                Token.UVEC3
+                Token.UVEC4
+                Token.MAT2
+                Token.MAT3
+                Token.MAT4
+                Token.MAT2X2
+                Token.MAT2X3
+                Token.MAT2X4
+                Token.MAT3X2
+                Token.MAT3X3
+                Token.MAT3X4
+                Token.MAT4X2
+                Token.MAT4X3
+                Token.MAT4X4
+                Token.DMAT2
+                Token.DMAT3
+                Token.DMAT4
+                Token.DMAT2X2
+                Token.DMAT2X3
+                Token.DMAT2X4
+                Token.DMAT3X2
+                Token.DMAT3X3
+                Token.DMAT3X4
+                Token.DMAT4X2
+                Token.DMAT4X3
+                Token.DMAT4X4
+                Token.ATOMICUINT
+                Token.SAMPLER2D
+                Token.SAMPLER3D
+                Token.SAMPLERCUBE
+                Token.SAMPLER2DSHADOW
+                Token.SAMPLERCUBESHADOW
+                Token.SAMPLER2DARRAY
+                Token.SAMPLER2DARRAYSHADOW
+                Token.SAMPLERCUBEARRAY
+                Token.SAMPLERCUBEARRAYSHADOW
+                Token.ISAMPLER2D
+                Token.ISAMPLER3D
+                Token.ISAMPLERCUBE
+                Token.ISAMPLER2DARRAY
+                Token.ISAMPLERCUBEARRAY
+                Token.USAMPLER2D
+                Token.USAMPLER3D
+                Token.USAMPLERCUBE
+                Token.USAMPLER2DARRAY
+                Token.USAMPLERCUBEARRAY
+                Token.SAMPLER1D
+                Token.SAMPLER1DSHADOW
+                Token.SAMPLER1DARRAY
+                Token.SAMPLER1DARRAYSHADOW
+                Token.ISAMPLER1D
+                Token.ISAMPLER1DARRAY
+                Token.USAMPLER1D
+                Token.USAMPLER1DARRAY
+                Token.SAMPLER2DRECT
+                Token.SAMPLER2DRECTSHADOW
+                Token.ISAMPLER2DRECT
+                Token.USAMPLER2DRECT
+                Token.SAMPLERBUFFER
+                Token.ISAMPLERBUFFER
+                Token.USAMPLERBUFFER
+                Token.SAMPLER2DMS
+                Token.ISAMPLER2DMS
+                Token.USAMPLER2DMS
+                Token.SAMPLER2DMSARRAY
+                Token.ISAMPLER2DMSARRAY
+                Token.USAMPLER2DMSARRAY
+                Token.IMAGE2D
+                Token.IIMAGE2D
+                Token.UIMAGE2D
+                Token.IMAGE3D
+                Token.IIMAGE3D
+                Token.UIMAGE3D
+                Token.IMAGECUBE
+                Token.IIMAGECUBE
+                Token.UIMAGECUBE
+                Token.IMAGEBUFFER
+                Token.IIMAGEBUFFER
+                Token.UIMAGEBUFFER
+                Token.IMAGE1D
+                Token.IIMAGE1D
+                Token.UIMAGE1D
+                Token.IMAGE1DARRAY
+                Token.IIMAGE1DARRAY
+                Token.UIMAGE1DARRAY
+                Token.IMAGE2DRECT
+                Token.IIMAGE2DRECT
+                Token.UIMAGE2DRECT
+                Token.IMAGE2DARRAY
+                Token.IIMAGE2DARRAY
+                Token.UIMAGE2DARRAY
+                Token.IMAGECUBEARRAY
+                Token.IIMAGECUBEARRAY
+                Token.UIMAGECUBEARRAY
+                Token.IMAGE2DMS
+                Token.IIMAGE2DMS
+                Token.UIMAGE2DMS
+                Token.IMAGE2DMSARRAY
+                Token.IIMAGE2DMSARRAY
+                Token.UIMAGE2DMSARRAY
+            ]
+        let tokensP = List.map (fun t -> tokenP t) tokens |> choice |>> ignore
+        
+        tokensP <|> (identifierP |>> ignore) (*TYPE_NAME*) <|> structSpecifierP
+
+    and arraySpecifierP =
+        let singular =
+            (leftBracketP .>>. rightBracketP |>> ignore) 
+            <|> (leftBracketP .>>. constantExpressionP .>>. rightBracketP |>> ignore) 
+        
+        many1 singular |>> ignore
+    
+    and typeSpecifierP =
+        (typeSpecifierNonArrayP |>> ignore)
+        <|> (typeSpecifierNonArrayP .>>. arraySpecifierP |>> ignore)
+    
+    and typeNameListP =
+        (identifierP |>> ignore) .>>. many (commaP .>>. identifierP |>> ignore) 
+    
+    and storageQualifierP =
+        let tokens = [
+            Token.CONST
+            Token.IN
+            Token.OUT
+            Token.INOUT
+            Token.CENTROID
+            Token.PATCH
+            Token.SAMPLE
+            Token.UNIFORM
+            Token.BUFFER
+            Token.SHARED
+            Token.COHERENT
+            Token.VOLATILE
+            Token.RESTRICT
+            Token.READONLY
+            Token.WRITEONLY
+            Token.SUBROUTINE
+        ]
+        let tokensP = List.map tokenP tokens |> choice |>> ignore
+        tokensP <|> (tokenP Token.SUBROUTINE .>>. leftParenP .>>. typeNameListP .>>. rightParenP |>> ignore)
+    
+    and layoutQualifierIdP =
+        (identifierP |>> ignore)
+        <|> (identifierP .>>. tokenP Token.EQUAL .>>. constantExpressionP |>> ignore)
+        <|> (tokenP Token.SHARED |>> ignore)
+    
+    and layoutQualifierIdListP =
+        layoutQualifierIdP .>>. (many (commaP .>>. layoutQualifierIdP)) |>> ignore
+    
+    and layoutQualifierP =
+        (tokenP Token.LAYOUT) .>>. leftParenP .>>. layoutQualifierIdListP .>>. rightParenP |>> ignore
+    
+    and interpolationQualifierP =
+        (tokenP Token.SMOOTH |>> ignore)
+        <|> (tokenP Token.FLAT |>> ignore)
+        <|> (tokenP Token.NOPERSPECTIVE |>> ignore)
+    
+    and invariantQualifierP = tokenP Token.INVARIANT |>> ignore
+    
+    and preciseQualifierP = tokenP Token.PRECISE |>> ignore
+    
+    and singleTypeQualifierP =
+        storageQualifierP
+        <|> layoutQualifierP
+        <|> precisionQualifierP
+        <|> interpolationQualifierP
+        <|> invariantQualifierP
+        <|> preciseQualifierP
+    
+    and typeQualifierP =
+        many1 singleTypeQualifierP |>> ignore
+
+    
+    and fullySpecifiedTypeP =
+        (typeSpecifierP |>> ignore)
+        <|> (typeQualifierP .>>. typeSpecifierP |>> ignore)
+    
+    and functionHeaderP =
+        fullySpecifiedTypeP .>>. identifierP .>>. leftParenP
+    
+    and parameterDeclarationP = failwith "TODO"
+    
+    and functionHeaderWithParametersP =
+        (functionHeaderP .>>. parameterDeclarationP) .>>. many (commaP .>>. parameterDeclarationP)
+    
+    and functionDeclaratorP =
+        (functionHeaderP |>> ignore) <|> (functionHeaderWithParametersP |>> ignore)
+    
+    and functionPrototypeP =
+        functionDeclaratorP .>>. rightParenP
+    
+    and statementListP = many1 statementPRef.Parser |>> ignore
+    
+    and compoundStatementP =
+        (leftBraceP .>>. rightBraceP |>> ignore)
+        <|> (leftBraceP .>>. statementListP .>>. rightBraceP |>> ignore)
+    
+    and initDeclaratorListP = failwith "TODO"
+    
+    and precisionP = tokenP GlslParser.Tokenizer.Token.PRECISION
+    
+    and precisionQualifierP = failwith "todo"
+    
+    and arraySpecifierP = failwith "todo"
+    
+    and identifierListP = many1 (commaP .>>. identifierP) |>> ignore
+    
+    and declarationP =
+        (functionPrototypeP .>>. semicolonP |>> ignore)
+        <|> (initDeclaratorListP .>>. semicolonP |>> ignore)
+        <|> (precisionP .>>. precisionQualifierP .>>. typeSpecifierP .>>. semicolonP |>> ignore)
+        <|> (typeQualifierP .>>. identifierP .>>. leftBraceP .>>. structDeclarationListP .>>. rightBraceP .>>. semicolonP |>> ignore)
+        <|> (typeQualifierP .>>. identifierP .>>. leftBraceP .>>. structDeclarationListP .>>. rightBraceP .>>. identifierP .>>. semicolonP |>> ignore)
+        <|> (typeQualifierP .>>. identifierP .>>. leftBraceP .>>. structDeclarationListP .>>. rightBraceP .>>. identifierP |>> ignore)
+        <|> (arraySpecifierP .>>. semicolonP |>> ignore)    
+        <|> (typeQualifierP .>>. semicolonP |>> ignore)    
+        <|> (typeQualifierP .>>. identifierP .>>. semicolonP |>> ignore)    
+        <|> (typeQualifierP .>>. identifierP .>>. identifierListP .>>. semicolonP |>> ignore)    
+    
+    and declarationStatementP = declarationP
+    
+    and variableIdentifierP = identifierP
+    
+    and intConstantP =
+        let pred token =
+            match token with
+            | Token.INTCONSTANT _ -> true
+            | _ -> false
+        satisfy pred "INTCONSTANT"
+    
+    
+    and uintConstantP =
+        let pred token =
+            match token with
+            | Token.UINTCONSTANT _ -> true
+            | _ -> false
+        satisfy pred "UINTCONSTANT"
+
+    
+    and floatConstant =
+        let pred token =
+            match token with
+            | Token.FLOATCONSTANT _ -> true
+            | _ -> false
+        satisfy pred "FLOATCONSTANT"
+        
+        
+    and doubleConstant =
+        let pred token =
+            match token with
+            | Token.DOUBLECONSTANT _ -> true
+            | _ -> false
+        satisfy pred "DOUBLECONSTANT"
+
+    and primaryExpressionP =
+        (variableIdentifierP |>> ignore)
+        <|> (intConstantP |>> ignore)
+        <|> (uintConstantP |>> ignore)
+        <|> (floatConstant |>> ignore)
+        <|> (doubleConstant |>> ignore)
+        <|> (leftParenP .>>. expressionPRef.Parser .>>. rightParenP |>> ignore)
+    
+    and functionIdentifierP =
+        typeSpecifierP
+        <|> postfixExpressionPRef.Parser
+    
+    and functionCallHeaderP =
+        functionIdentifierP .>>. leftParenP |>> ignore
+    
+    and functionCallHeaderNoParametersP =
+        functionCallHeaderP .>>. tokenP Token.VOID |>>  ignore
+        <|> functionCallHeaderP
+        
+    and functionCallHeaderWithParametersP = 
+        functionCallHeaderP .>>. assignmentExpressionPRef.Parser |>> ignore
+        <|> functionCallHeaderWithParametersPRef.Parser .>>. commaP .>>. assignmentExpressionPRef.Parser |>> ignore
+    
+    and functionCallGenericP =
+        functionCallHeaderWithParametersPRef.Parser .>>. rightParenP |>> ignore
+        <|> functionCallHeaderNoParametersP .>>. rightParenP |>> ignore
+        
+    and functionCallOrMethodP = functionCallGenericP
+    
+    and functionCallP = functionCallOrMethodP 
+    
+    and integerExpressionP = expressionPRef.Parser
+    
+    and postfixExpressionP =
+        primaryExpressionP
+        <|> (postfixExpressionPRef.Parser .>>. leftBracketP .>>. integerExpressionP .>>. rightBracketP |>> ignore)
+        <|> functionCallP
+        <|> (postfixExpressionPRef.Parser .>>. (tokenP Token.DOT |>> ignore) .>>. (tokenP Token.FIELDSELECTION) |>> ignore)
+        <|> (postfixExpressionPRef.Parser .>>. tokenP Token.INCOP |>> ignore)
+        <|> (postfixExpressionPRef.Parser .>>. tokenP Token.DECOP |>> ignore)
+    
+    and unaryOperatorP =
+        tokenP Token.PLUS
+        <|> tokenP Token.DASH
+        <|> tokenP Token.BANG
+        <|> tokenP Token.TILDE |>> ignore
+    
+    and unaryExpressionP =
+        (postfixExpressionP |>> ignore)
+        <|> (tokenP Token.INCOP .>>. unaryExpressionPRef.Parser |>> ignore)
+        <|> (tokenP Token.DECOP .>>. unaryExpressionPRef.Parser |>> ignore)
+        <|> (unaryOperatorP .>>. unaryExpressionPRef.Parser |>> ignore)
+        
+    and multiplicativeExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    and multiplicativeExpressionP =
+        unaryExpressionP
+        <|> (multiplicativeExpressionPRef.Parser .>>. tokenP Token.STAR .>>. unaryExpressionP |>> ignore)
+        <|> (multiplicativeExpressionPRef.Parser .>>. tokenP Token.SLASH .>>. unaryExpressionP |>> ignore)
+        <|> (multiplicativeExpressionPRef.Parser .>>. tokenP Token.PERCENT .>>. unaryExpressionP |>> ignore)
+        
+    and additiveExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    and additiveExpressionP =
+        multiplicativeExpressionP
+        <|> (additiveExpressionPRef.Parser .>>. tokenP Token.PLUS .>>. multiplicativeExpressionP |>> ignore)
+        <|> (additiveExpressionPRef.Parser .>>. tokenP Token.DASH .>>. multiplicativeExpressionP |>> ignore)
+
+    and shiftExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    and shiftExpressionP =
+        additiveExpressionP
+        <|> (shiftExpressionPRef.Parser .>>. tokenP Token.LEFTOP .>>. additiveExpressionP |>> ignore)
+        <|> (shiftExpressionPRef.Parser .>>. tokenP Token.RIGHTOP .>>. additiveExpressionP |>> ignore)
+    
+    and relationalExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    and relationalExpressionP =
+        shiftExpressionP
+        <|> (relationalExpressionPRef.Parser .>>. tokenP Token.LEFTANGLE .>>. shiftExpressionP |>> ignore)
+        <|> (relationalExpressionPRef.Parser .>>. tokenP Token.RIGHTANGLE .>>. shiftExpressionP |>> ignore)
+        <|> (relationalExpressionPRef.Parser .>>. tokenP Token.LEOP .>>. shiftExpressionP |>> ignore)
+        <|> (relationalExpressionPRef.Parser .>>. tokenP Token.GEOP .>>. shiftExpressionP |>> ignore)
+
+    and equalityExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    and equalityExpressionP =
+        relationalExpressionP
+        <|> (equalityExpressionPRef.Parser .>>. tokenP Token.EQOP .>>. relationalExpressionP |>> ignore)
+        <|> (equalityExpressionPRef.Parser .>>. tokenP Token.NEOP .>>. relationalExpressionP |>> ignore)
+    
+    and andExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    and andExpressionP =
+        equalityExpressionP
+        <|> (andExpressionPRef.Parser .>>. tokenP Token.AMPERSAND .>>. equalityExpressionP |>> ignore) 
+
+    and exclusiveOrExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    and exclusiveOrExpressionP =    
+        andExpressionP
+        <|> (exclusiveOrExpressionPRef.Parser .>>. tokenP Token.CARET .>>. andExpressionP |>> ignore)
+        
+    and inclusiveOrExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    and inclusiveOrExpressionP =
+        exclusiveOrExpressionP
+        <|> (inclusiveOrExpressionPRef.Parser .>>. tokenP Token.VERTICALBAR .>>. exclusiveOrExpressionP |>> ignore)
+
+    and logicalAndExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    and logicalAndExpressionP =
+        inclusiveOrExpressionP
+        <|> (logicalAndExpressionPRef.Parser .>>. tokenP Token.ANDOP .>>. inclusiveOrExpressionP |>> ignore) 
+
+    and logicalXorExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    and logicalXorExpressionP =
+        logicalAndExpressionP
+        <|> (logicalXorExpressionPRef.Parser .>>. tokenP Token.XOROP .>>. logicalAndExpressionP |>> ignore)
+
+    and logicalOrExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    and logicalOrExpressionP =
+        logicalXorExpressionP
+        <|> (logicalOrExpressionPRef.Parser .>>. tokenP Token.OROP .>>. logicalXorExpressionP |>> ignore)
+        
+    and conditionalExpressionP =
+        logicalOrExpressionP
+        <|> (logicalOrExpressionP .>>. tokenP Token.QUESTION .>>. expressionPRef.Parser .>>. tokenP Token.COLON .>>. assignmentExpressionPRef.Parser |>> ignore)
+
+    and assignmentExpressionP =
+        conditionalExpressionP
+        <|> (unaryExpressionP .>>. assignmentOpP .>>. assignmentExpressionP |>> ignore)
+    
+    and expressionP =
+        assignmentExpressionP .>>. (many (commaP .>>. assignmentExpressionP)) |>> ignore
+        
+    and expressionStatementP =
+        (semicolonP |>> ignore)
+        <|> (expressionP .>>. semicolonP |>> ignore)
+
+    and selectionRestStatementP =
+        (statementP .>>. tokenP Token.ELSE .>>. statementP |>> ignore)
+        <|> statementP
+            
+    and selectionStatementP =
+        tokenP Token.IF .>>. leftParenP .>>. expressionP .>>. rightParenP .>>. selectionRestStatementP |>> ignore
+    
+    and switchStatementListP = statementListP
+
+    and switchStatementP =
+        tokenP Token.SWITCH .>>. leftParenP .>>. expressionP .>>. rightParenP .>>. leftBraceP .>>. switchStatementListP .>>. rightBraceP |>> ignore
+        
+    and caseLabelP =
+        (tokenP Token.CASE .>>. expressionP .>>. tokenP Token.COLON) |>> ignore
+        <|> (tokenP Token.DEFAULT .>>. tokenP Token.COLON |>> ignore)
+    
+    and iterationStatementP =
+        tokenP Token.WHILE .>>. leftParenP .>>. conditionP .>>. rightParenP .>>. statementNoNewScopeP
+        DO statement WHILE LEFT_PAREN expression RIGHT_PAREN SEMICOLON
+        FOR LEFT_PAREN for_init_statement for_rest_statement RIGHT_PAREN statement_no_new_scope
+        
+    
+    and jumpStatementP = failwith "todo"
+    
+    and simpleStatementP =    
+        declarationStatementP
+        <|> expressionStatementP
+        <|> selectionStatementP
+        <|> switchStatementP
+        <|> caseLabelP
+        <|> iterationStatementP
+        <|> jumpStatementP
+        
+    and statementP =
+        compoundStatementP <|> simpleStatementP
+    
+    and statementListP =
+        many1 statementP
+    
+    and compoundStatementNoNewScopeP =
+        (tokenP GlslParser.Tokenizer.Token.LEFTBRACE .>>. tokenP GlslParser.Tokenizer.Token.RIGHTBRACE |>> ignore)
+        <|>
+        (tokenP GlslParser.Tokenizer.Token.LEFTBRACE .>>. statementListP .>>. tokenP GlslParser.Tokenizer.Token.RIGHTBRACE |>> ignore)
+
+    
+    and functionDefinitionP =
+        functionPrototypeP .>>. compoundStatementNoNewScopeP
+
+    and externalDeclarationP =
+        //functionDefinitionP
+        //declarationP
+        semicolonP
+        
+    typeSpecifierPRef.Set typeSpecifierP
+    statementPRef.Set statementP
+    expressionPRef.Set expressionP
+
+
 
 [<EntryPoint>]
 let main argv =
-//    try 
-//        CharParsers.run Parser.translationUnit "" |> ignore
-//    with _ ->
-//        ()
-//    CharParsers.run Parser.StorageQualifierParser.storageQualifier "uniform" |> printfn "%A"
-    
     let src = """
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
@@ -618,12 +563,12 @@ void main()
 
 """
     
-    CharParsers.run (GlslParser.Tokenizer.tokenP) "123" |> printfn "%A"
-    CharParsers.run (GlslParser.Tokenizer.tokenP) "123u" |> printfn "%A"
-    CharParsers.run (GlslParser.Tokenizer.tokenP) "0123" |> printfn "%A"
-    CharParsers.run (GlslParser.Tokenizer.tokenP) "1.5" |> printfn "%A"
-    CharParsers.run (GlslParser.Tokenizer.tokenP) "2.0LF" |> printfn "%A"
-    CharParsers.run (GlslParser.Tokenizer.tokensP) "1" |> printfn "%A"
+//    CharParsers.run (GlslParser.Tokenizer.tokenP) "123" |> printfn "%A"
+//    CharParsers.run (GlslParser.Tokenizer.tokenP) "123u" |> printfn "%A"
+//    CharParsers.run (GlslParser.Tokenizer.tokenP) "0123" |> printfn "%A"
+//    CharParsers.run (GlslParser.Tokenizer.tokenP) "1.5" |> printfn "%A"
+//    CharParsers.run (GlslParser.Tokenizer.tokenP) "2.0LF" |> printfn "%A"
+//    CharParsers.run (GlslParser.Tokenizer.tokensP) "1" |> printfn "%A"
     GlslParser.Tokenizer.parse src |> printfn "%A"
     
     printfn "Hello World from F#!"
