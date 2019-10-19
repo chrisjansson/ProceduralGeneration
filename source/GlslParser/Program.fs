@@ -38,24 +38,27 @@ module Parser =
     let assignmentExpressionPRef = ParserWithPositionalErrors.createRefParser ()
     let functionCallHeaderWithParametersPRef = ParserWithPositionalErrors.createRefParser ()
     let unaryExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    let arraySpecifierPRef = ParserWithPositionalErrors.createRefParser ()
+    let typeQualifierPRef = ParserWithPositionalErrors.createRefParser ()
+    let statementPRef = ParserWithPositionalErrors.createRefParser ()
         
-    let rec structDeclaratorP =
-        (identifierP |>> ignore) <|> (identifierP .>>. arraySpecifierP |>> ignore)
+    let structDeclaratorP =
+        (identifierP |>> ignore) <|> (identifierP .>>. arraySpecifierPRef.Parser |>> ignore)
 
-    and structDeclaratorListP =
+    let structDeclaratorListP =
         (structDeclaratorP .>>. (many (commaP .>>. structDeclaratorP)) |>> ignore)
         
-    and structDeclarationP =
+    let structDeclarationP =
         (typeSpecifierPRef.Parser .>>. structDeclaratorListP .>>. semicolonP |>> ignore)
-        <|> (typeQualifierP .>>. typeSpecifierPRef.Parser .>>. structDeclaratorListP .>>. semicolonP |>> ignore)
+        <|> (typeQualifierPRef.Parser .>>. typeSpecifierPRef.Parser .>>. structDeclaratorListP .>>. semicolonP |>> ignore)
     
-    and structDeclarationListP = (many1 structDeclarationP) |>> ignore
+    let structDeclarationListP = (many1 structDeclarationP) |>> ignore
 
-    and structSpecifierP =
+    let structSpecifierP =
         (tokenP Token.STRUCT .>>. identifierP .>>. leftBraceP .>>. structDeclarationListP .>>. rightBraceP |>> ignore)
         <|> (tokenP Token.STRUCT .>>. leftBraceP .>>. structDeclarationListP .>>. rightBraceP |>> ignore)
     
-    and typeSpecifierNonArrayP =
+    let typeSpecifierNonArrayP =
         let tokens = [
                 Token.VOID
                 Token.FLOAT
@@ -181,21 +184,22 @@ module Parser =
         
         tokensP <|> (identifierP |>> ignore) (*TYPE_NAME*) <|> structSpecifierP
 
-    and arraySpecifierP =
+    let arraySpecifierP =
         let singular =
             (leftBracketP .>>. rightBracketP |>> ignore) 
             <|> (leftBracketP .>>. constantExpressionP .>>. rightBracketP |>> ignore) 
         
         many1 singular |>> ignore
-    
-    and typeSpecifierP =
+    arraySpecifierPRef.Set arraySpecifierP.parseFn
+        
+    let typeSpecifierP =
         (typeSpecifierNonArrayP |>> ignore)
         <|> (typeSpecifierNonArrayP .>>. arraySpecifierP |>> ignore)
     
-    and typeNameListP =
+    let typeNameListP =
         (identifierP |>> ignore) .>>. many (commaP .>>. identifierP |>> ignore) 
     
-    and storageQualifierP =
+    let storageQualifierP =
         let tokens = [
             Token.CONST
             Token.IN
@@ -217,27 +221,32 @@ module Parser =
         let tokensP = List.map tokenP tokens |> choice |>> ignore
         tokensP <|> (tokenP Token.SUBROUTINE .>>. leftParenP .>>. typeNameListP .>>. rightParenP |>> ignore)
     
-    and layoutQualifierIdP =
+    let layoutQualifierIdP =
         (identifierP |>> ignore)
         <|> (identifierP .>>. tokenP Token.EQUAL .>>. constantExpressionP |>> ignore)
         <|> (tokenP Token.SHARED |>> ignore)
     
-    and layoutQualifierIdListP =
+    let layoutQualifierIdListP =
         layoutQualifierIdP .>>. (many (commaP .>>. layoutQualifierIdP)) |>> ignore
     
-    and layoutQualifierP =
+    let layoutQualifierP =
         (tokenP Token.LAYOUT) .>>. leftParenP .>>. layoutQualifierIdListP .>>. rightParenP |>> ignore
     
-    and interpolationQualifierP =
+    let interpolationQualifierP =
         (tokenP Token.SMOOTH |>> ignore)
         <|> (tokenP Token.FLAT |>> ignore)
         <|> (tokenP Token.NOPERSPECTIVE |>> ignore)
     
-    and invariantQualifierP = tokenP Token.INVARIANT |>> ignore
+    let invariantQualifierP = tokenP Token.INVARIANT |>> ignore
     
-    and preciseQualifierP = tokenP Token.PRECISE |>> ignore
+    let preciseQualifierP = tokenP Token.PRECISE |>> ignore
     
-    and singleTypeQualifierP =
+    let precisionQualifierP =
+        (tokenP Token.HIGHPRECISION
+        <|> tokenP Token.MEDIUMPRECISION
+        <|> tokenP Token.LOWPRECISION) |>> ignore
+    
+    let singleTypeQualifierP =
         storageQualifierP
         <|> layoutQualifierP
         <|> precisionQualifierP
@@ -245,45 +254,44 @@ module Parser =
         <|> invariantQualifierP
         <|> preciseQualifierP
     
-    and typeQualifierP =
+    let typeQualifierP =
         many1 singleTypeQualifierP |>> ignore
-
+    typeQualifierPRef.Set typeQualifierP.parseFn
     
-    and fullySpecifiedTypeP =
+    let fullySpecifiedTypeP =
         (typeSpecifierP |>> ignore)
         <|> (typeQualifierP .>>. typeSpecifierP |>> ignore)
     
-    and functionHeaderP =
+    let functionHeaderP =
         fullySpecifiedTypeP .>>. identifierP .>>. leftParenP
     
-    and parameterDeclarationP = failwith "TODO"
+    let parameterDeclarationP = failwith "TODO"
     
-    and functionHeaderWithParametersP =
+    let functionHeaderWithParametersP =
         (functionHeaderP .>>. parameterDeclarationP) .>>. many (commaP .>>. parameterDeclarationP)
     
-    and functionDeclaratorP =
+    let functionDeclaratorP =
         (functionHeaderP |>> ignore) <|> (functionHeaderWithParametersP |>> ignore)
     
-    and functionPrototypeP =
+    let functionPrototypeP =
         functionDeclaratorP .>>. rightParenP
     
-    and statementListP = many1 statementPRef.Parser |>> ignore
+    let statementListP = many1 statementPRef.Parser |>> ignore
     
-    and compoundStatementP =
+    let compoundStatementP =
         (leftBraceP .>>. rightBraceP |>> ignore)
         <|> (leftBraceP .>>. statementListP .>>. rightBraceP |>> ignore)
     
-    and initDeclaratorListP = failwith "TODO"
+    let initDeclaratorListP = failwith "TODO"
     
-    and precisionP = tokenP GlslParser.Tokenizer.Token.PRECISION
+    let precisionP = tokenP GlslParser.Tokenizer.Token.PRECISION
     
-    and precisionQualifierP = failwith "todo"
     
-    and arraySpecifierP = failwith "todo"
+    let arraySpecifierP = failwith "todo"
     
-    and identifierListP = many1 (commaP .>>. identifierP) |>> ignore
+    let identifierListP = many1 (commaP .>>. identifierP) |>> ignore
     
-    and declarationP =
+    let declarationP =
         (functionPrototypeP .>>. semicolonP |>> ignore)
         <|> (initDeclaratorListP .>>. semicolonP |>> ignore)
         <|> (precisionP .>>. precisionQualifierP .>>. typeSpecifierP .>>. semicolonP |>> ignore)
@@ -295,11 +303,11 @@ module Parser =
         <|> (typeQualifierP .>>. identifierP .>>. semicolonP |>> ignore)    
         <|> (typeQualifierP .>>. identifierP .>>. identifierListP .>>. semicolonP |>> ignore)    
     
-    and declarationStatementP = declarationP
+    let declarationStatementP = declarationP
     
-    and variableIdentifierP = identifierP
+    let variableIdentifierP = identifierP
     
-    and intConstantP =
+    let intConstantP =
         let pred token =
             match token with
             | Token.INTCONSTANT _ -> true
@@ -307,7 +315,7 @@ module Parser =
         satisfy pred "INTCONSTANT"
     
     
-    and uintConstantP =
+    let uintConstantP =
         let pred token =
             match token with
             | Token.UINTCONSTANT _ -> true
@@ -315,7 +323,7 @@ module Parser =
         satisfy pred "UINTCONSTANT"
 
     
-    and floatConstant =
+    let floatConstant =
         let pred token =
             match token with
             | Token.FLOATCONSTANT _ -> true
@@ -323,7 +331,7 @@ module Parser =
         satisfy pred "FLOATCONSTANT"
         
         
-    and doubleConstant =
+    let doubleConstant =
         let pred token =
             match token with
             | Token.DOUBLECONSTANT _ -> true
@@ -331,14 +339,14 @@ module Parser =
         satisfy pred "DOUBLECONSTANT"
     
     
-    and boolConstant =
+    let boolConstant =
         let pred token =
             match token with
             | Token.BOOLCONSTANT _ -> true
             | _ -> false
         satisfy pred "BOOLCONSTANT"
 
-    and primaryExpressionP =
+    let primaryExpressionP =
         (variableIdentifierP |>> ignore)
         <|> (intConstantP |>> ignore)
         <|> (uintConstantP |>> ignore)
@@ -347,32 +355,32 @@ module Parser =
         <|> (doubleConstant |>> ignore)
         <|> (leftParenP .>>. expressionPRef.Parser .>>. rightParenP |>> ignore)
     
-    and functionIdentifierP =
+    let functionIdentifierP =
         typeSpecifierP
         <|> postfixExpressionPRef.Parser
     
-    and functionCallHeaderP =
+    let functionCallHeaderP =
         functionIdentifierP .>>. leftParenP |>> ignore
     
-    and functionCallHeaderNoParametersP =
-        functionCallHeaderP .>>. tokenP Token.VOID |>>  ignore
+    let functionCallHeaderNoParametersP =
+        (functionCallHeaderP .>>. tokenP Token.VOID |>>  ignore)
         <|> functionCallHeaderP
         
-    and functionCallHeaderWithParametersP = 
-        functionCallHeaderP .>>. assignmentExpressionPRef.Parser |>> ignore
-        <|> functionCallHeaderWithParametersPRef.Parser .>>. commaP .>>. assignmentExpressionPRef.Parser |>> ignore
+    let functionCallHeaderWithParametersP = 
+        (functionCallHeaderP .>>. assignmentExpressionPRef.Parser |>> ignore)
+        <|> (functionCallHeaderWithParametersPRef.Parser .>>. commaP .>>. assignmentExpressionPRef.Parser |>> ignore)
     
-    and functionCallGenericP =
-        functionCallHeaderWithParametersPRef.Parser .>>. rightParenP |>> ignore
-        <|> functionCallHeaderNoParametersP .>>. rightParenP |>> ignore
+    let functionCallGenericP =
+        (functionCallHeaderWithParametersPRef.Parser .>>. rightParenP |>> ignore)
+        <|> (functionCallHeaderNoParametersP .>>. rightParenP |>> ignore)
         
-    and functionCallOrMethodP = functionCallGenericP
+    let functionCallOrMethodP = functionCallGenericP
     
-    and functionCallP = functionCallOrMethodP 
+    let functionCallP = functionCallOrMethodP 
     
-    and integerExpressionP = expressionPRef.Parser
+    let integerExpressionP = expressionPRef.Parser
     
-    and postfixExpressionP =
+    let postfixExpressionP =
         primaryExpressionP
         <|> (postfixExpressionPRef.Parser .>>. leftBracketP .>>. integerExpressionP .>>. rightBracketP |>> ignore)
         <|> functionCallP
@@ -380,121 +388,122 @@ module Parser =
         <|> (postfixExpressionPRef.Parser .>>. tokenP Token.INCOP |>> ignore)
         <|> (postfixExpressionPRef.Parser .>>. tokenP Token.DECOP |>> ignore)
     
-    and unaryOperatorP =
-        tokenP Token.PLUS
+    let unaryOperatorP =
+        (tokenP Token.PLUS
         <|> tokenP Token.DASH
         <|> tokenP Token.BANG
-        <|> tokenP Token.TILDE |>> ignore
+        <|> tokenP Token.TILDE) |>> ignore
     
-    and unaryExpressionP =
+    let unaryExpressionP =
         (postfixExpressionP |>> ignore)
         <|> (tokenP Token.INCOP .>>. unaryExpressionPRef.Parser |>> ignore)
         <|> (tokenP Token.DECOP .>>. unaryExpressionPRef.Parser |>> ignore)
         <|> (unaryOperatorP .>>. unaryExpressionPRef.Parser |>> ignore)
         
-    and multiplicativeExpressionPRef = ParserWithPositionalErrors.createRefParser ()
-    and multiplicativeExpressionP =
+    let multiplicativeExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    let multiplicativeExpressionP =
         unaryExpressionP
         <|> (multiplicativeExpressionPRef.Parser .>>. tokenP Token.STAR .>>. unaryExpressionP |>> ignore)
         <|> (multiplicativeExpressionPRef.Parser .>>. tokenP Token.SLASH .>>. unaryExpressionP |>> ignore)
         <|> (multiplicativeExpressionPRef.Parser .>>. tokenP Token.PERCENT .>>. unaryExpressionP |>> ignore)
         
-    and additiveExpressionPRef = ParserWithPositionalErrors.createRefParser ()
-    and additiveExpressionP =
+    let additiveExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    let additiveExpressionP =
         multiplicativeExpressionP
         <|> (additiveExpressionPRef.Parser .>>. tokenP Token.PLUS .>>. multiplicativeExpressionP |>> ignore)
         <|> (additiveExpressionPRef.Parser .>>. tokenP Token.DASH .>>. multiplicativeExpressionP |>> ignore)
 
-    and shiftExpressionPRef = ParserWithPositionalErrors.createRefParser ()
-    and shiftExpressionP =
+    let shiftExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    let shiftExpressionP =
         additiveExpressionP
         <|> (shiftExpressionPRef.Parser .>>. tokenP Token.LEFTOP .>>. additiveExpressionP |>> ignore)
         <|> (shiftExpressionPRef.Parser .>>. tokenP Token.RIGHTOP .>>. additiveExpressionP |>> ignore)
     
-    and relationalExpressionPRef = ParserWithPositionalErrors.createRefParser ()
-    and relationalExpressionP =
+    let relationalExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    let relationalExpressionP =
         shiftExpressionP
         <|> (relationalExpressionPRef.Parser .>>. tokenP Token.LEFTANGLE .>>. shiftExpressionP |>> ignore)
         <|> (relationalExpressionPRef.Parser .>>. tokenP Token.RIGHTANGLE .>>. shiftExpressionP |>> ignore)
         <|> (relationalExpressionPRef.Parser .>>. tokenP Token.LEOP .>>. shiftExpressionP |>> ignore)
         <|> (relationalExpressionPRef.Parser .>>. tokenP Token.GEOP .>>. shiftExpressionP |>> ignore)
 
-    and equalityExpressionPRef = ParserWithPositionalErrors.createRefParser ()
-    and equalityExpressionP =
+    let equalityExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    let equalityExpressionP =
         relationalExpressionP
         <|> (equalityExpressionPRef.Parser .>>. tokenP Token.EQOP .>>. relationalExpressionP |>> ignore)
         <|> (equalityExpressionPRef.Parser .>>. tokenP Token.NEOP .>>. relationalExpressionP |>> ignore)
     
-    and andExpressionPRef = ParserWithPositionalErrors.createRefParser ()
-    and andExpressionP =
+    let andExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    let andExpressionP =
         equalityExpressionP
         <|> (andExpressionPRef.Parser .>>. tokenP Token.AMPERSAND .>>. equalityExpressionP |>> ignore) 
 
-    and exclusiveOrExpressionPRef = ParserWithPositionalErrors.createRefParser ()
-    and exclusiveOrExpressionP =    
+    let exclusiveOrExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    let exclusiveOrExpressionP =    
         andExpressionP
         <|> (exclusiveOrExpressionPRef.Parser .>>. tokenP Token.CARET .>>. andExpressionP |>> ignore)
         
-    and inclusiveOrExpressionPRef = ParserWithPositionalErrors.createRefParser ()
-    and inclusiveOrExpressionP =
+    let inclusiveOrExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    let inclusiveOrExpressionP =
         exclusiveOrExpressionP
         <|> (inclusiveOrExpressionPRef.Parser .>>. tokenP Token.VERTICALBAR .>>. exclusiveOrExpressionP |>> ignore)
 
-    and logicalAndExpressionPRef = ParserWithPositionalErrors.createRefParser ()
-    and logicalAndExpressionP =
+    let logicalAndExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    let logicalAndExpressionP =
         inclusiveOrExpressionP
         <|> (logicalAndExpressionPRef.Parser .>>. tokenP Token.ANDOP .>>. inclusiveOrExpressionP |>> ignore) 
 
-    and logicalXorExpressionPRef = ParserWithPositionalErrors.createRefParser ()
-    and logicalXorExpressionP =
+    let logicalXorExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    let logicalXorExpressionP =
         logicalAndExpressionP
         <|> (logicalXorExpressionPRef.Parser .>>. tokenP Token.XOROP .>>. logicalAndExpressionP |>> ignore)
 
-    and logicalOrExpressionPRef = ParserWithPositionalErrors.createRefParser ()
-    and logicalOrExpressionP =
+    let logicalOrExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    let logicalOrExpressionP =
         logicalXorExpressionP
         <|> (logicalOrExpressionPRef.Parser .>>. tokenP Token.OROP .>>. logicalXorExpressionP |>> ignore)
         
-    and conditionalExpressionP =
+    let conditionalExpressionP =
         logicalOrExpressionP
         <|> (logicalOrExpressionP .>>. tokenP Token.QUESTION .>>. expressionPRef.Parser .>>. tokenP Token.COLON .>>. assignmentExpressionPRef.Parser |>> ignore)
 
-    and assignmentExpressionP =
+    let assignmentExpressionPRef = ParserWithPositionalErrors.createRefParser ()
+    let assignmentExpressionP =
         conditionalExpressionP
-        <|> (unaryExpressionP .>>. assignmentOpP .>>. assignmentExpressionP |>> ignore)
+        <|> (unaryExpressionP .>>. assignmentOpP .>>. assignmentExpressionPRef.Parser |>> ignore)
     
-    and expressionP =
+    let expressionP =
         assignmentExpressionP .>>. (many (commaP .>>. assignmentExpressionP)) |>> ignore
         
-    and expressionStatementP =
+    let expressionStatementP =
         (semicolonP |>> ignore)
         <|> (expressionP .>>. semicolonP |>> ignore)
 
-    and selectionRestStatementP =
-        (statementP .>>. tokenP Token.ELSE .>>. statementP |>> ignore)
-        <|> statementP
+    let selectionRestStatementP =
+        (statementPRef.Parser .>>. tokenP Token.ELSE .>>. statementPRef.Parser |>> ignore)
+        <|> statementPRef.Parser
             
-    and selectionStatementP =
+    let selectionStatementP =
         tokenP Token.IF .>>. leftParenP .>>. expressionP .>>. rightParenP .>>. selectionRestStatementP |>> ignore
     
-    and switchStatementListP = statementListP
+    let switchStatementListP = statementListP
 
-    and switchStatementP =
+    let switchStatementP =
         tokenP Token.SWITCH .>>. leftParenP .>>. expressionP .>>. rightParenP .>>. leftBraceP .>>. switchStatementListP .>>. rightBraceP |>> ignore
         
-    and caseLabelP =
+    let caseLabelP =
         (tokenP Token.CASE .>>. expressionP .>>. tokenP Token.COLON) |>> ignore
         <|> (tokenP Token.DEFAULT .>>. tokenP Token.COLON |>> ignore)
     
-    and iterationStatementP =
-        tokenP Token.WHILE .>>. leftParenP .>>. conditionP .>>. rightParenP .>>. statementNoNewScopeP
-        DO statement WHILE LEFT_PAREN expression RIGHT_PAREN SEMICOLON
-        FOR LEFT_PAREN for_init_statement for_rest_statement RIGHT_PAREN statement_no_new_scope
+    let iterationStatementP = failwith "todo"
+    //    tokenP Token.WHILE .>>. leftParenP .>>. conditionP .>>. rightParenP .>>. statementNoNewScopeP
+    //    DO statement WHILE LEFT_PAREN expression RIGHT_PAREN SEMICOLON
+    //    FOR LEFT_PAREN for_init_statement for_rest_statement RIGHT_PAREN statement_no_new_scope
         
     
-    and jumpStatementP = failwith "todo"
+    let jumpStatementP = failwith "todo"
     
-    and simpleStatementP =    
+    let simpleStatementP =    
         declarationStatementP
         <|> expressionStatementP
         <|> selectionStatementP
@@ -503,29 +512,30 @@ module Parser =
         <|> iterationStatementP
         <|> jumpStatementP
         
-    and statementP =
+    let statementP =
         compoundStatementP <|> simpleStatementP
+    statementPRef.Set statementP.parseFn
     
-    and statementListP =
+    let statementListP =
         many1 statementP
     
-    and compoundStatementNoNewScopeP =
+    let compoundStatementNoNewScopeP =
         (tokenP GlslParser.Tokenizer.Token.LEFTBRACE .>>. tokenP GlslParser.Tokenizer.Token.RIGHTBRACE |>> ignore)
         <|>
         (tokenP GlslParser.Tokenizer.Token.LEFTBRACE .>>. statementListP .>>. tokenP GlslParser.Tokenizer.Token.RIGHTBRACE |>> ignore)
 
     
-    and functionDefinitionP =
+    let functionDefinitionP =
         functionPrototypeP .>>. compoundStatementNoNewScopeP
 
-    and externalDeclarationP =
+    let externalDeclarationP =
         //functionDefinitionP
         //declarationP
         semicolonP
         
-    typeSpecifierPRef.Set typeSpecifierP
-    statementPRef.Set statementP
-    expressionPRef.Set expressionP
+    typeSpecifierPRef.Set typeSpecifierP.parseFn
+    statementPRef.Set statementP.parseFn
+    expressionPRef.Set expressionP.parseFn
 
 
 
