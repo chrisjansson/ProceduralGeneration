@@ -329,12 +329,21 @@ module Parser =
             | Token.DOUBLECONSTANT _ -> true
             | _ -> false
         satisfy pred "DOUBLECONSTANT"
+    
+    
+    and boolConstant =
+        let pred token =
+            match token with
+            | Token.BOOLCONSTANT _ -> true
+            | _ -> false
+        satisfy pred "BOOLCONSTANT"
 
     and primaryExpressionP =
         (variableIdentifierP |>> ignore)
         <|> (intConstantP |>> ignore)
         <|> (uintConstantP |>> ignore)
         <|> (floatConstant |>> ignore)
+        <|> (boolConstant |>> ignore)
         <|> (doubleConstant |>> ignore)
         <|> (leftParenP .>>. expressionPRef.Parser .>>. rightParenP |>> ignore)
     
